@@ -1,8 +1,10 @@
 <script lang="ts">
   import "../app.css";
+  import { page } from "$app/stores";
   import { params } from "$lib/stores/params";
   import { locale, t } from "$lib/i18n";
   import NavBar from "$lib/components/NavBar.svelte";
+  import { etfCagr } from "$lib/stores/computed";
 
   const months = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
   let now = new Date();
@@ -34,6 +36,19 @@
   <NavBar />
 
   <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start mb-8">
+    {#if $page.url.pathname.startsWith("/etf")}
+    <aside class="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs lg:col-span-1 lg:sticky lg:top-6 z-40">
+      <h2 class="text-base font-bold text-[#0A2540] border-b border-gray-100 pb-2 mb-3">{$t("etf.etf_return")}</h2>
+      <input type="range" min="1" max="15" step="0.25" value={$etfCagr * 100}
+        oninput={(e) => $etfCagr = parseFloat(e.target.value) / 100}
+        class="w-full h-2 accent-[#635BFF]" />
+      <div class="flex justify-between text-xs text-gray-400 mt-1">
+        <span>1%</span>
+        <span>15%</span>
+      </div>
+      <p class="text-center text-3xl font-black text-[#635BFF] mt-3">{($etfCagr * 100).toFixed(1)}%</p>
+    </aside>
+    {:else}
     <aside class="bg-white p-3 rounded-2xl border border-gray-200 shadow-xs lg:col-span-1 space-y-2 lg:sticky lg:top-6 z-40 max-h-[calc(100vh-3rem)] overflow-y-auto">
       <h2 class="text-base font-bold text-[#0A2540] border-b border-gray-100 pb-2 mb-1">{$t("panel.variables")}</h2>
 
@@ -148,8 +163,9 @@
         </div>
       </div>
     </aside>
+    {/if}
 
-    <main class="lg:col-span-3 space-y-6">
+    <main class="space-y-6 lg:col-span-3">
       <slot />
     </main>
   </div>

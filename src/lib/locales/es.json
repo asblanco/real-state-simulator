@@ -131,7 +131,7 @@
   "tooltip.ahorro_formula": "Ahorro = (−Base × 42% Tasa) / 12",
   "tooltip.ahorro_resultado": "Ahorro Fiscal:",
 
-  "nav.dashboard": "Dashboard",
+  "nav.dashboard": "Inmueble",
   "nav.rental": "Renta",
   "nav.mortgage": "Hipoteca",
   "nav.fiscal": "Fiscal",

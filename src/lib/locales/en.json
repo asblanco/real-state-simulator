@@ -131,7 +131,7 @@
   "tooltip.ahorro_formula": "Savings = (−Base × 42% Rate) / 12",
   "tooltip.ahorro_resultado": "Tax Savings:",
 
-  "nav.dashboard": "Dashboard",
+  "nav.dashboard": "Property",
   "nav.rental": "Rental",
   "nav.mortgage": "Mortgage",
   "nav.fiscal": "Tax",

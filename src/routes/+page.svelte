@@ -11,7 +11,7 @@
     return Math.round(n).toLocaleString("de-DE") + " €";
   }
 
-
+  let tab = $state<"resumen" | "graficos" | "proyeccion" | "fiscal">("resumen");
 
   function warmTooltip(y: YearData): string {
     return `
@@ -58,6 +58,14 @@
   `;
 </script>
 
+<nav class="flex gap-1 border-b border-gray-200 mb-6 overflow-x-auto" role="tablist">
+  <button role="tab" class="px-4 py-2.5 text-sm font-bold whitespace-nowrap rounded-t-lg transition-colors {tab === 'resumen' ? 'text-[#635BFF] border-b-2 border-[#635BFF] bg-white' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}" onclick={() => tab = 'resumen'}>Resumen</button>
+  <button role="tab" class="px-4 py-2.5 text-sm font-bold whitespace-nowrap rounded-t-lg transition-colors {tab === 'graficos' ? 'text-[#635BFF] border-b-2 border-[#635BFF] bg-white' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}" onclick={() => tab = 'graficos'}>Gráficos</button>
+  <button role="tab" class="px-4 py-2.5 text-sm font-bold whitespace-nowrap rounded-t-lg transition-colors {tab === 'proyeccion' ? 'text-[#635BFF] border-b-2 border-[#635BFF] bg-white' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}" onclick={() => tab = 'proyeccion'}>Proyección</button>
+  <button role="tab" class="px-4 py-2.5 text-sm font-bold whitespace-nowrap rounded-t-lg transition-colors {tab === 'fiscal' ? 'text-[#635BFF] border-b-2 border-[#635BFF] bg-white' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}" onclick={() => tab = 'fiscal'}>Fiscal</button>
+</nav>
+
+{#if tab === "resumen"}
 <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
   <KpiCard label={$t("kpi.precio_total")} value={fmt($params.precio + $params.parking)} />
 
@@ -156,7 +164,9 @@
     </div>
   </div>
 </div>
+{/if}
 
+{#if tab === "graficos"}
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
   <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs h-80">
     <Chart
@@ -228,7 +238,9 @@
     title="Evolución Patrimonial Anual"
   />
 </div>
+{/if}
 
+{#if tab === "resumen"}
 <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-xs">
   <h3 class="text-base font-bold text-[#0A2540] mb-2">{$t("section.desglose_titulo")}</h3>
   <p class="text-xs text-gray-400 mb-4">{$t("section.desglose_subtitulo")}</p>
@@ -259,7 +271,9 @@
     </div>
   </div>
 </div>
+{/if}
 
+{#if tab === "proyeccion"}
 <div class="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden">
   <div class="p-6 border-b border-gray-100 bg-white">
     <h3 class="text-lg font-bold text-[#0A2540] flex items-center justify-between">
@@ -331,7 +345,9 @@
     </table>
   </div>
 </div>
+{/if}
 
+{#if tab === "fiscal"}
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
   <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs">
     <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Préstamo Total</p>
@@ -346,7 +362,9 @@
     <p class="text-xl font-black text-orange-600 mt-1">{fmt($years[$years.length - 1].deudaRestante)}</p>
   </div>
 </div>
+{/if}
 
+{#if tab === "proyeccion"}
 <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs">
   <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Intereses vs Amortización (Total Período)</p>
   <div class="flex items-center gap-4 h-8 mb-2">
@@ -358,7 +376,9 @@
     <span>Amortización: {fmt($totalAmortizacion)} ({$pctAmortizacion.toFixed(1)}%)</span>
   </div>
 </div>
+{/if}
 
+{#if tab === "fiscal"}
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
   <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs">
     <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">AfA Anual</p>
@@ -377,7 +397,9 @@
     <p class="text-xl font-black text-amber-600 mt-1">{fmt($summary.costoAdquisicionTotal - $summary.afaAcumulada)}</p>
   </div>
 </div>
+{/if}
 
+{#if tab === "proyeccion"}
 <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-xs">
   <h3 class="text-base font-bold text-[#0A2540] mb-4">Evolución Año a Año</h3>
   <div class="overflow-x-auto">
@@ -410,3 +432,4 @@
     </table>
   </div>
 </div>
+{/if}
