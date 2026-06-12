@@ -14,13 +14,6 @@ function updateCalculations(): void {
   updateCharts(years);
 }
 
-const inputs = ["precio", "parking", "entrada", "interes", "tilgung", "alquiler", "alquiler-parking", "subida", "inflacion", "afa"];
-bindInputs(inputs, updateCalculations);
-
-applyDefaults();
-bindToggle(updateCalculations);
-updateCalculations();
-
 const chartRentCanvas = document.getElementById("chartRent") as HTMLCanvasElement | null;
 const chartCFCanvas = document.getElementById("chartCashflow") as HTMLCanvasElement | null;
 const ctxRent = chartRentCanvas?.getContext("2d");
@@ -28,3 +21,10 @@ const ctxCF = chartCFCanvas?.getContext("2d");
 if (ctxRent && ctxCF) {
   try { initCharts(ctxRent, ctxCF); } catch { console.error("Chart initialization failed"); }
 }
+
+const inputs = ["precio", "parking", "entrada", "interes", "tilgung", "alquiler", "alquiler-parking", "subida", "inflacion", "afa"];
+bindInputs(inputs, updateCalculations);
+
+applyDefaults();
+bindToggle(updateCalculations);
+updateCalculations();

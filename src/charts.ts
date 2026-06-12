@@ -48,6 +48,7 @@ export function initCharts(ctxRent: CanvasRenderingContext2D, ctxCF: CanvasRende
 }
 
 export function updateCharts(years: YearData[]): void {
+  if (!chartRent || !chartCF) return;
   chartRent.data.datasets[0].data = years.map(y => Math.round(y.ingresoWarmMensual));
   chartRent.update();
 

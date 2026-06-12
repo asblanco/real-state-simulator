@@ -14508,6 +14508,8 @@ function initCharts(ctxRent, ctxCF) {
   });
 }
 function updateCharts(years) {
+  if (!chartRent || !chartCF)
+    return;
   chartRent.data.datasets[0].data = years.map((y) => Math.round(y.ingresoWarmMensual));
   chartRent.update();
   chartCF.data.datasets[0].data = years.map((y) => Math.round(y.cashflowNetoPostTaxMensual));
@@ -14818,11 +14820,6 @@ function updateCalculations() {
   renderSummary(summary, purchaseCosts);
   updateCharts(years);
 }
-var inputs = ["precio", "parking", "entrada", "interes", "tilgung", "alquiler", "alquiler-parking", "subida", "inflacion", "afa"];
-bindInputs(inputs, updateCalculations);
-applyDefaults();
-bindToggle(updateCalculations);
-updateCalculations();
 var chartRentCanvas = document.getElementById("chartRent");
 var chartCFCanvas = document.getElementById("chartCashflow");
 var ctxRent = chartRentCanvas?.getContext("2d");
@@ -14834,3 +14831,8 @@ if (ctxRent && ctxCF) {
     console.error("Chart initialization failed");
   }
 }
+var inputs = ["precio", "parking", "entrada", "interes", "tilgung", "alquiler", "alquiler-parking", "subida", "inflacion", "afa"];
+bindInputs(inputs, updateCalculations);
+applyDefaults();
+bindToggle(updateCalculations);
+updateCalculations();
