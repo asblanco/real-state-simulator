@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Inversión Inmobiliaria</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #F8F9FA; color: #1F2937; }
+        .fin-table th { background-color: #0A2540; color: #FFFFFF; font-weight: 600; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.05em; padding: 12px 10px; }
+        .fin-table td { padding: 12px 10px; font-size: 0.8rem; border-bottom: 1px solid #E5E7EB; }
+        .fin-table tr:hover { background-color: #F3F4F6 !important; transition: background 0.15s ease; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto">
+        <!-- Cabecera Nombre Fijo -->
+        <header class="mb-8 border-b border-gray-200 pb-6">
+            <h1 class="text-3xl font-extrabold text-[#0A2540] tracking-tight">Simulador de Inversión Inmobiliaria</h1>
+            <p class="text-sm text-gray-500 italic mt-0.5">Cálculo patrimonial con escalonamiento trienal (*Kappungsgrenze*) y proyección fiscal a 10 años.</p>
+        </header>
+
+        <!-- ESTRUCTURA PRINCIPAL -->
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start mb-8">
+            
+            <!-- PANEL DE CONTROL FLOTANTE (STICKY ON SCROLL) -->
+            <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-xs lg:col-span-1 space-y-5 lg:sticky lg:top-6 z-40 max-h-[calc(100vh-3rem)] overflow-y-auto">
+                <h2 class="text-lg font-bold text-[#0A2540] border-b border-gray-100 pb-2">Variables del Inmueble</h2>
+                
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Precio Piso: <span id="val-precio" class="text-[#635BFF] font-bold">340.000</span> €</label>
+                    <input type="range" id="input-precio" min="200000" max="600000" step="5000" value="340000" class="w-full accent-[#635BFF]">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Precio Parking: <span id="val-parking" class="text-[#635BFF] font-bold">15.000</span> €</label>
+                    <input type="range" id="input-parking" min="0" max="40000" step="1000" value="15000" class="w-full accent-[#635BFF]">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Entrada (Eigenkapital): <span id="val-entrada" class="text-[#635BFF] font-bold">15</span>%</label>
+                    <input type="range" id="input-entrada" min="0" max="50" step="5" value="15" class="w-full accent-[#635BFF]">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Interés Hipoteca (Zins): <span id="val-interes" class="text-[#635BFF] font-bold">4.22</span>%</label>
+                    <input type="range" id="input-interes" min="1.0" max="6.0" step="0.05" value="4.22" class="w-full accent-[#635BFF]">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Amortización (Tilgung): <span id="val-tilgung" class="text-[#635BFF] font-bold">1.0</span>%</label>
+                    <input type="range" id="input-tilgung" min="1.0" max="3.0" step="0.5" value="1.0" class="w-full accent-[#635BFF]">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Alquiler Inicial Piso: <span id="val-alquiler" class="text-[#635BFF] font-bold">1.125</span> €</label>
+                    <input type="range" id="input-alquiler" min="800" max="2000" step="25" value="1125" class="w-full accent-[#635BFF]">
+                </div>
+
+                <!-- NUEVA VARIABLE: ALQUILER PARKING -->
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Alquiler Inicial Parking: <span id="val-alquiler-parking" class="text-[#635BFF] font-bold">80</span> €</label>
+                    <input type="range" id="input-alquiler-parking" min="0" max="150" step="5" value="80" class="w-full accent-[#635BFF]">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Tope Trienal Máx: <span id="val-subida" class="text-[#635BFF] font-bold">15</span>%</label>
+                    <input type="range" id="input-subida" min="0" max="20" step="1" value="15" class="w-full accent-[#635BFF]">
+                </div>
+
+                <div class="pt-2 border-t border-gray-100">
+                    <label class="block text-xs font-bold text-emerald-700 uppercase mb-1">Revalorización Anual Inmueble: <span id="val-inflacion" class="text-emerald-600">2.5</span>%</label>
+                    <input type="range" id="input-inflacion" min="0.0" max="5.0" step="0.1" value="2.5" class="w-full accent-emerald-600">
+                </div>
+            </div>
+
+            <!-- CONTENIDO DE DASHBOARD (DERECHA) -->
+            <div class="lg:col-span-3 space-y-6">
+                <!-- TARJETAS KPI -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs">
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Precio Total Inmueble</p>
+                        <p id="kpi-precio-total" class="text-xl font-black text-[#0A2540] mt-1">0 €</p>
+                    </div>
+
+                    <!-- Efectivo Inicial con Tooltip -->
+                    <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs relative group cursor-help">
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center">
+                            Efectivo Inicial 
+                            <svg class="w-3.5 h-3.5 ml-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </p>
+                        <p id="kpi-efectivo" class="text-xl font-black text-[#0A2540] mt-1">0 €</p>
+                        <div class="absolute left-0 top-full mt-2 hidden group-hover:block bg-[#0A2540] text-white text-xs rounded-xl p-4 w-64 shadow-xl z-50 space-y-1.5 pointer-events-none">
+                            <p class="font-bold border-b border-gray-700 pb-1 mb-1 text-[#635BFF]">Desglose de Fondos:</p>
+                            <div class="flex justify-between"><span>Entrada pura:</span><span id="tt-ek" class="font-mono">0 €</span></div>
+                            <div class="flex justify-between"><span>Impuestos (ITP 3.5%):</span><span id="tt-itp" class="font-mono">0 €</span></div>
+                            <div class="flex justify-between"><span>Notaría y Reg. (2.0%):</span><span id="tt-notario" class="font-mono">0 €</span></div>
+                            <div class="flex justify-between"><span>Agencia (3.57%):</span><span id="tt-agencia" class="font-mono">0 €</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Ganancia Año 10 con Tooltip -->
+                    <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs relative group cursor-help">
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center">
+                            Ganancia Neto Año 10
+                            <svg class="w-3.5 h-3.5 ml-1 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </p>
+                        <p id="kpi-retorno" class="text-xl font-black text-emerald-600 mt-1">0 €</p>
+                        <div class="absolute left-0 md:right-0 md:left-auto top-full mt-2 hidden group-hover:block bg-[#0A2540] text-white text-xs rounded-xl p-4 w-64 shadow-xl z-50 space-y-1.5 pointer-events-none">
+                            <p class="font-bold border-b border-gray-700 pb-1 mb-1 text-emerald-400">Tasación de Liquidación:</p>
+                            <div class="flex justify-between font-medium"><span>Precio de Adquisición:</span><span id="tt-compra-orig" class="font-mono">0 €</span></div>
+                            <div class="flex justify-between font-bold text-emerald-400"><span>Valor de Venta (A10):</span><span id="tt-venta-futura" class="font-mono">0 €</span></div>
+                            <div class="text-[10px] text-gray-400 pt-1 border-t border-gray-700 mt-1 leading-tight">Valor futuro aplicando la revalorización compuesta seleccionada.</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-[#635BFF] p-5 rounded-2xl text-white shadow-xs relative group cursor-help">
+                        <p class="text-xs font-bold text-blue-100 uppercase tracking-wider flex items-center">
+                            Rendimiento Anual (ROI)
+                            <svg class="w-3.5 h-3.5 ml-1 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </p>
+                        <p id="kpi-roi" class="text-xl font-black mt-1">0.00 %</p>
+                        <div class="absolute right-0 top-full mt-2 hidden group-hover:block bg-gray-900 text-white text-xs rounded-xl p-4 w-72 shadow-xl z-50 pointer-events-none leading-relaxed">
+                            <p class="font-bold text-[#635BFF] mb-1">Comparativa con ETFs</p>
+                            Muestra el rendimiento anualizado equivalente (CAGR) que tendría que generar un fondo o ETF de acciones sobre tu capital aportado para igualar este beneficio neto inmobiliario.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GRÁFICOS REFORZADOS -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs h-80">
+                        <canvas id="chartRent"></canvas>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs h-80">
+                        <canvas id="chartCashflow"></canvas>
+                    </div>
+                </div>
+
+                <!-- DESGLOSE MATEMÁTICO INFERIOR -->
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-xs">
+                    <h3 class="text-base font-bold text-[#0A2540] mb-2">
+                        Desglose Matemático de la Liquidación del Activo (Año 10)
+                    </h3>
+                    <p class="text-xs text-gray-400 mb-4">Valores en tiempo real según la tasa de revalorización compuesta.</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div class="p-3 bg-gray-50 border border-gray-100 rounded-xl">
+                            <span class="text-[10px] font-bold text-gray-400 uppercase block tracking-wide">1. Valor de Venta Futuro</span>
+                            <span id="math-venta" class="text-base font-extrabold text-gray-800 block mt-0.5">0 €</span>
+                        </div>
+                        <div class="p-3 bg-gray-50 border border-gray-100 rounded-xl">
+                            <span class="text-[10px] font-bold text-gray-400 uppercase block tracking-wide">2. Deuda Hipoteca</span>
+                            <span id="math-deuda" class="text-base font-extrabold text-red-600 block mt-0.5">0 €</span>
+                        </div>
+                        <div class="p-3 bg-gray-50 border border-gray-100 rounded-xl">
+                            <span class="text-[10px] font-bold text-gray-400 uppercase block tracking-wide">3. Recuperación Inversión</span>
+                            <span id="math-efectivo" class="text-base font-extrabold text-gray-700 block mt-0.5">0 €</span>
+                        </div>
+                        <div class="p-3 bg-emerald-50 border border-emerald-100 rounded-xl">
+                            <span class="text-[10px] font-bold text-emerald-700 uppercase block tracking-wide">4. Cashflow 10A + Venta</span>
+                            <span id="math-final" class="text-base font-extrabold text-emerald-700 block mt-0.5">0 €</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TABLA DE DESARROLLO INMOBILIARIO -->
+                <div class="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden">
+                    <div class="p-6 border-b border-gray-100 bg-white">
+                        <h3 class="text-lg font-bold text-[#0A2540]">2. Cuadro de Desarrollo Inmobiliario y Optimización Fiscal</h3>
+                        <p class="text-xs text-gray-400 mt-0.5">Desglose de amortización progresiva frente al ahorro de la base imponible del Finanzamt.</p>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse fin-table">
+                            <thead>
+                                <tr>
+                                    <th class="text-center w-12">Año</th>
+                                    <th>Alquiler Kalt (Mes)</th>
+                                    <th>Cashflow Bruto (Año)</th>
+                                    <th>Intereses (Zins)</th>
+                                    <th>Amortización (Tilgung)</th>
+                                    <th class="text-amber-700 bg-amber-50/50">Base Fiscal (Anual)</th>
+                                    <th class="text-emerald-700 bg-emerald-50/50">Ahorro Fiscal (Mes)</th>
+                                    <th class="bg-blue-50 text-[#635BFF] font-bold text-right pr-6">Neto Post-Tax (Mes)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-proyeccion-body" class="divide-y divide-gray-100 bg-white">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Selección de inputs incluyendo el nuevo input de alquiler de parking
+        const inputs = ['precio', 'parking', 'entrada', 'interes', 'tilgung', 'alquiler', 'alquiler-parking', 'subida', 'inflacion'];
+        const elements = {};
+        inputs.forEach(id => {
+            elements[id] = document.getElementById(`input-${id}`);
+            elements[`val_${id}`] = document.getElementById(`val-${id}`);
+        });
+
+        const ctxRent = document.getElementById('chartRent').getContext('2d');
+        const ctxCF = document.getElementById('chartCashflow').getContext('2d');
+
+        let chartRent = new Chart(ctxRent, {
+            type: 'line',
+            data: { labels: Array.from({length: 10}, (_, i) => `Año ${i+1}`), datasets: [{ label: 'Ingresos Mensuales Total (€)', data: [], borderColor: '#0A2540', tension: 0, borderWidth: 2.5, pointBackgroundColor: '#0A2540' }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Renta Mensual Total Escalada (Piso + Parking)' } } }
+        });
+
+        let chartCF = new Chart(ctxCF, {
+            type: 'bar',
+            data: { labels: Array.from({length: 10}, (_, i) => `Año ${i+1}`), datasets: [{ label: 'Cashflow Mensual Post-Tax (€)', data: [], backgroundColor: '#635BFF', borderRadius: 4 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Flujo Líquido Neto Mensual (Post-Impuestos)' } } }
+        });
+
+        function formatEuro(val) {
+            return Math.round(val).toLocaleString('de-DE') + " €";
+        }
+
+        function updateCalculations() {
+            const precio = parseFloat(elements.precio.value);
+            const parking = parseFloat(elements.parking.value);
+            const entradaPct = parseFloat(elements.entrada.value) / 100;
+            const interesPct = parseFloat(elements.interes.value) / 100;
+            const tilgungPct = parseFloat(elements.tilgung.value) / 100;
+            const alquilerInicialPiso = parseFloat(elements.alquiler.value);
+            const alquilerInicialParking = parseFloat(elements['alquiler-parking'].value); // Dinámico ahora
+            const subidaPct = parseFloat(elements.subida.value) / 100;
+            const inflacionPct = parseFloat(elements.inflacion.value) / 100;
+
+            const hausgeldNoTransf = 150;
+            const reservaPrivada = 40;
+            const taxRate = 0.42;
+
+            elements.val_precio.innerText = precio.toLocaleString('de-DE');
+            elements.val_parking.innerText = parking.toLocaleString('de-DE');
+            elements.val_entrada.innerText = elements.entrada.value;
+            elements.val_interes.innerText = elements.interes.value;
+            elements.val_tilgung.innerText = elements.tilgung.value;
+            elements.val_alquiler.innerText = alquilerInicialPiso.toLocaleString('de-DE');
+            elements['val_alquiler-parking'].innerText = alquilerInicialParking.toLocaleString('de-DE');
+            elements.val_subida.innerText = elements.subida.value;
+            elements.val_inflacion.innerText = elements.inflacion.value;
+
+            const precioTotal = precio + parking;
+            document.getElementById('kpi-precio-total').innerText = formatEuro(precioTotal);
+
+            const costeITP = precioTotal * 0.035;
+            const costeNotario = precioTotal * 0.02;
+            const costeAgencia = precioTotal * 0.0357;
+            const capitalPropioEntrada = precioTotal * entradaPct;
+            const efectivoTotalNecesario = capitalPropioEntrada + costeITP + costeNotario + costeAgencia;
+
+            document.getElementById('tt-ek').innerText = formatEuro(capitalPropioEntrada);
+            document.getElementById('tt-itp').innerText = formatEuro(costeITP);
+            document.getElementById('tt-notario').innerText = formatEuro(costeNotario);
+            document.getElementById('tt-agencia').innerText = formatEuro(costeAgencia);
+            document.getElementById('kpi-efectivo').innerText = formatEuro(efectivoTotalNecesario);
+
+            const montoFinanciar = precioTotal - capitalPropioEntrada;
+            const cuotaMensualHipoteca = (montoFinanciar * (interesPct + tilgungPct)) / 12;
+
+            let rentSeries = [];
+            let cfSeries = [];
+            let deudaRestante = montoFinanciar;
+            let totalCashflowAcumulado = 0;
+            
+            const afaEdificioAnual = (precio * 0.8 * 0.02) + 400 + 1000;
+            const tablaBody = document.getElementById('tabla-proyeccion-body');
+            tablaBody.innerHTML = "";
+
+            for (let y = 1; y <= 10; y++) {
+                let factorSubida = 1;
+                if (y >= 4 && y <= 6) factorSubida = (1 + subidaPct);
+                if (y >= 7 && y <= 9) factorSubida = Math.pow((1 + subidaPct), 2);
+                if (y === 10) factorSubida = Math.pow((1 + subidaPct), 3);
+
+                const mensualPiso = alquilerInicialPiso * factorSubida;
+                const mensualParking = alquilerInicialParking * factorSubida;
+                const ingresoMensualTotal = mensualPiso + mensualParking;
+
+                const interesesAnuales = deudaRestante * interesPct;
+                const cuotaAnualTotal = cuotaMensualHipoteca * 12;
+                const amortizacionAnual = cuotaAnualTotal - interesesAnuales;
+                deudaRestante -= amortizacionAnual;
+
+                const gastosFijosMensuales = hausgeldNoTransf + reservaPrivada;
+                const cashflowPreTaxMensual = ingresoMensualTotal - cuotaMensualHipoteca - gastosFijosMensuales;
+
+                const ingresosBrutosAnuales = ingresoMensualTotal * 12;
+                const gastosDeduciblesAnuales = interesesAnuales + afaEdificioAnual + (hausgeldNoTransf * 12);
+                const resultadoFiscalAnual = ingresosBrutosAnuales - gastosDeduciblesAnuales;
+
+                const devolucionFiscalMensual = resultadoFiscalAnual < 0 ? (-resultadoFiscalAnual * taxRate) / 12 : 0;
+                const cashflowNetoPostTaxMensual = cashflowPreTaxMensual + devolucionFiscalMensual;
+
+                rentSeries.push(Math.round(ingresoMensualTotal));
+                cfSeries.push(Math.round(cashflowNetoPostTaxMensual));
+                totalCashflowAcumulado += (cashflowNetoPostTaxMensual * 12);
+
+                const row = document.createElement('tr');
+                row.className = y % 2 === 0 ? 'bg-white' : 'bg-[#F9FAFB]';
+                
+                // CELDA DINÁMICA CON TOOLTIP DE EXPLICACIÓN (ALQUILER KALT)
+                row.innerHTML = `
+                    <td class="text-center font-bold text-gray-500">${y}</td>
+                    <td class="font-semibold text-gray-900 relative group cursor-help">
+                        <div class="flex items-center gap-1">
+                            <span>${formatEuro(ingresoMensualTotal)}</span>
+                            <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <div class="absolute left-full top-1/2 -translate-y-1/2 ml-2 hidden group-hover:block bg-[#0A2540] text-white text-[11px] rounded-lg p-2.5 w-52 shadow-xl z-50 pointer-events-none space-y-1">
+                            <p class="font-bold text-blue-300 border-b border-gray-700 pb-0.5">Composición de Renta:</p>
+                            <div class="flex justify-between"><span>Alquiler Piso:</span><span>${formatEuro(mensualPiso)}</span></div>
+                            <div class="flex justify-between"><span>Alquiler Parking:</span><span>${formatEuro(mensualParking)}</span></div>
+                            <div class="text-[9px] text-gray-400 pt-0.5 italic">Aplicado factor de escala: x${factorSubida.toFixed(2)}</div>
+                        </div>
+                    </td>
+                    <td class="text-gray-600">${formatEuro(cashflowPreTaxMensual * 12)}</td>
+                    <td class="text-red-500 font-mono">-${formatEuro(interesesAnuales)}</td>
+                    <td class="text-emerald-600 font-mono">+${formatEuro(amortizacionAnual)}</td>
+                    <td class="text-amber-700 bg-amber-50/40 font-medium">${formatEuro(resultadoFiscalAnual)}</td>
+                    <td class="text-emerald-700 bg-emerald-50/40 font-medium">+${formatEuro(devolucionFiscalMensual)}</td>
+                    <td class="bg-blue-50/60 text-[#635BFF] font-extrabold text-right pr-6">${formatEuro(cashflowNetoPostTaxMensual)}</td>
+                `;
+                tablaBody.appendChild(row);
+            }
+
+            const valorPropiedadFutura = precioTotal * Math.pow(1 + inflacionPct, 10);
+            const netoDeLaVentaAlBanco = valorPropiedadFutura - deudaRestante;
+            const gananciaNetoNetoReal = netoDeLaVentaAlBanco - efectivoTotalNecesario + totalCashflowAcumulado;
+
+            document.getElementById('tt-compra-orig').innerText = formatEuro(precioTotal);
+            document.getElementById('tt-venta-futura').innerText = formatEuro(valorPropiedadFutura);
+
+            document.getElementById('math-venta').innerText = formatEuro(valorPropiedadFutura);
+            document.getElementById('math-deuda').innerText = formatEuro(deudaRestante);
+            document.getElementById('math-efectivo').innerText = formatEuro(efectivoTotalNecesario);
+            document.getElementById('math-final').innerText = formatEuro(gananciaNetoNetoReal);
+
+            document.getElementById('kpi-retorno').innerText = formatEuro(gananciaNetoNetoReal);
+
+            const capitalTotalFinal = gananciaNetoNetoReal + efectivoTotalNecesario;
+            const roiAnualizado = (Math.pow((capitalTotalFinal / efectivoTotalNecesario), 1 / 10) - 1) * 100;
+            document.getElementById('kpi-roi').innerText = isNaN(roiAnualizado) ? "0.00 %" : roiAnualizado.toFixed(2) + " %";
+
+            chartRent.data.datasets[0].data = rentSeries;
+            chartRent.update();
+
+            chartCF.data.datasets[0].data = cfSeries;
+            chartCF.update();
+        }
+
+        inputs.forEach(id => elements[id].addEventListener('input', updateCalculations));
+        updateCalculations();
+    </script>
+</body>
+</html>
