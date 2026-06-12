@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "inmueble",
+      "name": "real-state-simulator",
       "dependencies": {
         "chart.js": "^4.5.1",
       },
