@@ -5,7 +5,6 @@ export const ITP_RATE = 0.035;
 export const NOTARIO_RATE = 0.02;
 export const AGENCIA_RATE = 0.0357;
 export const AFA_BUILDING_PCT = 0.8;
-export const AFA_RATE = 0.02;
 export const AFA_FLAT_1 = 400;
 export const AFA_FLAT_2 = 1000;
 export const YEARS = 10;

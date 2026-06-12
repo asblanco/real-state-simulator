@@ -18,7 +18,7 @@ const chartRentCanvas = document.getElementById("chartRent") as HTMLCanvasElemen
 const chartCFCanvas = document.getElementById("chartCashflow") as HTMLCanvasElement;
 initCharts(chartRentCanvas.getContext("2d")!, chartCFCanvas.getContext("2d")!);
 
-const inputs = ["precio", "parking", "entrada", "interes", "tilgung", "alquiler", "alquiler-parking", "subida", "inflacion"];
+const inputs = ["precio", "parking", "entrada", "interes", "tilgung", "alquiler", "alquiler-parking", "subida", "inflacion", "afa"];
 bindInputs(inputs, updateCalculations);
 
 updateCalculations();

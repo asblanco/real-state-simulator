@@ -16,6 +16,7 @@ export function readInputs(): InputParams {
     alquilerInicialParking: getVal("input-alquiler-parking"),
     subidaPct: getVal("input-subida") / 100,
     inflacionPct: getVal("input-inflacion") / 100,
+    afaPct: getVal("input-afa") / 100,
   };
 }
 
@@ -30,6 +31,7 @@ export function updateDisplayValues(params: InputParams): void {
   setText("val-alquiler-parking", (params.alquilerInicialParking).toLocaleString("de-DE"));
   setText("val-subida", (params.subidaPct * 100).toString());
   setText("val-inflacion", (params.inflacionPct * 100).toString());
+  setText("val-afa", (params.afaPct * 100).toFixed(1));
 }
 
 export function renderKPIs(purchaseCosts: PurchaseCosts, params: InputParams): void {

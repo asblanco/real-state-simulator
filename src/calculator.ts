@@ -7,7 +7,6 @@ import {
   NOTARIO_RATE,
   AGENCIA_RATE,
   AFA_BUILDING_PCT,
-  AFA_RATE,
   AFA_FLAT_1,
   AFA_FLAT_2,
   YEARS,
@@ -53,7 +52,7 @@ export function calculateYear(
   const cashflowPreTaxMensual = ingresoMensualTotal - cuotaMensualHipoteca - gastosFijosMensuales;
 
   const ingresosBrutosAnuales = ingresoMensualTotal * MONTHS_PER_YEAR;
-  const afaEdificioAnual = (params.precio * AFA_BUILDING_PCT * AFA_RATE) + AFA_FLAT_1 + AFA_FLAT_2;
+  const afaEdificioAnual = (params.precio * AFA_BUILDING_PCT * params.afaPct) + AFA_FLAT_1 + AFA_FLAT_2;
   const gastosDeduciblesAnuales = interesesAnuales + afaEdificioAnual + (HAUSGELD_NO_TRANSF * MONTHS_PER_YEAR);
   const resultadoFiscalAnual = ingresosBrutosAnuales - gastosDeduciblesAnuales;
 

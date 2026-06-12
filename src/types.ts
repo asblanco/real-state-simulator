@@ -8,6 +8,7 @@ export interface InputParams {
   alquilerInicialParking: number;
   subidaPct: number;
   inflacionPct: number;
+  afaPct: number;
 }
 
 export interface YearData {

@@ -14445,7 +14445,6 @@ var ITP_RATE = 0.035;
 var NOTARIO_RATE = 0.02;
 var AGENCIA_RATE = 0.0357;
 var AFA_BUILDING_PCT = 0.8;
-var AFA_RATE = 0.02;
 var AFA_FLAT_1 = 400;
 var AFA_FLAT_2 = 1000;
 var YEARS = 10;
@@ -14533,7 +14532,7 @@ function calculateYear(params, year, deudaRestante, cuotaMensualHipoteca) {
   const gastosFijosMensuales = HAUSGELD_NO_TRANSF + RESERVA_PRIVADA;
   const cashflowPreTaxMensual = ingresoMensualTotal - cuotaMensualHipoteca - gastosFijosMensuales;
   const ingresosBrutosAnuales = ingresoMensualTotal * MONTHS_PER_YEAR;
-  const afaEdificioAnual = params.precio * AFA_BUILDING_PCT * AFA_RATE + AFA_FLAT_1 + AFA_FLAT_2;
+  const afaEdificioAnual = params.precio * AFA_BUILDING_PCT * params.afaPct + AFA_FLAT_1 + AFA_FLAT_2;
   const gastosDeduciblesAnuales = interesesAnuales + afaEdificioAnual + HAUSGELD_NO_TRANSF * MONTHS_PER_YEAR;
   const resultadoFiscalAnual = ingresosBrutosAnuales - gastosDeduciblesAnuales;
   const devolucionFiscalMensual = resultadoFiscalAnual < 0 ? -resultadoFiscalAnual * TAX_RATE / MONTHS_PER_YEAR : 0;
@@ -14590,7 +14589,8 @@ function readInputs() {
     alquilerInicialPiso: getVal("input-alquiler"),
     alquilerInicialParking: getVal("input-alquiler-parking"),
     subidaPct: getVal("input-subida") / 100,
-    inflacionPct: getVal("input-inflacion") / 100
+    inflacionPct: getVal("input-inflacion") / 100,
+    afaPct: getVal("input-afa") / 100
   };
 }
 function updateDisplayValues(params) {
@@ -14606,6 +14606,7 @@ function updateDisplayValues(params) {
   setText("val-alquiler-parking", params.alquilerInicialParking.toLocaleString("de-DE"));
   setText("val-subida", (params.subidaPct * 100).toString());
   setText("val-inflacion", (params.inflacionPct * 100).toString());
+  setText("val-afa", (params.afaPct * 100).toFixed(1));
 }
 function renderKPIs(purchaseCosts, params) {
   const precioTotal = params.precio + params.parking;
@@ -14678,6 +14679,6 @@ function updateCalculations() {
 var chartRentCanvas = document.getElementById("chartRent");
 var chartCFCanvas = document.getElementById("chartCashflow");
 initCharts(chartRentCanvas.getContext("2d"), chartCFCanvas.getContext("2d"));
-var inputs = ["precio", "parking", "entrada", "interes", "tilgung", "alquiler", "alquiler-parking", "subida", "inflacion"];
+var inputs = ["precio", "parking", "entrada", "interes", "tilgung", "alquiler", "alquiler-parking", "subida", "inflacion", "afa"];
 bindInputs(inputs, updateCalculations);
 updateCalculations();

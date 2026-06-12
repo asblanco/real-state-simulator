@@ -12,6 +12,7 @@ const defaultParams: InputParams = {
   alquilerInicialParking: 80,
   subidaPct: 0.15,
   inflacionPct: 0.025,
+  afaPct: 0.035,
 };
 
 describe("getRentFactor", () => {
