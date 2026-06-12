@@ -14458,7 +14458,7 @@ var DEFAULT_PARAMS = {
   alquilerInicialPiso: 1125,
   alquilerInicialParking: 80,
   subidaPct: 0.15,
-  inflacionPct: 0.025,
+  inflacionPct: 0.03,
   afaPct: 0.035
 };
 
