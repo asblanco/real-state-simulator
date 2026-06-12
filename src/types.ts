@@ -8,7 +8,8 @@ export interface InputParams {
   alquilerInicialParking: number;
   subidaPct: number;
   inflacionPct: number;
-  afaPct: number;
+  afaYears: number;
+  useFlatRate: boolean;
 }
 
 export interface YearData {
@@ -26,6 +27,7 @@ export interface YearData {
   resultadoFiscalMensual: number;
   devolucionFiscalMensual: number;
   cashflowNetoPostTaxMensual: number;
+  afaMensual: number;
 }
 
 export interface PurchaseCosts {

@@ -14438,17 +14438,15 @@ Chart.register(...registerables);
 var auto_default = Chart;
 
 // src/constants.ts
-var HAUSGELD_NO_TRANSF = 150;
-var UMLAGEFAEHIG = 350;
-var HAUSGELD_TOTAL = HAUSGELD_NO_TRANSF + UMLAGEFAEHIG;
-var RESERVA_PRIVADA = 40;
+var HAUSGELD_TOTAL = 500;
+var UMLAGEFAEHIG = 300;
+var HAUSGELD_NO_TRANSF = HAUSGELD_TOTAL - UMLAGEFAEHIG;
+var RESERVA_IMPREVISTOS = 100;
 var TAX_RATE = 0.42;
 var ITP_RATE = 0.035;
 var NOTARIO_RATE = 0.02;
 var AGENCIA_RATE = 0.0357;
 var AFA_BUILDING_PCT = 0.75;
-var AFA_FLAT_1 = 400;
-var AFA_FLAT_2 = 1000;
 var AFA_RND_YEARS = 28;
 var AFA_RND_RATE = 1 / AFA_RND_YEARS;
 var YEARS = 10;
@@ -14459,11 +14457,12 @@ var DEFAULT_PARAMS = {
   entradaPct: 0.15,
   interesPct: 0.0422,
   tilgungPct: 0.015,
-  alquilerInicialPiso: 1125,
+  alquilerInicialPiso: 1220,
   alquilerInicialParking: 80,
-  subidaPct: 0.15,
+  subidaPct: 0.02,
   inflacionPct: 0.03,
-  afaPct: AFA_RND_RATE
+  afaYears: AFA_RND_YEARS,
+  useFlatRate: false
 };
 
 // src/charts.ts
@@ -14528,16 +14527,18 @@ function computePurchaseCosts(params) {
   return { capitalPropioEntrada, costeITP, costeNotario, costeAgencia, efectivoTotalNecesario, montoFinanciar, cuotaMensualHipoteca };
 }
 function getRentFactor(year, subidaPct) {
-  if (year >= 4 && year <= 6)
-    return 1 + subidaPct;
-  if (year >= 7 && year <= 9)
-    return (1 + subidaPct) ** 2;
-  if (year === 10)
-    return (1 + subidaPct) ** 3;
-  return 1;
+  return (1 + subidaPct) ** (year - 1);
+}
+function computeFlatRatePct(params) {
+  const base = params.alquilerInicialPiso + params.alquilerInicialParking;
+  const p = params.subidaPct;
+  if (p === 0 || base === 0)
+    return 0;
+  const flatX = (base * ((1 + p) ** 10 - 1) / p - 10 * base) / 45;
+  return flatX / base;
 }
 function calculateYear(params, year, deudaRestante, cuotaMensualHipoteca) {
-  const factorSubida = getRentFactor(year, params.subidaPct);
+  const factorSubida = params.useFlatRate ? 1 + (year - 1) * computeFlatRatePct(params) : getRentFactor(year, params.subidaPct);
   const mensualPiso = params.alquilerInicialPiso * factorSubida;
   const mensualParking = params.alquilerInicialParking * factorSubida;
   const umlageMensual = UMLAGEFAEHIG;
@@ -14548,15 +14549,16 @@ function calculateYear(params, year, deudaRestante, cuotaMensualHipoteca) {
   const amortizacionAnual = cuotaAnualTotal - interesesAnuales;
   const amortizacionMensual = amortizacionAnual / MONTHS_PER_YEAR;
   const nuevaDeuda = deudaRestante - amortizacionAnual;
-  const gastosOperativosMensuales = HAUSGELD_NO_TRANSF + RESERVA_PRIVADA;
+  const gastosOperativosMensuales = HAUSGELD_TOTAL + RESERVA_IMPREVISTOS;
   const cashflowPreTaxMensual = ingresoWarmMensual - cuotaMensualHipoteca - gastosOperativosMensuales;
   const ingresosBrutosAnuales = ingresoWarmMensual * MONTHS_PER_YEAR;
-  const afaEdificioAnual = params.precio * AFA_BUILDING_PCT * params.afaPct + AFA_FLAT_1 + AFA_FLAT_2;
+  const afaEdificioAnual = params.precio * AFA_BUILDING_PCT * (1 / params.afaYears);
   const gastosDeduciblesAnuales = interesesAnuales + afaEdificioAnual + HAUSGELD_TOTAL * MONTHS_PER_YEAR;
   const resultadoFiscalAnual = ingresosBrutosAnuales - gastosDeduciblesAnuales;
   const resultadoFiscalMensual = resultadoFiscalAnual / MONTHS_PER_YEAR;
   const devolucionFiscalMensual = resultadoFiscalAnual < 0 ? -resultadoFiscalAnual * TAX_RATE / MONTHS_PER_YEAR : 0;
   const cashflowNetoPostTaxMensual = cashflowPreTaxMensual + devolucionFiscalMensual;
+  const afaMensual = afaEdificioAnual / MONTHS_PER_YEAR;
   return {
     year,
     factorSubida,
@@ -14571,7 +14573,8 @@ function calculateYear(params, year, deudaRestante, cuotaMensualHipoteca) {
     cashflowPreTaxMensual,
     resultadoFiscalMensual,
     devolucionFiscalMensual,
-    cashflowNetoPostTaxMensual
+    cashflowNetoPostTaxMensual,
+    afaMensual
   };
 }
 function calculateAllYears(params, purchaseCosts) {
@@ -14635,8 +14638,12 @@ function applyDefaults() {
   setVal("alquiler-parking", p.alquilerInicialParking);
   setVal("subida", p.subidaPct * 100);
   setVal("inflacion", (p.inflacionPct * 100).toFixed(1));
-  setVal("afa", (p.afaPct * 100).toFixed(2));
+  setVal("afa", p.afaYears.toString());
   updateDisplayValues(p);
+  document.getElementById("toggle-subida").checked = p.useFlatRate;
+}
+function bindToggle(handler) {
+  document.getElementById("toggle-subida").addEventListener("change", handler);
 }
 function formatEuro(val) {
   return Math.round(val).toLocaleString("de-DE") + " €";
@@ -14653,7 +14660,8 @@ function readInputs() {
     alquilerInicialParking: getVal("input-alquiler-parking"),
     subidaPct: getVal("input-subida") / 100,
     inflacionPct: getVal("input-inflacion") / 100,
-    afaPct: getVal("input-afa") / 100
+    afaYears: getVal("input-afa"),
+    useFlatRate: document.getElementById("toggle-subida").checked
   };
 }
 function updateDisplayValues(params) {
@@ -14667,9 +14675,22 @@ function updateDisplayValues(params) {
   setText("val-tilgung", (params.tilgungPct * 100).toString());
   setText("val-alquiler", params.alquilerInicialPiso.toLocaleString("de-DE"));
   setText("val-alquiler-parking", params.alquilerInicialParking.toLocaleString("de-DE"));
-  setText("val-subida", (params.subidaPct * 100).toString());
+  const p = params.subidaPct;
+  const base = params.alquilerInicialPiso + params.alquilerInicialParking;
+  const flatX = p === 0 ? 0 : (base * ((1 + p) ** 10 - 1) / p - 10 * base) / 45;
+  setText("val-subida", (p * 100).toString());
+  if (params.useFlatRate) {
+    setText("val-subida-flat", `(~${Math.round(flatX)}€/mes año — activo)`);
+    setText("label-compuesto", "Compuesto");
+    setText("label-lineal", "Lineal");
+  } else {
+    setText("val-subida-flat", `(~${Math.round(flatX)}€/mes año)`);
+    setText("label-compuesto", "Compuesto");
+    setText("label-lineal", "Lineal");
+  }
   setText("val-inflacion", (params.inflacionPct * 100).toString());
-  setText("val-afa", (params.afaPct * 100).toFixed(2));
+  setText("val-afa", params.afaYears.toString());
+  setText("val-afa-rate", `(${(100 / params.afaYears).toFixed(2)}%)`);
 }
 function renderKPIs(purchaseCosts, params) {
   const precioTotal = params.precio + params.parking;
@@ -14696,8 +14717,8 @@ function cashflowContent(y) {
     <p class="font-bold text-blue-300 border-b border-gray-700 pb-0.5">Cálculo Cashflow Bruto:</p>
     <div class="flex justify-between"><span>Renta Warm:</span><span class="text-green-300">+${formatEuro(y.ingresoWarmMensual)}</span></div>
     <div class="flex justify-between"><span>− Hipoteca:</span><span class="text-red-300">-${formatEuro(y.hipotecaMensual)}</span></div>
-    <div class="flex justify-between"><span>− Hausgeld:</span><span class="text-red-300">-150 €</span></div>
-    <div class="flex justify-between"><span>− Rücklage:</span><span class="text-red-300">-40 €</span></div>
+    <div class="flex justify-between"><span>− Hausgeld:</span><span class="text-red-300">-${HAUSGELD_TOTAL} €</span></div>
+    <div class="flex justify-between"><span>− Imprevistos:</span><span class="text-red-300">-100 €</span></div>
     <div class="border-t border-gray-700 pt-0.5 mt-0.5 flex justify-between font-bold"><span>Cashflow Bruto:</span><span>${formatEuro(y.cashflowPreTaxMensual)}</span></div>`;
 }
 function hipotecaContent(y) {
@@ -14710,7 +14731,7 @@ function baseFiscalContent(y) {
   return `
     <p class="font-bold text-amber-300 border-b border-gray-700 pb-0.5">Base Fiscal Mensual:</p>
     <div class="text-gray-300">= Ingresos Warm − Intereses − AfA − Hausgeld</div>
-    <div class="text-gray-300">= ${formatEuro(y.ingresoWarmMensual)} − ${formatEuro(y.interesesMensuales)} − AfA − 150</div>
+    <div class="text-gray-300">= ${formatEuro(y.ingresoWarmMensual)} − ${formatEuro(y.interesesMensuales)} − ${formatEuro(y.afaMensual)} − ${HAUSGELD_TOTAL}</div>
     <div class="border-t border-gray-700 pt-1 mt-1 flex justify-between font-bold"><span>Base Fiscal:</span><span class="text-amber-300">${formatEuro(y.resultadoFiscalMensual)}</span></div>`;
 }
 function ahorroContent(y) {
@@ -14731,7 +14752,7 @@ function renderTable(years) {
       <td class="text-center font-bold text-gray-500">${y.year}</td>
       <td class="font-semibold"><div class="flex items-center gap-1">${formatEuro(y.ingresoWarmMensual)}<span class="tt" data-col="1">${icon}</span></div></td>
       <td class="text-gray-600"><div class="flex items-center gap-1">${formatEuro(y.cashflowPreTaxMensual)}<span class="tt" data-col="2">${icon}</span></div></td>
-      <td class="text-[#635BFF] font-mono"><div class="flex items-center gap-1">${formatEuro(y.hipotecaMensual)}<span class="tt" data-col="3">${icon}</span></div></td>
+      <td class="text-[#635BFF] font-mono"><div class="flex items-center gap-1">${formatEuro(-y.hipotecaMensual)}<span class="tt" data-col="3">${icon}</span></div></td>
       <td class="text-amber-700 bg-amber-50/40 font-medium"><div class="flex items-center gap-1">${formatEuro(y.resultadoFiscalMensual)}<span class="tt" data-col="4">${icon}</span></div></td>
       <td class="text-emerald-700 bg-emerald-50/40 font-medium"><div class="flex items-center gap-1">+${formatEuro(y.devolucionFiscalMensual)}<span class="tt" data-col="5">${icon}</span></div></td>
       <td class="bg-blue-50/60 text-[#635BFF] font-extrabold text-right pr-6">${formatEuro(y.cashflowNetoPostTaxMensual)}</td>
@@ -14803,4 +14824,5 @@ initCharts(chartRentCanvas.getContext("2d"), chartCFCanvas.getContext("2d"));
 var inputs = ["precio", "parking", "entrada", "interes", "tilgung", "alquiler", "alquiler-parking", "subida", "inflacion", "afa"];
 bindInputs(inputs, updateCalculations);
 applyDefaults();
+bindToggle(updateCalculations);
 updateCalculations();

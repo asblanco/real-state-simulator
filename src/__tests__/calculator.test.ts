@@ -1,5 +1,5 @@
 import { test, expect, describe } from "bun:test";
-import { computePurchaseCosts, getRentFactor, calculateYear, calculateAllYears, computeSummary } from "../calculator";
+import { computePurchaseCosts, getRentFactor, computeFlatRatePct, calculateYear, calculateAllYears, computeSummary } from "../calculator";
 import type { InputParams, PurchaseCosts } from "../types";
 
 const defaultParams: InputParams = {
@@ -10,35 +10,54 @@ const defaultParams: InputParams = {
   tilgungPct: 0.01,
   alquilerInicialPiso: 1125,
   alquilerInicialParking: 80,
-  subidaPct: 0.15,
+  subidaPct: 0.02,
   inflacionPct: 0.025,
-  afaPct: 0.035,
+  afaYears: 28,
+  useFlatRate: false,
 };
 
 const KALT_INITIAL = 1125 + 80; // 1205
-const UMLAGE = 350;
+const UMLAGE = 300;
 const WARM_INITIAL = KALT_INITIAL + UMLAGE; // 1555
 
 describe("getRentFactor", () => {
-  test("year 1-3 returns 1", () => {
-    expect(getRentFactor(1, 0.15)).toBe(1);
-    expect(getRentFactor(3, 0.15)).toBe(1);
+  test("year 1 = 1 (no increase)", () => {
+    expect(getRentFactor(1, 0.02)).toBe(1);
   });
-  test("year 4-6 applies first trienal increase", () => {
-    expect(getRentFactor(4, 0.15)).toBe(1.15);
-    expect(getRentFactor(6, 0.15)).toBe(1.15);
+  test("year 2 = 1.02", () => {
+    expect(getRentFactor(2, 0.02)).toBe(1.02);
   });
-  test("year 7-9 applies second trienal increase", () => {
-    expect(getRentFactor(7, 0.15)).toBeCloseTo(1.3225);
-    expect(getRentFactor(9, 0.15)).toBeCloseTo(1.3225);
+  test("year 5 = 1.02^4", () => {
+    expect(getRentFactor(5, 0.02)).toBeCloseTo(1.0824, 4);
   });
-  test("year 10 applies third trienal increase", () => {
-    expect(getRentFactor(10, 0.15)).toBeCloseTo(1.520875);
+  test("year 10 = 1.02^9", () => {
+    expect(getRentFactor(10, 0.02)).toBeCloseTo(1.1951, 4);
   });
   test("0% subida always returns 1", () => {
     for (let y = 1; y <= 10; y++) {
       expect(getRentFactor(y, 0)).toBe(1);
     }
+  });
+});
+
+describe("computeFlatRatePct", () => {
+  test("returns ~0.0211 for 2% compound on default rent", () => {
+    const pct = computeFlatRatePct(defaultParams);
+    expect(pct).toBeCloseTo(0.0211, 4);
+  });
+  test("returns 0 when subida is 0", () => {
+    const pct = computeFlatRatePct({ ...defaultParams, subidaPct: 0 });
+    expect(pct).toBe(0);
+  });
+  test("flat rate total over 10 years equals compound total", () => {
+    const pct = computeFlatRatePct(defaultParams);
+    let flatTotal = 0, compTotal = 0;
+    const base = 1205, uml = 350;
+    for (let y = 1; y <= 10; y++) {
+      flatTotal += base * (1 + (y - 1) * pct) + uml;
+      compTotal += base * (1.02 ** (y - 1)) + uml;
+    }
+    expect(flatTotal).toBeCloseTo(compTotal, 0);
   });
 });
 
@@ -70,10 +89,10 @@ describe("calculateYear", () => {
   const costs = computePurchaseCosts(defaultParams);
   const year1 = calculateYear(defaultParams, 1, costs.montoFinanciar, costs.cuotaMensualHipoteca);
 
-  test("year 1 warm rent = kalt + parking + 350 umlage", () => {
+  test("year 1 warm rent = kalt + parking + 300 umlage", () => {
     expect(year1.mensualPiso).toBe(1125);
     expect(year1.mensualParking).toBe(80);
-    expect(year1.umlageMensual).toBe(350);
+    expect(year1.umlageMensual).toBe(300);
     expect(year1.ingresoWarmMensual).toBe(WARM_INITIAL);
   });
 
@@ -105,11 +124,11 @@ describe("calculateAllYears", () => {
     }
   });
 
-  test("warm rent increases with trienal steps (umlage is fixed)", () => {
+  test("warm rent increases with annual compound (umlage is fixed)", () => {
     expect(years[0].ingresoWarmMensual).toBe(KALT_INITIAL * 1 + UMLAGE);
-    expect(years[3].ingresoWarmMensual).toBeCloseTo(KALT_INITIAL * 1.15 + UMLAGE, 1);
-    expect(years[6].ingresoWarmMensual).toBeCloseTo(KALT_INITIAL * 1.3225 + UMLAGE, 1);
-    expect(years[9].ingresoWarmMensual).toBeCloseTo(KALT_INITIAL * 1.520875 + UMLAGE, 1);
+    expect(years[3].ingresoWarmMensual).toBeCloseTo(KALT_INITIAL * 1.02 ** 3 + UMLAGE, 1);
+    expect(years[6].ingresoWarmMensual).toBeCloseTo(KALT_INITIAL * 1.02 ** 6 + UMLAGE, 1);
+    expect(years[9].ingresoWarmMensual).toBeCloseTo(KALT_INITIAL * 1.02 ** 9 + UMLAGE, 1);
   });
 });
 

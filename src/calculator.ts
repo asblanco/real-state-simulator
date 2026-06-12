@@ -1,15 +1,12 @@
 import type { InputParams, YearData, PurchaseCosts, SummaryData } from "./types";
 import {
-  HAUSGELD_NO_TRANSF,
   HAUSGELD_TOTAL,
-  RESERVA_PRIVADA,
+  RESERVA_IMPREVISTOS,
   TAX_RATE,
   ITP_RATE,
   NOTARIO_RATE,
   AGENCIA_RATE,
   AFA_BUILDING_PCT,
-  AFA_FLAT_1,
-  AFA_FLAT_2,
   YEARS,
   MONTHS_PER_YEAR,
   UMLAGEFAEHIG,
@@ -28,10 +25,15 @@ export function computePurchaseCosts(params: InputParams): PurchaseCosts {
 }
 
 export function getRentFactor(year: number, subidaPct: number): number {
-  if (year >= 4 && year <= 6) return 1 + subidaPct;
-  if (year >= 7 && year <= 9) return (1 + subidaPct) ** 2;
-  if (year === 10) return (1 + subidaPct) ** 3;
-  return 1;
+  return (1 + subidaPct) ** (year - 1);
+}
+
+export function computeFlatRatePct(params: InputParams): number {
+  const base = params.alquilerInicialPiso + params.alquilerInicialParking;
+  const p = params.subidaPct;
+  if (p === 0 || base === 0) return 0;
+  const flatX = (base * ((1 + p) ** 10 - 1) / p - 10 * base) / 45;
+  return flatX / base;
 }
 
 export function calculateYear(
@@ -40,7 +42,9 @@ export function calculateYear(
   deudaRestante: number,
   cuotaMensualHipoteca: number,
 ): YearData {
-  const factorSubida = getRentFactor(year, params.subidaPct);
+  const factorSubida = params.useFlatRate
+    ? 1 + (year - 1) * computeFlatRatePct(params)
+    : getRentFactor(year, params.subidaPct);
   const mensualPiso = params.alquilerInicialPiso * factorSubida;
   const mensualParking = params.alquilerInicialParking * factorSubida;
   const umlageMensual = UMLAGEFAEHIG;
@@ -53,17 +57,18 @@ export function calculateYear(
   const amortizacionMensual = amortizacionAnual / MONTHS_PER_YEAR;
   const nuevaDeuda = deudaRestante - amortizacionAnual;
 
-  const gastosOperativosMensuales = HAUSGELD_NO_TRANSF + RESERVA_PRIVADA;
+  const gastosOperativosMensuales = HAUSGELD_TOTAL + RESERVA_IMPREVISTOS;
   const cashflowPreTaxMensual = ingresoWarmMensual - cuotaMensualHipoteca - gastosOperativosMensuales;
 
   const ingresosBrutosAnuales = ingresoWarmMensual * MONTHS_PER_YEAR;
-  const afaEdificioAnual = (params.precio * AFA_BUILDING_PCT * params.afaPct) + AFA_FLAT_1 + AFA_FLAT_2;
+  const afaEdificioAnual = (params.precio * AFA_BUILDING_PCT * (1 / params.afaYears));
   const gastosDeduciblesAnuales = interesesAnuales + afaEdificioAnual + (HAUSGELD_TOTAL * MONTHS_PER_YEAR);
   const resultadoFiscalAnual = ingresosBrutosAnuales - gastosDeduciblesAnuales;
   const resultadoFiscalMensual = resultadoFiscalAnual / MONTHS_PER_YEAR;
 
   const devolucionFiscalMensual = resultadoFiscalAnual < 0 ? (-resultadoFiscalAnual * TAX_RATE) / MONTHS_PER_YEAR : 0;
   const cashflowNetoPostTaxMensual = cashflowPreTaxMensual + devolucionFiscalMensual;
+  const afaMensual = afaEdificioAnual / MONTHS_PER_YEAR;
 
   return {
     year,
@@ -80,6 +85,7 @@ export function calculateYear(
     resultadoFiscalMensual,
     devolucionFiscalMensual,
     cashflowNetoPostTaxMensual,
+    afaMensual,
   };
 }
 

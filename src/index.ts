@@ -1,6 +1,6 @@
 import { initCharts, updateCharts } from "./charts";
 import { computePurchaseCosts, calculateAllYears, computeSummary } from "./calculator";
-import { applyDefaults, readInputs, updateDisplayValues, renderKPIs, renderTable, renderSummary, bindInputs } from "./ui";
+import { applyDefaults, readInputs, updateDisplayValues, renderKPIs, renderTable, renderSummary, bindInputs, bindToggle } from "./ui";
 
 function updateCalculations(): void {
   const params = readInputs();
@@ -22,4 +22,5 @@ const inputs = ["precio", "parking", "entrada", "interes", "tilgung", "alquiler"
 bindInputs(inputs, updateCalculations);
 
 applyDefaults();
+bindToggle(updateCalculations);
 updateCalculations();

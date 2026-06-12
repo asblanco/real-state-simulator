@@ -1,5 +1,6 @@
 import type { InputParams, YearData, PurchaseCosts, SummaryData } from "./types";
-import { DEFAULT_PARAMS } from "./constants";
+import { DEFAULT_PARAMS, HAUSGELD_TOTAL } from "./constants";
+import { computeFlatRatePct } from "./calculator";
 
 let tooltipAnchor: HTMLElement | null = null;
 
@@ -43,8 +44,13 @@ export function applyDefaults(): void {
   setVal("alquiler-parking", p.alquilerInicialParking);
   setVal("subida", p.subidaPct * 100);
   setVal("inflacion", (p.inflacionPct * 100).toFixed(1));
-  setVal("afa", (p.afaPct * 100).toFixed(2));
+  setVal("afa", p.afaYears.toString());
   updateDisplayValues(p);
+  (document.getElementById("toggle-subida") as HTMLInputElement).checked = p.useFlatRate;
+}
+
+export function bindToggle(handler: () => void): void {
+  document.getElementById("toggle-subida")!.addEventListener("change", handler);
 }
 
 export function formatEuro(val: number): string {
@@ -63,7 +69,8 @@ export function readInputs(): InputParams {
     alquilerInicialParking: getVal("input-alquiler-parking"),
     subidaPct: getVal("input-subida") / 100,
     inflacionPct: getVal("input-inflacion") / 100,
-    afaPct: getVal("input-afa") / 100,
+    afaYears: getVal("input-afa"),
+    useFlatRate: (document.getElementById("toggle-subida") as HTMLInputElement).checked,
   };
 }
 
@@ -76,9 +83,22 @@ export function updateDisplayValues(params: InputParams): void {
   setText("val-tilgung", (params.tilgungPct * 100).toString());
   setText("val-alquiler", (params.alquilerInicialPiso).toLocaleString("de-DE"));
   setText("val-alquiler-parking", (params.alquilerInicialParking).toLocaleString("de-DE"));
-  setText("val-subida", (params.subidaPct * 100).toString());
+  const p = params.subidaPct;
+  const base = params.alquilerInicialPiso + params.alquilerInicialParking;
+  const flatX = p === 0 ? 0 : (base * ((1 + p) ** 10 - 1) / p - 10 * base) / 45;
+  setText("val-subida", (p * 100).toString());
+  if (params.useFlatRate) {
+    setText("val-subida-flat", `(~${Math.round(flatX)}€/mes año — activo)`);
+    setText("label-compuesto", "Compuesto");
+    setText("label-lineal", "Lineal");
+  } else {
+    setText("val-subida-flat", `(~${Math.round(flatX)}€/mes año)`);
+    setText("label-compuesto", "Compuesto");
+    setText("label-lineal", "Lineal");
+  }
   setText("val-inflacion", (params.inflacionPct * 100).toString());
-  setText("val-afa", (params.afaPct * 100).toFixed(2));
+  setText("val-afa", params.afaYears.toString());
+  setText("val-afa-rate", `(${(100 / params.afaYears).toFixed(2)}%)`);
 }
 
 export function renderKPIs(purchaseCosts: PurchaseCosts, params: InputParams): void {
@@ -109,8 +129,8 @@ function cashflowContent(y: YearData): string {
     <p class="font-bold text-blue-300 border-b border-gray-700 pb-0.5">Cálculo Cashflow Bruto:</p>
     <div class="flex justify-between"><span>Renta Warm:</span><span class="text-green-300">+${formatEuro(y.ingresoWarmMensual)}</span></div>
     <div class="flex justify-between"><span>− Hipoteca:</span><span class="text-red-300">-${formatEuro(y.hipotecaMensual)}</span></div>
-    <div class="flex justify-between"><span>− Hausgeld:</span><span class="text-red-300">-150 €</span></div>
-    <div class="flex justify-between"><span>− Rücklage:</span><span class="text-red-300">-40 €</span></div>
+    <div class="flex justify-between"><span>− Hausgeld:</span><span class="text-red-300">-${HAUSGELD_TOTAL} €</span></div>
+    <div class="flex justify-between"><span>− Imprevistos:</span><span class="text-red-300">-100 €</span></div>
     <div class="border-t border-gray-700 pt-0.5 mt-0.5 flex justify-between font-bold"><span>Cashflow Bruto:</span><span>${formatEuro(y.cashflowPreTaxMensual)}</span></div>`;
 }
 
@@ -125,7 +145,7 @@ function baseFiscalContent(y: YearData): string {
   return `
     <p class="font-bold text-amber-300 border-b border-gray-700 pb-0.5">Base Fiscal Mensual:</p>
     <div class="text-gray-300">= Ingresos Warm − Intereses − AfA − Hausgeld</div>
-    <div class="text-gray-300">= ${formatEuro(y.ingresoWarmMensual)} − ${formatEuro(y.interesesMensuales)} − AfA − 150</div>
+    <div class="text-gray-300">= ${formatEuro(y.ingresoWarmMensual)} − ${formatEuro(y.interesesMensuales)} − ${formatEuro(y.afaMensual)} − ${HAUSGELD_TOTAL}</div>
     <div class="border-t border-gray-700 pt-1 mt-1 flex justify-between font-bold"><span>Base Fiscal:</span><span class="text-amber-300">${formatEuro(y.resultadoFiscalMensual)}</span></div>`;
 }
 
@@ -149,7 +169,7 @@ export function renderTable(years: YearData[]): void {
       <td class="text-center font-bold text-gray-500">${y.year}</td>
       <td class="font-semibold"><div class="flex items-center gap-1">${formatEuro(y.ingresoWarmMensual)}<span class="tt" data-col="1">${icon}</span></div></td>
       <td class="text-gray-600"><div class="flex items-center gap-1">${formatEuro(y.cashflowPreTaxMensual)}<span class="tt" data-col="2">${icon}</span></div></td>
-      <td class="text-[#635BFF] font-mono"><div class="flex items-center gap-1">${formatEuro(y.hipotecaMensual)}<span class="tt" data-col="3">${icon}</span></div></td>
+      <td class="text-[#635BFF] font-mono"><div class="flex items-center gap-1">${formatEuro(-y.hipotecaMensual)}<span class="tt" data-col="3">${icon}</span></div></td>
       <td class="text-amber-700 bg-amber-50/40 font-medium"><div class="flex items-center gap-1">${formatEuro(y.resultadoFiscalMensual)}<span class="tt" data-col="4">${icon}</span></div></td>
       <td class="text-emerald-700 bg-emerald-50/40 font-medium"><div class="flex items-center gap-1">+${formatEuro(y.devolucionFiscalMensual)}<span class="tt" data-col="5">${icon}</span></div></td>
       <td class="bg-blue-50/60 text-[#635BFF] font-extrabold text-right pr-6">${formatEuro(y.cashflowNetoPostTaxMensual)}</td>

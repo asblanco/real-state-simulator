@@ -1,14 +1,12 @@
-export const HAUSGELD_NO_TRANSF = 150;
-export const UMLAGEFAEHIG = 350;
-export const HAUSGELD_TOTAL = HAUSGELD_NO_TRANSF + UMLAGEFAEHIG; // 500
-export const RESERVA_PRIVADA = 40;
+export const HAUSGELD_TOTAL = 500;
+export const UMLAGEFAEHIG = 300;
+export const HAUSGELD_NO_TRANSF = HAUSGELD_TOTAL - UMLAGEFAEHIG; // 200
+export const RESERVA_IMPREVISTOS = 100;
 export const TAX_RATE = 0.42;
 export const ITP_RATE = 0.035;
 export const NOTARIO_RATE = 0.02;
 export const AGENCIA_RATE = 0.0357;
 export const AFA_BUILDING_PCT = 0.75;
-export const AFA_FLAT_1 = 400;
-export const AFA_FLAT_2 = 1000;
 export const AFA_RND_YEARS = 28;
 export const AFA_RND_RATE = 1 / AFA_RND_YEARS; // ~3.5714%
 export const YEARS = 10;
@@ -22,9 +20,10 @@ export const DEFAULT_PARAMS: InputParams = {
   entradaPct: 0.15,
   interesPct: 0.0422,
   tilgungPct: 0.015,
-  alquilerInicialPiso: 1125,
+  alquilerInicialPiso: 1220,
   alquilerInicialParking: 80,
-  subidaPct: 0.15,
+  subidaPct: 0.02,
   inflacionPct: 0.03,
-  afaPct: AFA_RND_RATE,
+  afaYears: AFA_RND_YEARS,
+  useFlatRate: false,
 };
