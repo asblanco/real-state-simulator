@@ -1,6 +1,6 @@
 {
   "app.title": "Simulador de Inversión Inmobiliaria",
-  "app.subtitle": "Cálculo patrimonial con escalonamiento anual y proyección fiscal a 10 años.",
+  "app.subtitle": "Cálculo patrimonial con escalonamiento anual y proyección fiscal.",
 
   "panel.variables": "Variables",
   "section.inmueble": "Inmueble y Financiación",
@@ -19,11 +19,12 @@
   "slider.anos": "años",
   "slider.hausgeld_total": "Hausgeld Total:",
   "slider.reserva_imprevistos": "Reserva Imprevistos:",
+  "slider.anos_proyeccion": "Proyección:",
 
   "kpi.precio_total": "Precio Total Inmueble",
   "kpi.efectivo_inicial": "Efectivo Inicial",
   "kpi.costo_adquisicion": "Costo Adq. Total",
-  "kpi.ganancia_neto": "Ganancia Neto Año 10",
+  "kpi.ganancia_neto": "Ganancia Neta",
   "kpi.roi": "ROI Capital Propio",
   "kpi.roi_proyecto": "ROI del Proyecto",
 
@@ -51,7 +52,7 @@
   "tooltip.neto_venta": "Neto Recibido Venta:",
   "tooltip.menos_efectivo": "− Efectivo Invertido:",
   "tooltip.ganancia_venta": "Ganancia por Venta:",
-  "tooltip.mas_cashflow": "+ Cashflow 10A Acumulado:",
+  "tooltip.mas_cashflow": "+ Cashflow Acumulado:",
   "tooltip.resultado_final": "Ganancia Neta Final:",
   "tooltip.referencia_fiscal": "Referencia Fiscal (AfA):",
   "tooltip.base_costo": "Base Costo Fiscal:",
@@ -66,14 +67,14 @@
   "tooltip.roa_cagr": "→ CAGR Anual:",
   "tooltip.roa_desc": "Rentabilidad del proyecto como si se hubiese comprado al contado, sin financiación.",
 
-  "section.desglose_titulo": "Desglose Matemático de la Liquidación del Activo (Año 10)",
+  "section.desglose_titulo": "Desglose Matemático de la Liquidación del Activo",
   "section.desglose_subtitulo": "Valores en tiempo real según la tasa de revalorización compuesta.",
 
   "math.valor_venta": "1. Valor de Venta Futuro",
   "math.deuda_hipoteca": "2. Deuda Hipoteca",
   "math.costo_adquisicion": "3. Costo Adq. Total",
   "math.afa_acumulada": "4. AfA Acumulada",
-  "math.recuperacion_inversion": "5. Cashflow 10A",
+  "math.recuperacion_inversion": "5. Cashflow Acumulado",
   "math.cashflow_venta": "6. Ganancia Neta",
 
   "section.tabla_titulo": "Cuadro de Desarrollo Inmobiliario y Optimización Fiscal",

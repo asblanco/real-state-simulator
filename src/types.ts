@@ -12,6 +12,7 @@ export interface InputParams {
   hausgeldTotal: number;
   useFlatRate: boolean;
   reservaImprevistos: number;
+  years: number;
 }
 
 export interface YearData {

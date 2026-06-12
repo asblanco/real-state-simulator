@@ -1,6 +1,6 @@
 {
   "app.title": "Simulator für Immobilieninvestitionen",
-  "app.subtitle": "Vermögensberechnung mit jährlicher Staffelung und 10-Jahres-Steuerprognose.",
+  "app.subtitle": "Vermögensberechnung mit jährlicher Staffelung und Steuerprognose.",
 
   "panel.variables": "Variablen",
   "section.inmueble": "Immobilie & Finanzierung",
@@ -19,11 +19,12 @@
   "slider.anos": "Jahre",
   "slider.hausgeld_total": "Hausgeld Gesamt:",
   "slider.reserva_imprevistos": "Instandhaltungsrücklage:",
+  "slider.anos_proyeccion": "Prognosezeitraum:",
 
   "kpi.precio_total": "Gesamtkaufpreis",
   "kpi.efectivo_inicial": "Anfangskapital",
   "kpi.costo_adquisicion": "Gesamte Anschaffungskosten",
-  "kpi.ganancia_neto": "Nettogewinn Jahr 10",
+  "kpi.ganancia_neto": "Nettogewinn",
   "kpi.roi": "Eigenkapitalrendite (ROE)",
   "kpi.roi_proyecto": "Projektrendite (ROA)",
 
@@ -51,7 +52,7 @@
   "tooltip.neto_venta": "Netto-Verkaufserlös:",
   "tooltip.menos_efectivo": "− Anfangskapital:",
   "tooltip.ganancia_venta": "Gewinn aus Verkauf:",
-  "tooltip.mas_cashflow": "+ 10J Cashflow kumuliert:",
+  "tooltip.mas_cashflow": "+ Cashflow kumuliert:",
   "tooltip.resultado_final": "Endgültiger Nettogewinn:",
   "tooltip.referencia_fiscal": "Steuerliche Referenz (AfA):",
   "tooltip.base_costo": "Steuerliche Kostenbasis:",
@@ -66,14 +67,14 @@
   "tooltip.roa_cagr": "→ CAGR jährlich:",
   "tooltip.roa_desc": "Projektrendite, als ob die Immobilie zu 100% bar bezahlt worden wäre, ohne Finanzierung.",
 
-  "section.desglose_titulo": "Mathematische Aufschlüsselung der Vermögensliquidation (Jahr 10)",
+  "section.desglose_titulo": "Mathematische Aufschlüsselung der Vermögensliquidation",
   "section.desglose_subtitulo": "Echtzeitwerte basierend auf dem zusammengesetzten Wertsteigerungssatz.",
 
   "math.valor_venta": "1. Zukünftiger Verkaufswert",
   "math.deuda_hipoteca": "2. Restschuld",
   "math.costo_adquisicion": "3. Gesamte Anschaffungskosten",
   "math.afa_acumulada": "4. Kumulierte AfA",
-  "math.recuperacion_inversion": "5. 10J Cashflow",
+  "math.recuperacion_inversion": "5. Cashflow kumuliert",
   "math.cashflow_venta": "6. Nettogewinn",
 
   "section.tabla_titulo": "Immobilienentwicklung & Steueroptimierungstabelle",

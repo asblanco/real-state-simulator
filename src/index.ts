@@ -1,4 +1,4 @@
-import { initCharts, updateCharts, lastYears, lastParams, recreateCharts } from "./charts";
+import { initCharts, updateCharts, lastYears, lastParams, recreateCharts, setYears } from "./charts";
 import { computePurchaseCosts, calculateAllYears, computeSummary } from "./calculator";
 import { applyDefaults, readInputs, updateDisplayValues, renderKPIs, renderTable, renderSummary, bindInputs, bindToggle } from "./ui";
 import { setLocale, type Locale } from "./i18n";
@@ -19,8 +19,15 @@ if (langSelect) {
   });
 }
 
+let lastYearsValue = 10;
+
 function updateCalculations(): void {
   const params = readInputs();
+  if (params.years !== lastYearsValue) {
+    lastYearsValue = params.years;
+    setYears(params.years);
+    recreateCharts();
+  }
   updateDisplayValues(params);
   const purchaseCosts = computePurchaseCosts(params);
   renderKPIs(purchaseCosts, params);
@@ -31,7 +38,7 @@ function updateCalculations(): void {
   updateCharts(years, params);
 }
 
-const inputs = ["precio", "parking", "entrada", "interes", "tilgung", "alquiler", "alquiler-parking", "subida", "inflacion", "afa", "hausgeld", "reserva-imprevistos"];
+const inputs = ["precio", "parking", "entrada", "interes", "tilgung", "alquiler", "alquiler-parking", "subida", "inflacion", "afa", "hausgeld", "reserva-imprevistos", "anos"];
 bindInputs(inputs, updateCalculations);
 
 applyDefaults();

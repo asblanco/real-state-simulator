@@ -8,7 +8,9 @@ export const AGENCIA_RATE = 0.0357;
 export const AFA_BUILDING_PCT = 0.75;
 export const AFA_RND_YEARS = 28;
 export const AFA_RND_RATE = 1 / AFA_RND_YEARS; // ~3.5714%
-export const YEARS = 10;
+export const YEARS_MIN = 10;
+export const YEARS_MAX = 30;
+export const YEARS_DEFAULT = 10;
 export const MONTHS_PER_YEAR = 12;
 
 import type { InputParams } from "./types";
@@ -27,4 +29,5 @@ export const DEFAULT_PARAMS: InputParams = {
   hausgeldTotal: HAUSGELD_TOTAL,
   useFlatRate: false,
   reservaImprevistos: 100,
+  years: YEARS_DEFAULT,
 };

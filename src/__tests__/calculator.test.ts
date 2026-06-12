@@ -16,6 +16,7 @@ const defaultParams: InputParams = {
   useFlatRate: false,
   hausgeldTotal: 500,
   reservaImprevistos: 100,
+  years: 10,
 };
 
 const KALT_INITIAL = 1125 + 80; // 1205

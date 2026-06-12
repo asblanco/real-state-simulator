@@ -1,6 +1,5 @@
 import Chart from "chart.js/auto";
 import type { YearData, InputParams } from "./types";
-import { YEARS } from "./constants";
 import { t } from "./i18n";
 
 let chartRent: Chart;
@@ -11,8 +10,14 @@ let _ctxRent: CanvasRenderingContext2D | null = null;
 let _ctxCF: CanvasRenderingContext2D | null = null;
 let _ctxEquity: CanvasRenderingContext2D | null = null;
 
+let _years = 10;
+
+export function setYears(n: number): void {
+  _years = n;
+}
+
 function buildLabels(): string[] {
-  return Array.from({ length: YEARS }, (_, i) => `${t("chart.axis_prefix")}${i + 1}`);
+  return Array.from({ length: _years }, (_, i) => `${t("chart.axis_prefix")}${i + 1}`);
 }
 
 export function initCharts(ctxRent: CanvasRenderingContext2D, ctxCF: CanvasRenderingContext2D, ctxEquity: CanvasRenderingContext2D): void {

@@ -51,6 +51,7 @@ export function applyDefaults(): void {
   setVal("inflacion", (p.inflacionPct * 100).toFixed(1));
   setVal("hausgeld", p.hausgeldTotal.toString());
   setVal("reserva-imprevistos", p.reservaImprevistos.toString());
+  setVal("anos", p.years.toString());
   updateDisplayValues(p);
   (document.getElementById("toggle-subida") as HTMLInputElement).checked = p.useFlatRate;
 }
@@ -79,6 +80,7 @@ export function readInputs(): InputParams {
     hausgeldTotal: getVal("input-hausgeld"),
     useFlatRate: (document.getElementById("toggle-subida") as HTMLInputElement).checked,
     reservaImprevistos: getVal("input-reserva-imprevistos"),
+    years: getVal("input-anos"),
   };
 }
 
@@ -93,7 +95,8 @@ export function updateDisplayValues(params: InputParams): void {
   setText("val-alquiler-parking", (params.alquilerInicialParking).toLocaleString("de-DE"));
   const p = params.subidaPct;
   const base = params.alquilerInicialPiso + params.alquilerInicialParking;
-  const flatX = p === 0 ? 0 : (base * ((1 + p) ** 10 - 1) / p - 10 * base) / 45;
+  const n = params.years;
+  const flatX = p === 0 ? 0 : (base * ((1 + p) ** n - 1) / p - n * base) / (n * (n - 1) / 2);
   setText("val-subida", (p * 100).toString());
   const suffix = params.useFlatRate ? t("ui.flat_format_active") : t("ui.flat_format");
   setText("val-subida-flat", `(~${Math.round(flatX)}${suffix})`);
@@ -102,6 +105,7 @@ export function updateDisplayValues(params: InputParams): void {
   setText("val-afa-rate", `(${(100 / params.afaYears).toFixed(2)}%)`);
   setText("val-hausgeld", params.hausgeldTotal.toString());
   setText("val-reserva-imprevistos", params.reservaImprevistos.toString());
+  setText("val-anos", params.years.toString());
 }
 
 export function renderKPIs(purchaseCosts: PurchaseCosts, params: InputParams): void {
@@ -257,8 +261,8 @@ function roeTooltip(summary: SummaryData, purchaseCosts: PurchaseCosts): string 
     <p class="font-bold text-[#635BFF] mb-1">${t("tooltip.roe_titulo")}</p>
     <div class="flex justify-between"><span>${t("kpi.ganancia_neto")}:</span><span class="font-mono">${formatEuro(summary.gananciaNeta)}</span></div>
     <div class="flex justify-between"><span>÷ ${t("kpi.efectivo_inicial")}:</span><span class="font-mono">${formatEuro(purchaseCosts.efectivoTotalNecesario)}</span></div>
-    <div class="flex justify-between font-bold text-sky-300"><span>${t("tooltip.roe_total")}:</span><span class="font-mono">${(summary.roiCapitalPropioTotal * 100).toFixed(2)} %</span></div>
-    <div class="flex justify-between font-bold text-sky-300"><span>${t("tooltip.roe_cagr")}:</span><span class="font-mono">${(summary.roiAnualizado * 100).toFixed(2)} %</span></div>
+    <div class="flex justify-between font-bold text-sky-300"><span>${t("tooltip.roe_total")}</span><span class="font-mono">${(summary.roiCapitalPropioTotal * 100).toFixed(2)} %</span></div>
+    <div class="flex justify-between font-bold text-sky-300"><span>${t("tooltip.roe_cagr")}</span><span class="font-mono">${(summary.roiAnualizado * 100).toFixed(2)} %</span></div>
     <div class="border-t border-gray-700 pt-2 mt-2 space-y-1">
       <p class="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">Leyenda ROI</p>
       <div class="flex items-center gap-1.5"><span class="inline-block w-2 h-2 rounded-full bg-red-600 shrink-0"></span>${t("tooltip.roi_bajo")} <span class="text-gray-400">&lt; 5%</span></div>
@@ -279,8 +283,8 @@ function roaTooltip(summary: SummaryData): string {
     <div class="flex justify-between"><span>− (${t("kpi.costo_adquisicion")} − ${t("math.afa_acumulada")}):</span><span class="font-mono text-red-300">−${formatEuro(baseFiscal)}</span></div>
     <div class="flex justify-between font-medium border-b border-gray-800 pb-1"><span>= ${t("tooltip.ganancia_fiscal")}:</span><span class="font-mono">${formatEuro(summary.gananciaFiscal)}</span></div>
     <div class="flex justify-between"><span>÷ ${t("kpi.costo_adquisicion")}:</span><span class="font-mono">${formatEuro(summary.costoAdquisicionTotal)}</span></div>
-    <div class="flex justify-between font-bold text-sky-300"><span>${t("tooltip.roa_total")}:</span><span class="font-mono">${(summary.roiProyectoTotal * 100).toFixed(2)} %</span></div>
-    <div class="flex justify-between font-bold text-sky-300"><span>${t("tooltip.roa_cagr")}:</span><span class="font-mono">${(summary.roiProyectoAnualizado * 100).toFixed(2)} %</span></div>
+    <div class="flex justify-between font-bold text-sky-300"><span>${t("tooltip.roa_total")}</span><span class="font-mono">${(summary.roiProyectoTotal * 100).toFixed(2)} %</span></div>
+    <div class="flex justify-between font-bold text-sky-300"><span>${t("tooltip.roa_cagr")}</span><span class="font-mono">${(summary.roiProyectoAnualizado * 100).toFixed(2)} %</span></div>
     <div class="border-t border-gray-700 pt-2 mt-2 space-y-1">
       <p class="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">Leyenda ROA</p>
       <div class="flex items-center gap-1.5"><span class="inline-block w-2 h-2 rounded-full bg-red-600 shrink-0"></span>${t("tooltip.roi_bajo")} <span class="text-gray-400">&lt; 2,5%</span></div>

@@ -6,7 +6,6 @@ import {
   NOTARIO_RATE,
   AGENCIA_RATE,
   AFA_BUILDING_PCT,
-  YEARS,
   MONTHS_PER_YEAR,
 } from "./constants";
 
@@ -29,8 +28,9 @@ export function getRentFactor(year: number, subidaPct: number): number {
 export function computeFlatRatePct(params: InputParams): number {
   const base = params.alquilerInicialPiso + params.alquilerInicialParking;
   const p = params.subidaPct;
+  const n = params.years;
   if (p === 0 || base === 0) return 0;
-  const flatX = (base * ((1 + p) ** 10 - 1) / p - 10 * base) / 45;
+  const flatX = (base * ((1 + p) ** n - 1) / p - n * base) / (n * (n - 1) / 2);
   return flatX / base;
 }
 
@@ -90,7 +90,7 @@ export function calculateYear(
 export function calculateAllYears(params: InputParams, purchaseCosts: PurchaseCosts): YearData[] {
   const years: YearData[] = [];
   let deudaRestante = purchaseCosts.montoFinanciar;
-  for (let y = 1; y <= YEARS; y++) {
+  for (let y = 1; y <= params.years; y++) {
     const yearData = calculateYear(params, y, deudaRestante, purchaseCosts.cuotaMensualHipoteca);
     deudaRestante = yearData.deudaRestante;
     years.push(yearData);
@@ -99,8 +99,9 @@ export function calculateAllYears(params: InputParams, purchaseCosts: PurchaseCo
 }
 
 export function computeSummary(params: InputParams, years: YearData[], purchaseCosts: PurchaseCosts): SummaryData {
+  const n = params.years;
   const precioTotal = params.precio + params.parking;
-  const valorPropiedadFutura = precioTotal * ((1 + params.inflacionPct) ** YEARS);
+  const valorPropiedadFutura = precioTotal * ((1 + params.inflacionPct) ** n);
   const deudaRestanteFinal = years[years.length - 1].deudaRestante;
   const netoDeLaVenta = valorPropiedadFutura - deudaRestanteFinal;
 
@@ -108,16 +109,16 @@ export function computeSummary(params: InputParams, years: YearData[], purchaseC
   const gananciaNeta = netoDeLaVenta - purchaseCosts.efectivoTotalNecesario + totalCashflowAcumulado;
 
   const capitalTotalFinal = gananciaNeta + purchaseCosts.efectivoTotalNecesario;
-  const roiAnualizado = (capitalTotalFinal / purchaseCosts.efectivoTotalNecesario) ** (1 / YEARS) - 1;
+  const roiAnualizado = (capitalTotalFinal / purchaseCosts.efectivoTotalNecesario) ** (1 / n) - 1;
 
   const costoAdquisicionTotal = purchaseCosts.efectivoTotalNecesario + purchaseCosts.montoFinanciar;
   const afaAnual = (params.precio * AFA_BUILDING_PCT * (1 / params.afaYears));
-  const afaAcumulada = afaAnual * YEARS;
+  const afaAcumulada = afaAnual * n;
   const gananciaVenta = netoDeLaVenta - purchaseCosts.efectivoTotalNecesario;
   const gananciaFiscal = valorPropiedadFutura - (costoAdquisicionTotal - afaAcumulada);
   const roiCapitalPropioTotal = gananciaNeta / purchaseCosts.efectivoTotalNecesario;
   const roiProyectoTotal = gananciaFiscal / costoAdquisicionTotal;
-  const roiProyectoAnualizado = (1 + roiProyectoTotal) ** (1 / YEARS) - 1;
+  const roiProyectoAnualizado = (1 + roiProyectoTotal) ** (1 / n) - 1;
   const apalancamiento = roiCapitalPropioTotal > 0 && roiProyectoTotal > 0 ? roiCapitalPropioTotal / roiProyectoTotal : 0;
 
   return {
