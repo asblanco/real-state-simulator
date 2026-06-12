@@ -170,9 +170,9 @@ export function renderTable(years: YearData[], reservaImprevistos: number): void
     row.innerHTML = `
       <td class="text-center font-bold text-gray-500">${y.year}</td>
       <td class="font-semibold"><div class="flex items-center gap-1">${formatEuro(y.ingresoWarmMensual)}<span class="tt" data-col="1">${icon}</span></div></td>
-      <td class="text-gray-600"><div class="flex items-center gap-1">${formatEuro(y.cashflowPreTaxMensual)}<span class="tt" data-col="2">${icon}</span></div></td>
-      <td class="text-[#635BFF] font-mono"><div class="flex items-center gap-1">${formatEuro(-y.hipotecaMensual)}<span class="tt" data-col="3">${icon}</span></div></td>
-      <td class="text-amber-700 bg-amber-50/40 font-medium"><div class="flex items-center gap-1">${formatEuro(y.resultadoFiscalMensual)}<span class="tt" data-col="4">${icon}</span></div></td>
+      <td class="text-amber-700 bg-amber-50/40 font-medium"><div class="flex items-center gap-1">${formatEuro(-y.hipotecaMensual)}<span class="tt" data-col="2">${icon}</span></div></td>
+      <td class="text-gray-600"><div class="flex items-center gap-1">${formatEuro(y.cashflowPreTaxMensual)}<span class="tt" data-col="3">${icon}</span></div></td>
+      <td class="text-[#635BFF] font-mono"><div class="flex items-center gap-1">${formatEuro(y.resultadoFiscalMensual)}<span class="tt" data-col="4">${icon}</span></div></td>
       <td class="text-emerald-700 bg-emerald-50/40 font-medium"><div class="flex items-center gap-1">+${formatEuro(y.devolucionFiscalMensual)}<span class="tt" data-col="5">${icon}</span></div></td>
       <td class="bg-blue-50/60 text-[#635BFF] font-extrabold text-right pr-6">${formatEuro(y.cashflowNetoPostTaxMensual)}</td>
     `;
@@ -193,8 +193,8 @@ export function renderTable(years: YearData[], reservaImprevistos: number): void
 
     const contentMap: Record<number, (y: YearData) => string> = {
       1: warmContent,
-      2: cashflowContent(imprevistos),
-      3: hipotecaContent,
+      2: hipotecaContent,
+      3: cashflowContent(imprevistos),
       4: baseFiscalContent,
       5: ahorroContent,
     };
