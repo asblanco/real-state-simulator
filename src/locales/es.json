@@ -35,6 +35,9 @@
   "tooltip.valor_futuro_desc": "Valor futuro aplicando la revalorización compuesta seleccionada.",
   "tooltip.etf_title": "Comparativa con ETFs",
   "tooltip.etf_desc": "Muestra el rendimiento anualizado equivalente (CAGR) que tendría que generar un fondo o ETF de acciones sobre tu capital aportado para igualar este beneficio neto inmobiliario.",
+  "tooltip.roi_bajo": "Rendimiento bajo",
+  "tooltip.roi_aceptable": "Rendimiento aceptable",
+  "tooltip.roi_excelente": "Rendimiento excelente",
 
   "section.desglose_titulo": "Desglose Matemático de la Liquidación del Activo (Año 10)",
   "section.desglose_subtitulo": "Valores en tiempo real según la tasa de revalorización compuesta.",

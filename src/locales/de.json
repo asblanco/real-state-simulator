@@ -35,6 +35,9 @@
   "tooltip.valor_futuro_desc": "Zukünftiger Wert basierend auf der ausgewählten zusammengesetzten Wertsteigerungsrate.",
   "tooltip.etf_title": "ETF-Vergleich",
   "tooltip.etf_desc": "Zeigt die jährliche Durchschnittsrendite (CAGR), die ein Aktienfonds oder ETF auf Ihr eingesetztes Kapital erzielen müsste, um diesen Nettogewinn aus Immobilien zu erreichen.",
+  "tooltip.roi_bajo": "Niedrige Rendite",
+  "tooltip.roi_aceptable": "Akzeptable Rendite",
+  "tooltip.roi_excelente": "Hervorragende Rendite",
 
   "section.desglose_titulo": "Mathematische Aufschlüsselung der Vermögensliquidation (Jahr 10)",
   "section.desglose_subtitulo": "Echtzeitwerte basierend auf dem zusammengesetzten Wertsteigerungssatz.",

@@ -35,6 +35,9 @@
   "tooltip.valor_futuro_desc": "Future value based on the selected compound appreciation rate.",
   "tooltip.etf_title": "ETF Comparison",
   "tooltip.etf_desc": "Shows the equivalent annualized return (CAGR) a stock fund or ETF would need to generate on your invested capital to match this net real estate profit.",
+  "tooltip.roi_bajo": "Low return",
+  "tooltip.roi_aceptable": "Aceptable return",
+  "tooltip.roi_excelente": "Excellent return",
 
   "section.desglose_titulo": "Mathematical Breakdown of Asset Liquidation (Year 10)",
   "section.desglose_subtitulo": "Real-time values based on the compound appreciation rate.",
