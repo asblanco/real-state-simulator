@@ -86,6 +86,16 @@ export function renderTable(years: YearData[]): void {
         <div class="flex justify-between"><span>Amortización (Tilgung):</span><span class="text-emerald-300">${formatEuro(y.amortizacionMensual)}</span></div>
       </div>`;
 
+    const cashflowTooltip = `
+      <div class="absolute left-full top-1/2 -translate-y-1/2 ml-2 hidden group-hover:block bg-[#0A2540] text-white text-[11px] rounded-lg p-2.5 w-64 shadow-xl z-50 pointer-events-none space-y-1">
+        <p class="font-bold text-blue-300 border-b border-gray-700 pb-0.5">Cálculo Cashflow Bruto:</p>
+        <div class="flex justify-between"><span>Renta Warm:</span><span class="text-green-300">+${formatEuro(y.ingresoWarmMensual)}</span></div>
+        <div class="flex justify-between"><span>− Hipoteca:</span><span class="text-red-300">-${formatEuro(y.hipotecaMensual)}</span></div>
+        <div class="flex justify-between"><span>− Hausgeld:</span><span class="text-red-300">-150 €</span></div>
+        <div class="flex justify-between"><span>− Rücklage:</span><span class="text-red-300">-40 €</span></div>
+        <div class="border-t border-gray-700 pt-0.5 mt-0.5 flex justify-between font-bold"><span>Cashflow Bruto:</span><span>${formatEuro(y.cashflowPreTaxMensual)}</span></div>
+      </div>`;
+
     const baseFiscalTooltip = `
       <div class="absolute left-full top-1/2 -translate-y-1/2 ml-2 hidden group-hover:block bg-[#0A2540] text-white text-[11px] rounded-lg p-2.5 w-64 shadow-xl z-50 pointer-events-none space-y-1">
         <p class="font-bold text-amber-300 border-b border-gray-700 pb-0.5">Base Fiscal Mensual:</p>
@@ -112,7 +122,13 @@ export function renderTable(years: YearData[]): void {
         </div>
         ${warmTooltip}
       </td>
-      <td class="text-gray-600">${formatEuro(y.cashflowPreTaxMensual)}</td>
+      <td class="text-gray-600 relative group cursor-help">
+        <div class="flex items-center gap-1">
+          <span>${formatEuro(y.cashflowPreTaxMensual)}</span>
+          <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </div>
+        ${cashflowTooltip}
+      </td>
       <td class="text-[#635BFF] font-mono relative group cursor-help">
         <div class="flex items-center gap-1">
           <span>${formatEuro(y.hipotecaMensual)}</span>
