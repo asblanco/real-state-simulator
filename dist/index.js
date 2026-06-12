@@ -14661,7 +14661,7 @@ function renderTable(years) {
     const row = document.createElement("tr");
     row.className = y.year % 2 === 0 ? "bg-white" : "bg-[#F9FAFB]";
     const warmTooltip = `
-      <div class="absolute left-full top-1/2 -translate-y-1/2 ml-2 hidden group-hover:block bg-[#0A2540] text-white text-[11px] rounded-lg p-2.5 w-56 shadow-xl z-50 pointer-events-none space-y-1">
+      <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block bg-[#0A2540] text-white text-[11px] rounded-lg p-2.5 w-56 shadow-xl z-50 pointer-events-none space-y-1">
         <p class="font-bold text-blue-300 border-b border-gray-700 pb-0.5">Composición Renta Warm:</p>
         <div class="flex justify-between"><span>Alquiler Piso:</span><span>${formatEuro(y.mensualPiso)}</span></div>
         <div class="flex justify-between"><span>Alquiler Parking:</span><span>${formatEuro(y.mensualParking)}</span></div>
@@ -14669,13 +14669,13 @@ function renderTable(years) {
         <div class="text-[9px] text-gray-400 pt-0.5 italic">Aplicado factor de escala: x${y.factorSubida.toFixed(2)}</div>
       </div>`;
     const hipotecaTooltip = `
-      <div class="absolute left-full top-1/2 -translate-y-1/2 ml-2 hidden group-hover:block bg-[#0A2540] text-white text-[11px] rounded-lg p-2.5 w-52 shadow-xl z-50 pointer-events-none space-y-1">
+      <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block bg-[#0A2540] text-white text-[11px] rounded-lg p-2.5 w-52 shadow-xl z-50 pointer-events-none space-y-1">
         <p class="font-bold text-blue-300 border-b border-gray-700 pb-0.5">Desglose Hipoteca:</p>
         <div class="flex justify-between"><span>Intereses (Zins):</span><span class="text-red-300">${formatEuro(y.interesesMensuales)}</span></div>
         <div class="flex justify-between"><span>Amortización (Tilgung):</span><span class="text-emerald-300">${formatEuro(y.amortizacionMensual)}</span></div>
       </div>`;
     const cashflowTooltip = `
-      <div class="absolute left-full top-1/2 -translate-y-1/2 ml-2 hidden group-hover:block bg-[#0A2540] text-white text-[11px] rounded-lg p-2.5 w-64 shadow-xl z-50 pointer-events-none space-y-1">
+      <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block bg-[#0A2540] text-white text-[11px] rounded-lg p-2.5 w-64 shadow-xl z-50 pointer-events-none space-y-1">
         <p class="font-bold text-blue-300 border-b border-gray-700 pb-0.5">Cálculo Cashflow Bruto:</p>
         <div class="flex justify-between"><span>Renta Warm:</span><span class="text-green-300">+${formatEuro(y.ingresoWarmMensual)}</span></div>
         <div class="flex justify-between"><span>− Hipoteca:</span><span class="text-red-300">-${formatEuro(y.hipotecaMensual)}</span></div>
@@ -14684,7 +14684,7 @@ function renderTable(years) {
         <div class="border-t border-gray-700 pt-0.5 mt-0.5 flex justify-between font-bold"><span>Cashflow Bruto:</span><span>${formatEuro(y.cashflowPreTaxMensual)}</span></div>
       </div>`;
     const baseFiscalTooltip = `
-      <div class="absolute left-full top-1/2 -translate-y-1/2 ml-2 hidden group-hover:block bg-[#0A2540] text-white text-[11px] rounded-lg p-2.5 w-64 shadow-xl z-50 pointer-events-none space-y-1">
+      <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block bg-[#0A2540] text-white text-[11px] rounded-lg p-2.5 w-64 shadow-xl z-50 pointer-events-none space-y-1">
         <p class="font-bold text-amber-300 border-b border-gray-700 pb-0.5">Base Fiscal Mensual:</p>
         <div class="text-gray-300">= Ingresos Warm − Intereses − AfA − Hausgeld</div>
         <div class="text-gray-300">= ${formatEuro(y.ingresoWarmMensual)} − ${formatEuro(y.interesesMensuales)} − AfA − 150</div>
@@ -14692,7 +14692,7 @@ function renderTable(years) {
         <div class="border-t border-gray-700 pt-1 mt-1 flex justify-between font-bold"><span>Base Fiscal:</span><span class="text-amber-300">${formatEuro(y.resultadoFiscalMensual)}</span></div>
       </div>`;
     const ahorroTooltip = `
-      <div class="absolute left-full top-1/2 -translate-y-1/2 ml-2 hidden group-hover:block bg-[#0A2540] text-white text-[11px] rounded-lg p-2.5 w-64 shadow-xl z-50 pointer-events-none space-y-1">
+      <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block bg-[#0A2540] text-white text-[11px] rounded-lg p-2.5 w-64 shadow-xl z-50 pointer-events-none space-y-1">
         <p class="font-bold text-emerald-300 border-b border-gray-700 pb-0.5">Cálculo Ahorro Fiscal:</p>
         <div class="text-gray-300">Si Base Fiscal < 0:</div>
         <div class="pl-2 text-gray-300">Ahorro = (−Base × 42% Tasa) / 12</div>
