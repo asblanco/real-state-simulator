@@ -17,7 +17,7 @@ export const DEFAULT_PARAMS: InputParams = {
   parking: 15_000,
   entradaPct: 0.15,
   interesPct: 0.0422,
-  tilgungPct: 0.01,
+  tilgungPct: 0.015,
   alquilerInicialPiso: 1125,
   alquilerInicialParking: 80,
   subidaPct: 0.15,
