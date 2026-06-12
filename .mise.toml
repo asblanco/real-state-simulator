@@ -14,8 +14,11 @@ description = "Bundle TypeScript to dist/index.js"
 depends = ["install"]
 
 [tasks.dev]
-run = "bun build src/index.ts --outdir dist --watch"
-description = "Build in watch mode"
+run = """
+  bun build src/index.ts --outdir dist --watch &
+  sleep 1 && bunx browser-sync start --server --files 'dist/**/*, index.html, styles.css' --no-notify --no-open
+"""
+description = "Build in watch mode + live-reload server on :3000"
 depends = ["install"]
 
 [tasks.test]
