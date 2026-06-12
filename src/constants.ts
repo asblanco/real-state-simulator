@@ -1,4 +1,6 @@
 export const HAUSGELD_NO_TRANSF = 150;
+export const UMLAGEFAEHIG = 350;
+export const HAUSGELD_TOTAL = HAUSGELD_NO_TRANSF + UMLAGEFAEHIG; // 500
 export const RESERVA_PRIVADA = 40;
 export const TAX_RATE = 0.42;
 export const ITP_RATE = 0.035;

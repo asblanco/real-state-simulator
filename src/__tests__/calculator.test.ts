@@ -15,6 +15,10 @@ const defaultParams: InputParams = {
   afaPct: 0.035,
 };
 
+const KALT_INITIAL = 1125 + 80; // 1205
+const UMLAGE = 350;
+const WARM_INITIAL = KALT_INITIAL + UMLAGE; // 1555
+
 describe("getRentFactor", () => {
   test("year 1-3 returns 1", () => {
     expect(getRentFactor(1, 0.15)).toBe(1);
@@ -66,23 +70,24 @@ describe("calculateYear", () => {
   const costs = computePurchaseCosts(defaultParams);
   const year1 = calculateYear(defaultParams, 1, costs.montoFinanciar, costs.cuotaMensualHipoteca);
 
-  test("year 1 rent = initial rent (factor 1)", () => {
+  test("year 1 warm rent = kalt + parking + 350 umlage", () => {
     expect(year1.mensualPiso).toBe(1125);
     expect(year1.mensualParking).toBe(80);
-    expect(year1.ingresoMensualTotal).toBe(1205);
+    expect(year1.umlageMensual).toBe(350);
+    expect(year1.ingresoWarmMensual).toBe(WARM_INITIAL);
   });
 
-  test("year 1 interest calculated on full mortgage", () => {
-    expect(year1.interesesAnuales).toBeCloseTo(costs.montoFinanciar * 0.0422, 1);
+  test("year 1 monthly interest on full mortgage", () => {
+    expect(year1.interesesMensuales).toBeCloseTo(costs.montoFinanciar * 0.0422 / 12, 1);
   });
 
-  test("amortization = annual payment - interest", () => {
-    const annualPayment = costs.cuotaMensualHipoteca * 12;
-    expect(year1.amortizacionAnual).toBeCloseTo(annualPayment - year1.interesesAnuales, 1);
+  test("hipoteca total = interest + amortization", () => {
+    expect(year1.hipotecaMensual).toBeCloseTo(year1.interesesMensuales + year1.amortizacionMensual, 1);
   });
 
-  test("new debt = old debt - amortization", () => {
-    expect(year1.deudaRestante).toBeCloseTo(costs.montoFinanciar - year1.amortizacionAnual, 1);
+  test("new debt = old debt - annual amortization", () => {
+    const amortAnual = year1.amortizacionMensual * 12;
+    expect(year1.deudaRestante).toBeCloseTo(costs.montoFinanciar - amortAnual, 1);
   });
 });
 
@@ -100,11 +105,11 @@ describe("calculateAllYears", () => {
     }
   });
 
-  test("rent increases with trienal steps", () => {
-    expect(years[0].ingresoMensualTotal).toBe(1205);
-    expect(years[3].ingresoMensualTotal).toBeCloseTo(1205 * 1.15, 1);
-    expect(years[6].ingresoMensualTotal).toBeCloseTo(1205 * 1.15 * 1.15, 1);
-    expect(years[9].ingresoMensualTotal).toBeCloseTo(1205 * 1.15 * 1.15 * 1.15, 1);
+  test("warm rent increases with trienal steps (umlage is fixed)", () => {
+    expect(years[0].ingresoWarmMensual).toBe(KALT_INITIAL * 1 + UMLAGE);
+    expect(years[3].ingresoWarmMensual).toBeCloseTo(KALT_INITIAL * 1.15 + UMLAGE, 1);
+    expect(years[6].ingresoWarmMensual).toBeCloseTo(KALT_INITIAL * 1.3225 + UMLAGE, 1);
+    expect(years[9].ingresoWarmMensual).toBeCloseTo(KALT_INITIAL * 1.520875 + UMLAGE, 1);
   });
 });
 
@@ -149,10 +154,10 @@ describe("edge cases", () => {
     expect(costs.montoFinanciar).toBe(0);
     expect(costs.cuotaMensualHipoteca).toBe(0);
     const years = calculateAllYears(params, costs);
-    // No interest or amortization
     for (const y of years) {
-      expect(y.interesesAnuales).toBe(0);
-      expect(y.amortizacionAnual).toBe(0);
+      expect(y.interesesMensuales).toBe(0);
+      expect(y.amortizacionMensual).toBe(0);
+      expect(y.hipotecaMensual).toBe(0);
     }
   });
 
@@ -161,7 +166,7 @@ describe("edge cases", () => {
     const costs = computePurchaseCosts(params);
     const years = calculateAllYears(params, costs);
     for (const y of years) {
-      expect(y.ingresoMensualTotal).toBe(1205);
+      expect(y.ingresoWarmMensual).toBe(WARM_INITIAL);
     }
   });
 
@@ -169,8 +174,7 @@ describe("edge cases", () => {
     const params: InputParams = { ...defaultParams, interesPct: 0.06, entradaPct: 0.05 };
     const costs = computePurchaseCosts(params);
     const years = calculateAllYears(params, costs);
-    // Early years should have negative tax result due to high interest
-    expect(years[0].resultadoFiscalAnual).toBeLessThan(0);
+    expect(years[0].resultadoFiscalMensual).toBeLessThan(0);
     expect(years[0].devolucionFiscalMensual).toBeGreaterThan(0);
   });
 });

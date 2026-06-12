@@ -13,7 +13,7 @@ export function initCharts(ctxRent: CanvasRenderingContext2D, ctxCF: CanvasRende
     data: {
       labels,
       datasets: [{
-        label: "Ingresos Mensuales Total (€)",
+        label: "Renta Warm Mensual (€)",
         data: [],
         borderColor: "#0A2540",
         tension: 0,
@@ -24,7 +24,7 @@ export function initCharts(ctxRent: CanvasRenderingContext2D, ctxCF: CanvasRende
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: { title: { display: true, text: "Renta Mensual Total Escalada (Piso + Parking)" } },
+      plugins: { title: { display: true, text: "Renta Warm Mensual Escalada (Piso + Parking + Umlage)" } },
     },
   });
 
@@ -48,7 +48,7 @@ export function initCharts(ctxRent: CanvasRenderingContext2D, ctxCF: CanvasRende
 }
 
 export function updateCharts(years: YearData[]): void {
-  chartRent.data.datasets[0].data = years.map(y => Math.round(y.ingresoMensualTotal));
+  chartRent.data.datasets[0].data = years.map(y => Math.round(y.ingresoWarmMensual));
   chartRent.update();
 
   chartCF.data.datasets[0].data = years.map(y => Math.round(y.cashflowNetoPostTaxMensual));

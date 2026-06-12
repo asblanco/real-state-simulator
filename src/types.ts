@@ -16,12 +16,14 @@ export interface YearData {
   factorSubida: number;
   mensualPiso: number;
   mensualParking: number;
-  ingresoMensualTotal: number;
-  interesesAnuales: number;
-  amortizacionAnual: number;
+  umlageMensual: number;
+  ingresoWarmMensual: number;
+  hipotecaMensual: number;
+  interesesMensuales: number;
+  amortizacionMensual: number;
   deudaRestante: number;
   cashflowPreTaxMensual: number;
-  resultadoFiscalAnual: number;
+  resultadoFiscalMensual: number;
   devolucionFiscalMensual: number;
   cashflowNetoPostTaxMensual: number;
 }

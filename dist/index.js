@@ -14439,6 +14439,8 @@ var auto_default = Chart;
 
 // src/constants.ts
 var HAUSGELD_NO_TRANSF = 150;
+var UMLAGEFAEHIG = 350;
+var HAUSGELD_TOTAL = HAUSGELD_NO_TRANSF + UMLAGEFAEHIG;
 var RESERVA_PRIVADA = 40;
 var TAX_RATE = 0.42;
 var ITP_RATE = 0.035;
@@ -14472,7 +14474,7 @@ function initCharts(ctxRent, ctxCF) {
     data: {
       labels,
       datasets: [{
-        label: "Ingresos Mensuales Total (€)",
+        label: "Renta Warm Mensual (€)",
         data: [],
         borderColor: "#0A2540",
         tension: 0,
@@ -14483,7 +14485,7 @@ function initCharts(ctxRent, ctxCF) {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: { title: { display: true, text: "Renta Mensual Total Escalada (Piso + Parking)" } }
+      plugins: { title: { display: true, text: "Renta Warm Mensual Escalada (Piso + Parking + Umlage)" } }
     }
   });
   chartCF = new auto_default(ctxCF, {
@@ -14505,7 +14507,7 @@ function initCharts(ctxRent, ctxCF) {
   });
 }
 function updateCharts(years) {
-  chartRent.data.datasets[0].data = years.map((y) => Math.round(y.ingresoMensualTotal));
+  chartRent.data.datasets[0].data = years.map((y) => Math.round(y.ingresoWarmMensual));
   chartRent.update();
   chartCF.data.datasets[0].data = years.map((y) => Math.round(y.cashflowNetoPostTaxMensual));
   chartCF.update();
@@ -14536,17 +14538,21 @@ function calculateYear(params, year, deudaRestante, cuotaMensualHipoteca) {
   const factorSubida = getRentFactor(year, params.subidaPct);
   const mensualPiso = params.alquilerInicialPiso * factorSubida;
   const mensualParking = params.alquilerInicialParking * factorSubida;
-  const ingresoMensualTotal = mensualPiso + mensualParking;
+  const umlageMensual = UMLAGEFAEHIG;
+  const ingresoWarmMensual = mensualPiso + mensualParking + umlageMensual;
   const interesesAnuales = deudaRestante * params.interesPct;
+  const interesesMensuales = interesesAnuales / MONTHS_PER_YEAR;
   const cuotaAnualTotal = cuotaMensualHipoteca * MONTHS_PER_YEAR;
   const amortizacionAnual = cuotaAnualTotal - interesesAnuales;
+  const amortizacionMensual = amortizacionAnual / MONTHS_PER_YEAR;
   const nuevaDeuda = deudaRestante - amortizacionAnual;
-  const gastosFijosMensuales = HAUSGELD_NO_TRANSF + RESERVA_PRIVADA;
-  const cashflowPreTaxMensual = ingresoMensualTotal - cuotaMensualHipoteca - gastosFijosMensuales;
-  const ingresosBrutosAnuales = ingresoMensualTotal * MONTHS_PER_YEAR;
+  const gastosOperativosMensuales = HAUSGELD_NO_TRANSF + RESERVA_PRIVADA;
+  const cashflowPreTaxMensual = ingresoWarmMensual - cuotaMensualHipoteca - gastosOperativosMensuales;
+  const ingresosBrutosAnuales = ingresoWarmMensual * MONTHS_PER_YEAR;
   const afaEdificioAnual = params.precio * AFA_BUILDING_PCT * params.afaPct + AFA_FLAT_1 + AFA_FLAT_2;
-  const gastosDeduciblesAnuales = interesesAnuales + afaEdificioAnual + HAUSGELD_NO_TRANSF * MONTHS_PER_YEAR;
+  const gastosDeduciblesAnuales = interesesAnuales + afaEdificioAnual + HAUSGELD_TOTAL * MONTHS_PER_YEAR;
   const resultadoFiscalAnual = ingresosBrutosAnuales - gastosDeduciblesAnuales;
+  const resultadoFiscalMensual = resultadoFiscalAnual / MONTHS_PER_YEAR;
   const devolucionFiscalMensual = resultadoFiscalAnual < 0 ? -resultadoFiscalAnual * TAX_RATE / MONTHS_PER_YEAR : 0;
   const cashflowNetoPostTaxMensual = cashflowPreTaxMensual + devolucionFiscalMensual;
   return {
@@ -14554,12 +14560,14 @@ function calculateYear(params, year, deudaRestante, cuotaMensualHipoteca) {
     factorSubida,
     mensualPiso,
     mensualParking,
-    ingresoMensualTotal,
-    interesesAnuales,
-    amortizacionAnual,
+    umlageMensual,
+    ingresoWarmMensual,
+    hipotecaMensual: cuotaMensualHipoteca,
+    interesesMensuales,
+    amortizacionMensual,
     deudaRestante: nuevaDeuda,
     cashflowPreTaxMensual,
-    resultadoFiscalAnual,
+    resultadoFiscalMensual,
     devolucionFiscalMensual,
     cashflowNetoPostTaxMensual
   };
@@ -14652,25 +14660,66 @@ function renderTable(years) {
   for (const y of years) {
     const row = document.createElement("tr");
     row.className = y.year % 2 === 0 ? "bg-white" : "bg-[#F9FAFB]";
+    const warmTooltip = `
+      <div class="absolute left-full top-1/2 -translate-y-1/2 ml-2 hidden group-hover:block bg-[#0A2540] text-white text-[11px] rounded-lg p-2.5 w-56 shadow-xl z-50 pointer-events-none space-y-1">
+        <p class="font-bold text-blue-300 border-b border-gray-700 pb-0.5">Composición Renta Warm:</p>
+        <div class="flex justify-between"><span>Alquiler Piso:</span><span>${formatEuro(y.mensualPiso)}</span></div>
+        <div class="flex justify-between"><span>Alquiler Parking:</span><span>${formatEuro(y.mensualParking)}</span></div>
+        <div class="flex justify-between"><span>Umlage (Hausgeld+Rückl.):</span><span>+${formatEuro(y.umlageMensual)}</span></div>
+        <div class="text-[9px] text-gray-400 pt-0.5 italic">Aplicado factor de escala: x${y.factorSubida.toFixed(2)}</div>
+      </div>`;
+    const hipotecaTooltip = `
+      <div class="absolute left-full top-1/2 -translate-y-1/2 ml-2 hidden group-hover:block bg-[#0A2540] text-white text-[11px] rounded-lg p-2.5 w-52 shadow-xl z-50 pointer-events-none space-y-1">
+        <p class="font-bold text-blue-300 border-b border-gray-700 pb-0.5">Desglose Hipoteca:</p>
+        <div class="flex justify-between"><span>Intereses (Zins):</span><span class="text-red-300">${formatEuro(y.interesesMensuales)}</span></div>
+        <div class="flex justify-between"><span>Amortización (Tilgung):</span><span class="text-emerald-300">${formatEuro(y.amortizacionMensual)}</span></div>
+      </div>`;
+    const baseFiscalTooltip = `
+      <div class="absolute left-full top-1/2 -translate-y-1/2 ml-2 hidden group-hover:block bg-[#0A2540] text-white text-[11px] rounded-lg p-2.5 w-64 shadow-xl z-50 pointer-events-none space-y-1">
+        <p class="font-bold text-amber-300 border-b border-gray-700 pb-0.5">Base Fiscal Mensual:</p>
+        <div class="text-gray-300">= Ingresos Warm − Intereses − AfA − Hausgeld</div>
+        <div class="text-gray-300">= ${formatEuro(y.ingresoWarmMensual)} − ${formatEuro(y.interesesMensuales)} − AfA − 150</div>
+
+        <div class="border-t border-gray-700 pt-1 mt-1 flex justify-between font-bold"><span>Base Fiscal:</span><span class="text-amber-300">${formatEuro(y.resultadoFiscalMensual)}</span></div>
+      </div>`;
+    const ahorroTooltip = `
+      <div class="absolute left-full top-1/2 -translate-y-1/2 ml-2 hidden group-hover:block bg-[#0A2540] text-white text-[11px] rounded-lg p-2.5 w-64 shadow-xl z-50 pointer-events-none space-y-1">
+        <p class="font-bold text-emerald-300 border-b border-gray-700 pb-0.5">Cálculo Ahorro Fiscal:</p>
+        <div class="text-gray-300">Si Base Fiscal < 0:</div>
+        <div class="pl-2 text-gray-300">Ahorro = (−Base × 42% Tasa) / 12</div>
+        <div class="flex justify-between border-t border-gray-700 pt-1 mt-1"><span>Ahorro Fiscal:</span><span class="text-emerald-300">+${formatEuro(y.devolucionFiscalMensual)}</span></div>
+      </div>`;
     row.innerHTML = `
       <td class="text-center font-bold text-gray-500">${y.year}</td>
       <td class="font-semibold text-gray-900 relative group cursor-help">
         <div class="flex items-center gap-1">
-          <span>${formatEuro(y.ingresoMensualTotal)}</span>
+          <span>${formatEuro(y.ingresoWarmMensual)}</span>
           <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
         </div>
-        <div class="absolute left-full top-1/2 -translate-y-1/2 ml-2 hidden group-hover:block bg-[#0A2540] text-white text-[11px] rounded-lg p-2.5 w-52 shadow-xl z-50 pointer-events-none space-y-1">
-          <p class="font-bold text-blue-300 border-b border-gray-700 pb-0.5">Composición de Renta:</p>
-          <div class="flex justify-between"><span>Alquiler Piso:</span><span>${formatEuro(y.mensualPiso)}</span></div>
-          <div class="flex justify-between"><span>Alquiler Parking:</span><span>${formatEuro(y.mensualParking)}</span></div>
-          <div class="text-[9px] text-gray-400 pt-0.5 italic">Aplicado factor de escala: x${y.factorSubida.toFixed(2)}</div>
-        </div>
+        ${warmTooltip}
       </td>
-      <td class="text-gray-600">${formatEuro(y.cashflowPreTaxMensual * 12)}</td>
-      <td class="text-red-500 font-mono">-${formatEuro(y.interesesAnuales)}</td>
-      <td class="text-emerald-600 font-mono">+${formatEuro(y.amortizacionAnual)}</td>
-      <td class="text-amber-700 bg-amber-50/40 font-medium">${formatEuro(y.resultadoFiscalAnual)}</td>
-      <td class="text-emerald-700 bg-emerald-50/40 font-medium">+${formatEuro(y.devolucionFiscalMensual)}</td>
+      <td class="text-gray-600">${formatEuro(y.cashflowPreTaxMensual)}</td>
+      <td class="text-[#635BFF] font-mono relative group cursor-help">
+        <div class="flex items-center gap-1">
+          <span>${formatEuro(y.hipotecaMensual)}</span>
+          <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </div>
+        ${hipotecaTooltip}
+      </td>
+      <td class="text-amber-700 bg-amber-50/40 font-medium relative group cursor-help">
+        <div class="flex items-center gap-1">
+          <span>${formatEuro(y.resultadoFiscalMensual)}</span>
+          <svg class="w-3 h-3 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </div>
+        ${baseFiscalTooltip}
+      </td>
+      <td class="text-emerald-700 bg-emerald-50/40 font-medium relative group cursor-help">
+        <div class="flex items-center gap-1">
+          <span>+${formatEuro(y.devolucionFiscalMensual)}</span>
+          <svg class="w-3 h-3 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </div>
+        ${ahorroTooltip}
+      </td>
       <td class="bg-blue-50/60 text-[#635BFF] font-extrabold text-right pr-6">${formatEuro(y.cashflowNetoPostTaxMensual)}</td>
     `;
     tbody.appendChild(row);
