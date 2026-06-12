@@ -14818,11 +14818,19 @@ function updateCalculations() {
   renderSummary(summary, purchaseCosts);
   updateCharts(years);
 }
-var chartRentCanvas = document.getElementById("chartRent");
-var chartCFCanvas = document.getElementById("chartCashflow");
-initCharts(chartRentCanvas.getContext("2d"), chartCFCanvas.getContext("2d"));
 var inputs = ["precio", "parking", "entrada", "interes", "tilgung", "alquiler", "alquiler-parking", "subida", "inflacion", "afa"];
 bindInputs(inputs, updateCalculations);
 applyDefaults();
 bindToggle(updateCalculations);
 updateCalculations();
+var chartRentCanvas = document.getElementById("chartRent");
+var chartCFCanvas = document.getElementById("chartCashflow");
+var ctxRent = chartRentCanvas?.getContext("2d");
+var ctxCF = chartCFCanvas?.getContext("2d");
+if (ctxRent && ctxCF) {
+  try {
+    initCharts(ctxRent, ctxCF);
+  } catch {
+    console.error("Chart initialization failed");
+  }
+}
