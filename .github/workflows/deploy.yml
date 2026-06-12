@@ -23,13 +23,11 @@ jobs:
         with:
           bun-version: latest
       - run: bun install
-      - run: npx tailwindcss -i src/tailwind-input.css -o dist/tailwind.css
-        env:
-          NODE_OPTIONS: --no-deprecation
+      - run: bunx tailwindcss -i src/tailwind-input.css -o dist/tailwind.css
       - run: bun test --path-ignore-patterns='e2e/**'
       - run: bun run build
       - run: |
-          npx playwright install chromium
+          bunx playwright install chromium
           python3 -m http.server 8080 & sleep 1
           bun run e2e/e2e.test.ts
         env:
