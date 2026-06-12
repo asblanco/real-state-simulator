@@ -5,4 +5,4 @@ node_modules/
 .cursor/
 .env
 *.log
-dist/
+dist/.svelte-kit/

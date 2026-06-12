@@ -4,13 +4,20 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "bun build src/index.ts --outdir dist",
+    "build": "vite build",
+    "dev": "vite dev",
+    "preview": "vite preview",
     "test": "bun test",
-    "dev": "bun build src/index.ts --outdir dist --watch & sleep 1 && bunx browser-sync start --server --files 'dist/**/*, index.html, styles.css' --no-notify --no-open"
+    "sync": "bun run build && bunx browser-sync start --server dist --files 'dist/**/*' --no-notify --no-open"
   },
   "devDependencies": {
+    "@sveltejs/adapter-static": "^3.0.10",
+    "@sveltejs/kit": "^2.65.0",
+    "@tailwindcss/vite": "^4.3.1",
     "@types/bun": "latest",
-    "browser-sync": "^3.0.4"
+    "browser-sync": "^3.0.4",
+    "svelte": "^5.56.3",
+    "vite": "^8.0.16"
   },
   "peerDependencies": {
     "typescript": "^5"

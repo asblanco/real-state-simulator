@@ -1,29 +1,57 @@
 # Real State Simulator
 
-Frontend-only real estate investment simulator. Static HTML + TypeScript, bundled with Bun.
+Frontend-only real estate investment simulator. Built with SvelteKit + Tailwind CSS.
 
 ## Commands
 
 - `mise run install` — install dependencies
-- `mise run build` — bundle TypeScript to `dist/index.js`
-- `mise run test` — run tests
-- `mise run dev` — build in watch mode
+- `mise run build` — build SvelteKit app to `dist/`
+- `mise run test` — run unit tests
+- `mise run dev` — start Vite dev server with HMR
+- `bun run preview` — preview production build locally
 
 ## Tech
 
 - **Runtime:** Bun (not Node.js)
-- **Bundler:** Bun's built-in bundler (not webpack/vite/esbuild)
+- **Framework:** SvelteKit (SPA, static adapter)
 - **Testing:** `bun:test` (not jest/vitest)
 - **Charts:** Chart.js
-- **Styling:** Tailwind CSS (CDN via `@tailwindcss/browser`)
+- **Styling:** Tailwind CSS v4 + daisyUI (via `@tailwindcss/vite`)
 
 ## Project Structure
 
-- `src/index.ts` — entry point
-- `src/calculator.ts` — financial calculations
-- `src/charts.ts` — Chart.js chart setup
-- `src/ui.ts` — DOM manipulation, KPI rendering, table generation
-- `src/types.ts` — shared types
-- `src/constants.ts` — fixed constants (tax rates, fees, etc.)
-- `src/__tests__/calculator.test.ts` — unit tests
-- `dist/index.js` — compiled output
+### Core Logic (pure TypeScript, tested)
+- `src/lib/calculator.ts` — financial calculations (purchase costs, yearly projections, summary)
+- `src/lib/etf-calculator.ts` — ETF comparison calculations (rent vs buy model)
+- `src/lib/constants.ts` — fixed constants (tax rates, fees, etc.)
+- `src/lib/types.ts` — shared types
+- `src/lib/__tests__/calculator.test.ts` — unit tests
+
+### State Management (Svelte stores)
+- `src/lib/stores/params.ts` — writable store for input parameters
+- `src/lib/stores/computed.ts` — derived stores (purchaseCosts, years, summary, etfComparison)
+
+### UI Components
+- `src/lib/components/Chart.svelte` — Chart.js wrapper
+- `src/lib/components/KpiCard.svelte` — KPI card with optional tooltip
+- `src/lib/components/NavBar.svelte` — navigation tabs
+
+### Routes (multi-view SPA)
+- `src/routes/+layout.svelte` — app shell (header, sidebar sliders, navbar)
+- `src/routes/+page.svelte` — Dashboard (KPIs + charts + table + math breakdown)
+- `src/routes/rental/+page.svelte` — detailed rental income view
+- `src/routes/mortgage/+page.svelte` — amortization schedule
+- `src/routes/fiscal/+page.svelte` — tax optimization breakdown
+- `src/routes/wealth/+page.svelte` — wealth evolution
+- `src/routes/etf/+page.svelte` — RE vs ETF comparison
+
+### Internationalization
+- `src/lib/i18n.ts` — Svelte store-based i18n
+- `src/lib/locales/es.json`, `en.json`, `de.json`
+
+## Key Architectural Decisions
+
+- **SvelteKit with adapter-static** — static SPA output to `dist/`, deployable to GitHub Pages
+- **Store-driven reactivity** — changing any slider instantly recomputes all derived data
+- **Rent vs Buy ETF model** — compares property investment with renting + ETF investing
+- **LocalStorage persistence** — input parameters saved between sessions

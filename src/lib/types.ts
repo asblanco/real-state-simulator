@@ -1,0 +1,86 @@
+export interface InputParams {
+  precio: number;
+  parking: number;
+  entradaPct: number;
+  interesPct: number;
+  tilgungPct: number;
+  alquilerInicialPiso: number;
+  alquilerInicialParking: number;
+  subidaPct: number;
+  inflacionPct: number;
+  afaYears: number;
+  hausgeldTotal: number;
+  useFlatRate: boolean;
+  reservaImprevistos: number;
+  years: number;
+}
+
+export interface YearData {
+  year: number;
+  factorSubida: number;
+  mensualPiso: number;
+  mensualParking: number;
+  umlageMensual: number;
+  ingresoWarmMensual: number;
+  hipotecaMensual: number;
+  interesesMensuales: number;
+  amortizacionMensual: number;
+  deudaRestante: number;
+  cashflowPreTaxMensual: number;
+  resultadoFiscalMensual: number;
+  devolucionFiscalMensual: number;
+  cashflowNetoPostTaxMensual: number;
+  afaMensual: number;
+}
+
+export interface PurchaseCosts {
+  capitalPropioEntrada: number;
+  costeITP: number;
+  costeNotario: number;
+  costeAgencia: number;
+  efectivoTotalNecesario: number;
+  montoFinanciar: number;
+  cuotaMensualHipoteca: number;
+}
+
+export interface SummaryData {
+  valorPropiedadFutura: number;
+  deudaRestanteFinal: number;
+  netoDeLaVenta: number;
+  totalCashflowAcumulado: number;
+  gananciaNeta: number;
+  capitalTotalFinal: number;
+  roiAnualizado: number;
+  costoAdquisicionTotal: number;
+  afaAcumulada: number;
+  gananciaVenta: number;
+  gananciaFiscal: number;
+  roiProyectoAnualizado: number;
+  roiCapitalPropioTotal: number;
+  roiProyectoTotal: number;
+  apalancamiento: number;
+}
+
+export interface EtfYearData {
+  year: number;
+  etfValue: number;
+  reTotalWealth: number;
+  monthlyContribution: number;
+}
+
+export interface EtfComparison {
+  etfCagr: number;
+  etfFinalValue: number;
+  reFinalWealth: number;
+  gap: number;
+  breakevenCagr: number;
+  yearByYear: EtfYearData[];
+  scenario5: number;
+  scenario7: number;
+  scenario10: number;
+  avgMonthlyContribution: number;
+}
+
+export type View = "dashboard" | "rental" | "mortgage" | "fiscal" | "wealth" | "etf";
+
+export type Locale = "es" | "en" | "de";

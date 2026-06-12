@@ -6,26 +6,19 @@ run = "bun install"
 description = "Install dependencies"
 
 [tasks.build]
-run = '''
-  npx tailwindcss -i src/tailwind-input.css -o dist/tailwind.css
-  bun build src/index.ts --outdir dist
-'''
-description = "Bundle TypeScript to dist/index.js"
+run = """
+  bun run build
+"""
+description = "Build SvelteKit app to dist/"
 depends = ["install"]
 
 [tasks.dev]
 run = """
-  bun build src/index.ts --outdir dist --watch &
-  sleep 1 && bunx browser-sync start --server --files 'dist/**/*, index.html, styles.css' --no-notify --no-open
+  bun run dev
 """
-description = "Build in watch mode + live-reload server on :3000"
+description = "Start Vite dev server with HMR"
 depends = ["install"]
 
 [tasks.test]
 run = "bun test --path-ignore-patterns='e2e/**'"
 description = "Run unit tests"
-
-[tasks.e2e]
-run = "python3 -m http.server 8080 > /dev/null 2>&1 & sleep 1 && bun run e2e/e2e.test.ts && bun run e2e/language-switch.test.ts; exit_code=$?; kill $(lsof -t -i:8080) 2>/dev/null; exit $exit_code"
-description = "Run end-to-end tests (requires Chromium)"
-depends = ["build"]
