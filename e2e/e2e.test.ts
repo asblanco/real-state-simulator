@@ -40,6 +40,15 @@ const chartContent = await page.evaluate(() => {
   return { rent: hasPixelContent("chartRent"), cashflow: hasPixelContent("chartCashflow") };
 });
 
+const tooltipShown = await page.evaluate(() => {
+  const tt = document.querySelector(".tt") as HTMLElement | null;
+  if (!tt) return "no-trigger-found";
+  tt.dispatchEvent(new MouseEvent("mouseover", { bubbles: true }));
+  const portal = document.getElementById("tooltip-portal") as HTMLElement | null;
+  if (!portal) return "no-portal";
+  return portal.classList.contains("hidden") ? "hidden" : "visible";
+});
+
 let passed = 0;
 let failed = 0;
 
@@ -60,6 +69,7 @@ assert(kpis.roi !== "0.00 %" && kpis.roi?.endsWith("%"), `ROI = ${kpis.roi}`);
 assert(tableRows >= 10, `Table has ${tableRows} rows (≥10)`);
 assert(chartContent.rent, "Rent chart has visible content");
 assert(chartContent.cashflow, "Cashflow chart has visible content");
+assert(tooltipShown === "visible", `Table tooltip should be visible (got "${tooltipShown}")`);
 
 console.log(`\n${passed + failed} tests, ${passed} passed, ${failed} failed`);
 

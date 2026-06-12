@@ -3,6 +3,8 @@ import { DEFAULT_PARAMS, HAUSGELD_TOTAL } from "./constants";
 import { computeFlatRatePct } from "./calculator";
 
 let tooltipAnchor: HTMLElement | null = null;
+let tooltipListenersAttached = false;
+let currentImprevistos = 0;
 
 function showTooltip(content: string, anchor: HTMLElement): void {
   const portal = document.getElementById("tooltip-portal") as HTMLElement;
@@ -162,6 +164,7 @@ function ahorroContent(y: YearData): string {
 export function renderTable(years: YearData[], reservaImprevistos: number): void {
   const tbody = document.getElementById("tabla-proyeccion-body") as HTMLElement;
   tbody.innerHTML = "";
+  currentImprevistos = reservaImprevistos;
   for (const y of years) {
     const row = document.createElement("tr");
     row.className = y.year % 2 === 0 ? "bg-white" : "bg-[#F9FAFB]";
@@ -182,6 +185,9 @@ export function renderTable(years: YearData[], reservaImprevistos: number): void
     tbody.appendChild(row);
   }
 
+  if (tooltipListenersAttached) return;
+  tooltipListenersAttached = true;
+
   // Event delegation: single listener on tbody for all tooltip triggers
   tbody.addEventListener("mouseover", (e) => {
     const target = (e.target as HTMLElement).closest(".tt") as HTMLElement | null;
@@ -194,7 +200,7 @@ export function renderTable(years: YearData[], reservaImprevistos: number): void
     const contentMap: Record<number, (y: YearData) => string> = {
       1: warmContent,
       2: hipotecaContent,
-      3: cashflowContent(imprevistos),
+      3: cashflowContent(currentImprevistos),
       4: baseFiscalContent,
       5: ahorroContent,
     };

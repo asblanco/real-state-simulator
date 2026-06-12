@@ -14606,6 +14606,8 @@ function computeSummary(params, years, purchaseCosts) {
 
 // src/ui.ts
 var tooltipAnchor = null;
+var tooltipListenersAttached = false;
+var currentImprevistos = 0;
 function showTooltip(content, anchor) {
   const portal = document.getElementById("tooltip-portal");
   if (!portal)
@@ -14719,13 +14721,13 @@ function warmContent(y) {
     <div class="flex justify-between"><span>Umlage (Hausgeld+Rückl.):</span><span>+${formatEuro(y.umlageMensual)}</span></div>
     <div class="text-[9px] text-gray-400 pt-0.5 italic">Aplicado factor de escala: x${y.factorSubida.toFixed(2)}</div>`;
 }
-function cashflowContent(imprevistos2) {
+function cashflowContent(imprevistos) {
   return (y) => `
     <p class="font-bold text-blue-300 border-b border-gray-700 pb-0.5">Cálculo Cashflow Bruto:</p>
     <div class="flex justify-between"><span>Renta Warm:</span><span class="text-green-300">+${formatEuro(y.ingresoWarmMensual)}</span></div>
     <div class="flex justify-between"><span>− Hipoteca:</span><span class="text-red-300">-${formatEuro(y.hipotecaMensual)}</span></div>
     <div class="flex justify-between"><span>− Hausgeld:</span><span class="text-red-300">-${HAUSGELD_TOTAL} €</span></div>
-    <div class="flex justify-between"><span>− Imprevistos:</span><span class="text-red-300">-${imprevistos2} €</span></div>
+    <div class="flex justify-between"><span>− Imprevistos:</span><span class="text-red-300">-${imprevistos} €</span></div>
     <div class="border-t border-gray-700 pt-0.5 mt-0.5 flex justify-between font-bold"><span>Cashflow Bruto:</span><span>${formatEuro(y.cashflowPreTaxMensual)}</span></div>`;
 }
 function hipotecaContent(y) {
@@ -14751,6 +14753,7 @@ function ahorroContent(y) {
 function renderTable(years, reservaImprevistos) {
   const tbody = document.getElementById("tabla-proyeccion-body");
   tbody.innerHTML = "";
+  currentImprevistos = reservaImprevistos;
   for (const y of years) {
     const row = document.createElement("tr");
     row.className = y.year % 2 === 0 ? "bg-white" : "bg-[#F9FAFB]";
@@ -14767,6 +14770,9 @@ function renderTable(years, reservaImprevistos) {
     row._yearData = y;
     tbody.appendChild(row);
   }
+  if (tooltipListenersAttached)
+    return;
+  tooltipListenersAttached = true;
   tbody.addEventListener("mouseover", (e) => {
     const target = e.target.closest(".tt");
     if (!target)
@@ -14779,7 +14785,7 @@ function renderTable(years, reservaImprevistos) {
     const contentMap = {
       1: warmContent,
       2: hipotecaContent,
-      3: cashflowContent(imprevistos),
+      3: cashflowContent(currentImprevistos),
       4: baseFiscalContent,
       5: ahorroContent
     };
