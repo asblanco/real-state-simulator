@@ -47,8 +47,13 @@ export function initCharts(ctxRent: CanvasRenderingContext2D, ctxCF: CanvasRende
   });
 }
 
+export let lastYears: YearData[] = [];
+
 export function updateCharts(years: YearData[]): void {
-  if (!chartRent || !chartCF) return;
+  if (!chartRent || !chartCF) {
+    lastYears = years;
+    return;
+  }
   chartRent.data.datasets[0].data = years.map(y => Math.round(y.ingresoWarmMensual));
   chartRent.update();
 
