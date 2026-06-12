@@ -9,6 +9,7 @@ export interface InputParams {
   subidaPct: number;
   inflacionPct: number;
   afaYears: number;
+  hausgeldTotal: number;
   useFlatRate: boolean;
   reservaImprevistos: number;
 }

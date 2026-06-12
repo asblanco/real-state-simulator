@@ -14,11 +14,12 @@ const defaultParams: InputParams = {
   inflacionPct: 0.025,
   afaYears: 28,
   useFlatRate: false,
+  hausgeldTotal: 500,
   reservaImprevistos: 100,
 };
 
 const KALT_INITIAL = 1125 + 80; // 1205
-const UMLAGE = 300;
+const UMLAGE = defaultParams.hausgeldTotal * 0.6;
 const WARM_INITIAL = KALT_INITIAL + UMLAGE; // 1555
 
 describe("getRentFactor", () => {

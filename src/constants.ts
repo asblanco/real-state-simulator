@@ -1,6 +1,5 @@
 export const HAUSGELD_TOTAL = 500;
-export const UMLAGEFAEHIG = 300;
-export const HAUSGELD_NO_TRANSF = HAUSGELD_TOTAL - UMLAGEFAEHIG; // 200
+export const UMLAGE_PCT = 0.6;
 
 export const TAX_RATE = 0.42;
 export const ITP_RATE = 0.035;
@@ -25,6 +24,7 @@ export const DEFAULT_PARAMS: InputParams = {
   subidaPct: 0.02,
   inflacionPct: 0.03,
   afaYears: AFA_RND_YEARS,
+  hausgeldTotal: HAUSGELD_TOTAL,
   useFlatRate: false,
   reservaImprevistos: 100,
 };

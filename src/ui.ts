@@ -1,5 +1,5 @@
 import type { InputParams, YearData, PurchaseCosts, SummaryData } from "./types";
-import { DEFAULT_PARAMS, HAUSGELD_TOTAL } from "./constants";
+import { DEFAULT_PARAMS } from "./constants";
 import { computeFlatRatePct } from "./calculator";
 import { getRoiColorClass } from "./roi";
 import { t } from "./i18n";
@@ -7,6 +7,7 @@ import { t } from "./i18n";
 let tooltipAnchor: HTMLElement | null = null;
 let tooltipListenersAttached = false;
 let currentImprevistos = 0;
+let currentHausgeld = 0;
 
 function showTooltip(content: string, anchor: HTMLElement): void {
   const portal = document.getElementById("tooltip-portal") as HTMLElement;
@@ -48,6 +49,7 @@ export function applyDefaults(): void {
   setVal("alquiler-parking", p.alquilerInicialParking);
   setVal("subida", p.subidaPct * 100);
   setVal("inflacion", (p.inflacionPct * 100).toFixed(1));
+  setVal("hausgeld", p.hausgeldTotal.toString());
   setVal("reserva-imprevistos", p.reservaImprevistos.toString());
   updateDisplayValues(p);
   (document.getElementById("toggle-subida") as HTMLInputElement).checked = p.useFlatRate;
@@ -74,6 +76,7 @@ export function readInputs(): InputParams {
     subidaPct: getVal("input-subida") / 100,
     inflacionPct: getVal("input-inflacion") / 100,
     afaYears: getVal("input-afa"),
+    hausgeldTotal: getVal("input-hausgeld"),
     useFlatRate: (document.getElementById("toggle-subida") as HTMLInputElement).checked,
     reservaImprevistos: getVal("input-reserva-imprevistos"),
   };
@@ -97,6 +100,7 @@ export function updateDisplayValues(params: InputParams): void {
   setText("val-inflacion", (params.inflacionPct * 100).toString());
   setText("val-afa", params.afaYears.toString());
   setText("val-afa-rate", `(${(100 / params.afaYears).toFixed(2)}%)`);
+  setText("val-hausgeld", params.hausgeldTotal.toString());
   setText("val-reserva-imprevistos", params.reservaImprevistos.toString());
 }
 
@@ -123,12 +127,12 @@ function warmContent(y: YearData): string {
     <div class="text-[9px] text-gray-400 pt-0.5 italic">${t("tooltip.warm_factor")}${y.factorSubida.toFixed(2)}</div>`;
 }
 
-function cashflowContent(imprevistos: number): (y: YearData) => string {
+function cashflowContent(imprevistos: number, hausgeld: number): (y: YearData) => string {
   return (y: YearData) => `
     <p class="font-bold text-blue-300 border-b border-gray-700 pb-0.5">${t("tooltip.cashflow_titulo")}</p>
     <div class="flex justify-between"><span>${t("tooltip.cashflow_renta")}</span><span class="text-green-300">+${formatEuro(y.ingresoWarmMensual)}</span></div>
     <div class="flex justify-between"><span>${t("tooltip.cashflow_hipoteca")}</span><span class="text-red-300">-${formatEuro(y.hipotecaMensual)}</span></div>
-    <div class="flex justify-between"><span>${t("tooltip.cashflow_hausgeld")}</span><span class="text-red-300">-${HAUSGELD_TOTAL} €</span></div>
+    <div class="flex justify-between"><span>${t("tooltip.cashflow_hausgeld")}</span><span class="text-red-300">-${hausgeld} €</span></div>
     <div class="flex justify-between"><span>${t("tooltip.cashflow_imprevistos")}</span><span class="text-red-300">-${imprevistos} €</span></div>
     <div class="border-t border-gray-700 pt-0.5 mt-0.5 flex justify-between font-bold"><span>${t("tooltip.cashflow_resultado")}</span><span>${formatEuro(y.cashflowPreTaxMensual)}</span></div>`;
 }
@@ -140,11 +144,11 @@ function hipotecaContent(y: YearData): string {
     <div class="flex justify-between"><span>${t("tooltip.hipoteca_amortizacion")}</span><span class="text-emerald-300">${formatEuro(y.amortizacionMensual)}</span></div>`;
 }
 
-function baseFiscalContent(y: YearData): string {
+function baseFiscalContent(y: YearData, hausgeld: number): string {
   return `
     <p class="font-bold text-amber-300 border-b border-gray-700 pb-0.5">${t("tooltip.fiscal_titulo")}</p>
     <div class="text-gray-300">${t("tooltip.fiscal_formula")}</div>
-    <div class="text-gray-300">= ${formatEuro(y.ingresoWarmMensual)} − ${formatEuro(y.interesesMensuales)} − ${formatEuro(y.afaMensual)} − ${HAUSGELD_TOTAL}</div>
+    <div class="text-gray-300">= ${formatEuro(y.ingresoWarmMensual)} − ${formatEuro(y.interesesMensuales)} − ${formatEuro(y.afaMensual)} − ${hausgeld}</div>
     <div class="border-t border-gray-700 pt-1 mt-1 flex justify-between font-bold"><span>${t("tooltip.fiscal_resultado")}</span><span class="text-amber-300">${formatEuro(y.resultadoFiscalMensual)}</span></div>`;
 }
 
@@ -155,10 +159,11 @@ function ahorroHeaderContent(): string {
     <div class="pl-2 text-gray-300">${t("tooltip.ahorro_formula")}</div>`;
 }
 
-export function renderTable(years: YearData[], reservaImprevistos: number): void {
+export function renderTable(years: YearData[], reservaImprevistos: number, hausgeldTotal: number): void {
   const tbody = document.getElementById("tabla-proyeccion-body") as HTMLElement;
   tbody.innerHTML = "";
   currentImprevistos = reservaImprevistos;
+  currentHausgeld = hausgeldTotal;
   for (const y of years) {
     const row = document.createElement("tr");
     row.className = y.year % 2 === 0 ? "bg-white" : "bg-[#F9FAFB]";
@@ -194,8 +199,8 @@ export function renderTable(years: YearData[], reservaImprevistos: number): void
     const contentMap: Record<number, (y: YearData) => string> = {
       1: warmContent,
       2: hipotecaContent,
-      3: cashflowContent(currentImprevistos),
-      4: baseFiscalContent,
+      3: cashflowContent(currentImprevistos, currentHausgeld),
+      4: (y) => baseFiscalContent(y, currentHausgeld),
     };
     const fn = contentMap[col];
     if (fn) showTooltip(fn(y), target);
