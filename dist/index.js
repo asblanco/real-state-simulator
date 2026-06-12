@@ -14838,8 +14838,8 @@ if (ctxRent && ctxCF) {
       initCharts(ctxRent, ctxCF);
       if (lastYears.length)
         updateCharts(lastYears);
-    } catch {
-      console.error("Chart initialization failed");
+    } catch (e) {
+      console.error("Chart initialization failed", e);
     }
   });
 }

@@ -6,7 +6,10 @@ run = "bun install"
 description = "Install dependencies"
 
 [tasks.build]
-run = "bun build src/index.ts --outdir dist"
+run = '''
+  npx tailwindcss -i src/tailwind-input.css -o dist/tailwind.css
+  bun build src/index.ts --outdir dist
+'''
 description = "Bundle TypeScript to dist/index.js"
 depends = ["install"]
 

@@ -23,6 +23,7 @@ jobs:
         with:
           bun-version: latest
       - run: bun install
+      - run: npx tailwindcss -i src/tailwind-input.css -o dist/tailwind.css
       - run: bun test
       - run: bun run build
       - uses: actions/upload-pages-artifact@v3
