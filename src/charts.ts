@@ -40,7 +40,7 @@ function createCharts(): void {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: { title: { display: true, text: t("chart.rental_title") } },
+      plugins: { title: { display: true, text: t("chart.rental_title"), font: { size: 14, weight: "bold" }, color: "#0A2540" } },
     },
   });
 
@@ -61,7 +61,7 @@ function createCharts(): void {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: { title: { display: true, text: t("chart.cashflow_title") } },
+      plugins: { title: { display: true, text: t("chart.cashflow_title"), font: { size: 14, weight: "bold" }, color: "#0A2540" } },
     },
   });
 }

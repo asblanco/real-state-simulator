@@ -1,5 +1,5 @@
 body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #F8F9FA; color: #1F2937; }
-.fin-table th { background-color: #0A2540; color: #FFFFFF; font-weight: 600; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.05em; padding: 12px 10px; }
+.fin-table th { font-weight: 600; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.05em; padding: 12px 10px; }
 .fin-table td { padding: 12px 10px; font-size: 0.8rem; border-bottom: 1px solid #E5E7EB; }
 .fin-table tr:hover { background-color: #F3F4F6 !important; transition: background 0.15s ease; }
 
