@@ -1,6 +1,7 @@
 import type { InputParams, YearData, PurchaseCosts, SummaryData } from "./types";
 import { DEFAULT_PARAMS, HAUSGELD_TOTAL } from "./constants";
 import { computeFlatRatePct } from "./calculator";
+import { getRoiColorClass } from "./roi";
 import { t } from "./i18n";
 
 let tooltipAnchor: HTMLElement | null = null;
@@ -170,7 +171,7 @@ export function renderTable(years: YearData[], reservaImprevistos: number): void
       <td class="text-center text-gray-600"><div class="flex items-center justify-center gap-1">${formatEuro(y.cashflowPreTaxMensual)}<span class="tt" data-col="3">${icon}</span></div></td>
       <td class="text-center text-[#635BFF] font-mono"><div class="flex items-center justify-center gap-1">${formatEuro(y.resultadoFiscalMensual)}<span class="tt" data-col="4">${icon}</span></div></td>
       <td class="text-center text-emerald-700 bg-emerald-50/40 font-medium">+${formatEuro(y.devolucionFiscalMensual)}</td>
-      <td class="text-center bg-blue-50/60 text-[#635BFF] font-extrabold">${formatEuro(y.cashflowNetoPostTaxMensual)}</td>
+      <td class="text-center bg-blue-50/60 font-extrabold ${y.cashflowNetoPostTaxMensual >= 0 ? 'text-green-600' : 'text-orange-600'}">${formatEuro(y.cashflowNetoPostTaxMensual)}</td>
     `;
 
     // Store year data reference for tooltip event delegation
@@ -230,6 +231,13 @@ export function renderSummary(summary: SummaryData, purchaseCosts: PurchaseCosts
   (document.getElementById("kpi-retorno") as HTMLElement).innerText = formatEuro(summary.gananciaNeta);
   const roiDisplay = Number.isFinite(summary.roiAnualizado) ? (summary.roiAnualizado * 100).toFixed(2) + " %" : "0.00 %";
   (document.getElementById("kpi-roi") as HTMLElement).innerText = roiDisplay;
+
+  const roiCard = document.getElementById("kpi-roi-card") as HTMLElement;
+  if (roiCard) {
+    const roi = Number.isFinite(summary.roiAnualizado) ? summary.roiAnualizado : 0;
+    roiCard.className = roiCard.className.replace(/bg-\S+/g, "").trim();
+    roiCard.classList.add(getRoiColorClass(roi));
+  }
 }
 
 export function bindInputs(ids: string[], handler: () => void): void {
