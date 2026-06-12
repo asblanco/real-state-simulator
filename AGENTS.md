@@ -4,10 +4,10 @@ Frontend-only real estate investment simulator. Static HTML + TypeScript, bundle
 
 ## Commands
 
-- `bun install` — install dependencies
-- `bun run build` — bundle TypeScript to `dist/index.js`
-- `bun test` — run tests
-- `bun run dev` — build in watch mode
+- `mise run install` — install dependencies
+- `mise run build` — bundle TypeScript to `dist/index.js`
+- `mise run test` — run tests
+- `mise run dev` — build in watch mode
 
 ## Tech
 
@@ -27,9 +27,3 @@ Frontend-only real estate investment simulator. Static HTML + TypeScript, bundle
 - `src/constants.ts` — fixed constants (tax rates, fees, etc.)
 - `src/__tests__/calculator.test.ts` — unit tests
 - `dist/index.js` — compiled output
-
-## Build
-
-```sh
-bun build src/index.ts --outdir dist
-```
