@@ -51,7 +51,10 @@ function createCharts(): void {
       datasets: [{
         label: t("chart.cashflow_label"),
         data: [],
-        backgroundColor: "#635BFF",
+        backgroundColor: (ctx) => {
+          const val = ctx.parsed?.y ?? 0;
+          return val >= 0 ? "#22c55e" : "#f97316";
+        },
         borderRadius: 4,
       }],
     },
