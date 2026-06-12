@@ -14449,6 +14449,8 @@ var AGENCIA_RATE = 0.0357;
 var AFA_BUILDING_PCT = 0.75;
 var AFA_FLAT_1 = 400;
 var AFA_FLAT_2 = 1000;
+var AFA_RND_YEARS = 28;
+var AFA_RND_RATE = 1 / AFA_RND_YEARS;
 var YEARS = 10;
 var MONTHS_PER_YEAR = 12;
 var DEFAULT_PARAMS = {
@@ -14461,7 +14463,7 @@ var DEFAULT_PARAMS = {
   alquilerInicialParking: 80,
   subidaPct: 0.15,
   inflacionPct: 0.03,
-  afaPct: 0.035
+  afaPct: AFA_RND_RATE
 };
 
 // src/charts.ts
@@ -14633,7 +14635,7 @@ function applyDefaults() {
   setVal("alquiler-parking", p.alquilerInicialParking);
   setVal("subida", p.subidaPct * 100);
   setVal("inflacion", (p.inflacionPct * 100).toFixed(1));
-  setVal("afa", (p.afaPct * 100).toFixed(1));
+  setVal("afa", (p.afaPct * 100).toFixed(2));
   updateDisplayValues(p);
 }
 function formatEuro(val) {
@@ -14667,7 +14669,7 @@ function updateDisplayValues(params) {
   setText("val-alquiler-parking", params.alquilerInicialParking.toLocaleString("de-DE"));
   setText("val-subida", (params.subidaPct * 100).toString());
   setText("val-inflacion", (params.inflacionPct * 100).toString());
-  setText("val-afa", (params.afaPct * 100).toFixed(1));
+  setText("val-afa", (params.afaPct * 100).toFixed(2));
 }
 function renderKPIs(purchaseCosts, params) {
   const precioTotal = params.precio + params.parking;

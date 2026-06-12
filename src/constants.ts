@@ -9,6 +9,8 @@ export const AGENCIA_RATE = 0.0357;
 export const AFA_BUILDING_PCT = 0.75;
 export const AFA_FLAT_1 = 400;
 export const AFA_FLAT_2 = 1000;
+export const AFA_RND_YEARS = 28;
+export const AFA_RND_RATE = 1 / AFA_RND_YEARS; // ~3.5714%
 export const YEARS = 10;
 export const MONTHS_PER_YEAR = 12;
 
@@ -24,5 +26,5 @@ export const DEFAULT_PARAMS: InputParams = {
   alquilerInicialParking: 80,
   subidaPct: 0.15,
   inflacionPct: 0.03,
-  afaPct: 0.035,
+  afaPct: AFA_RND_RATE,
 };

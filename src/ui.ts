@@ -43,7 +43,7 @@ export function applyDefaults(): void {
   setVal("alquiler-parking", p.alquilerInicialParking);
   setVal("subida", p.subidaPct * 100);
   setVal("inflacion", (p.inflacionPct * 100).toFixed(1));
-  setVal("afa", (p.afaPct * 100).toFixed(1));
+  setVal("afa", (p.afaPct * 100).toFixed(2));
   updateDisplayValues(p);
 }
 
@@ -78,7 +78,7 @@ export function updateDisplayValues(params: InputParams): void {
   setText("val-alquiler-parking", (params.alquilerInicialParking).toLocaleString("de-DE"));
   setText("val-subida", (params.subidaPct * 100).toString());
   setText("val-inflacion", (params.inflacionPct * 100).toString());
-  setText("val-afa", (params.afaPct * 100).toFixed(1));
+  setText("val-afa", (params.afaPct * 100).toFixed(2));
 }
 
 export function renderKPIs(purchaseCosts: PurchaseCosts, params: InputParams): void {
