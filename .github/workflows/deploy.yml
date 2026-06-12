@@ -24,6 +24,8 @@ jobs:
           bun-version: latest
       - run: bun install
       - run: npx tailwindcss -i src/tailwind-input.css -o dist/tailwind.css
+        env:
+          NODE_OPTIONS: --no-deprecation
       - run: bun test --path-ignore-patterns='e2e/**'
       - run: bun run build
       - run: |
