@@ -1,0 +1,12 @@
+export const HAUSGELD_NO_TRANSF = 150;
+export const RESERVA_PRIVADA = 40;
+export const TAX_RATE = 0.42;
+export const ITP_RATE = 0.035;
+export const NOTARIO_RATE = 0.02;
+export const AGENCIA_RATE = 0.0357;
+export const AFA_BUILDING_PCT = 0.8;
+export const AFA_RATE = 0.02;
+export const AFA_FLAT_1 = 400;
+export const AFA_FLAT_2 = 1000;
+export const YEARS = 10;
+export const MONTHS_PER_YEAR = 12;
