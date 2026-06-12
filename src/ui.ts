@@ -1,7 +1,7 @@
 import type { InputParams, YearData, PurchaseCosts, SummaryData } from "./types";
 import { DEFAULT_PARAMS } from "./constants";
 import { computeFlatRatePct } from "./calculator";
-import { getRoiColorClass } from "./roi";
+import { getRoiColorClass, getRoiProyectoColorClass } from "./roi";
 import { t } from "./i18n";
 
 let tooltipAnchor: HTMLElement | null = null;
@@ -106,12 +106,19 @@ export function updateDisplayValues(params: InputParams): void {
 
 export function renderKPIs(purchaseCosts: PurchaseCosts, params: InputParams): void {
   const precioTotal = params.precio + params.parking;
+  const costoAdquisicionTotal = purchaseCosts.efectivoTotalNecesario + purchaseCosts.montoFinanciar;
   (document.getElementById("kpi-precio-total") as HTMLElement).innerText = formatEuro(precioTotal);
   (document.getElementById("tt-ek") as HTMLElement).innerText = formatEuro(purchaseCosts.capitalPropioEntrada);
   (document.getElementById("tt-itp") as HTMLElement).innerText = formatEuro(purchaseCosts.costeITP);
   (document.getElementById("tt-notario") as HTMLElement).innerText = formatEuro(purchaseCosts.costeNotario);
   (document.getElementById("tt-agencia") as HTMLElement).innerText = formatEuro(purchaseCosts.costeAgencia);
   (document.getElementById("kpi-efectivo") as HTMLElement).innerText = formatEuro(purchaseCosts.efectivoTotalNecesario);
+  (document.getElementById("kpi-costo-adquisicion") as HTMLElement).innerText = formatEuro(costoAdquisicionTotal);
+  (document.getElementById("tt-costo-precio") as HTMLElement).innerText = formatEuro(precioTotal);
+  (document.getElementById("tt-costo-itp") as HTMLElement).innerText = formatEuro(purchaseCosts.costeITP);
+  (document.getElementById("tt-costo-notario") as HTMLElement).innerText = formatEuro(purchaseCosts.costeNotario);
+  (document.getElementById("tt-costo-agencia") as HTMLElement).innerText = formatEuro(purchaseCosts.costeAgencia);
+  (document.getElementById("tt-costo-total") as HTMLElement).innerText = formatEuro(costoAdquisicionTotal);
 }
 
 function svgIcon(): string {
@@ -224,25 +231,105 @@ export function renderTable(years: YearData[], reservaImprevistos: number, hausg
   }
 }
 
+function gananciaTooltip(summary: SummaryData): string {
+  const baseFiscal = summary.costoAdquisicionTotal - summary.afaAcumulada;
+  const cf = summary.totalCashflowAcumulado;
+  const efectivoInvertido = summary.netoDeLaVenta - summary.gananciaVenta;
+  return `
+    <p class="font-bold border-b border-gray-700 pb-1 mb-1 text-emerald-400">${t("tooltip.desglose_ganancia")}</p>
+    <div class="flex justify-between"><span>${t("tooltip.valor_venta")}:</span><span class="font-mono">${formatEuro(summary.valorPropiedadFutura)}</span></div>
+    <div class="flex justify-between"><span>− ${t("math.deuda_hipoteca")}:</span><span class="font-mono text-red-300">−${formatEuro(summary.deudaRestanteFinal)}</span></div>
+    <div class="flex justify-between font-medium border-b border-gray-800 pb-1"><span>= ${t("tooltip.neto_venta")}:</span><span class="font-mono">${formatEuro(summary.netoDeLaVenta)}</span></div>
+    <div class="flex justify-between"><span>− ${t("tooltip.menos_efectivo")}:</span><span class="font-mono text-red-300">−${formatEuro(efectivoInvertido)}</span></div>
+    <div class="flex justify-between"><span>= ${t("tooltip.ganancia_venta")}:</span><span class="font-mono">${formatEuro(summary.gananciaVenta)}</span></div>
+    <div class="flex justify-between"><span>${t("tooltip.mas_cashflow")}:</span><span class="font-mono ${cf >= 0 ? 'text-green-300' : 'text-red-300'}">${cf >= 0 ? '+' : ''}${formatEuro(cf)}</span></div>
+    <div class="border-t border-gray-700 pt-1 mt-1 flex justify-between font-bold text-emerald-400"><span>${t("tooltip.resultado_final")}:</span><span class="font-mono">${formatEuro(summary.gananciaNeta)}</span></div>
+
+    <p class="font-bold border-b border-gray-700 pb-1 mb-1 mt-2 text-amber-400">${t("tooltip.referencia_fiscal")}</p>
+    <div class="flex justify-between"><span>${t("kpi.costo_adquisicion")}:</span><span class="font-mono">${formatEuro(summary.costoAdquisicionTotal)}</span></div>
+    <div class="flex justify-between"><span>− ${t("math.afa_acumulada")}:</span><span class="font-mono text-red-300">−${formatEuro(summary.afaAcumulada)}</span></div>
+    <div class="flex justify-between"><span>= ${t("tooltip.base_costo")}:</span><span class="font-mono">${formatEuro(baseFiscal)}</span></div>
+    <div class="flex justify-between font-bold text-amber-300"><span>${t("tooltip.ganancia_fiscal")}:</span><span class="font-mono">${formatEuro(summary.gananciaFiscal)}</span></div>`;
+}
+
+function roeTooltip(summary: SummaryData, purchaseCosts: PurchaseCosts): string {
+  return `
+    <p class="font-bold text-[#635BFF] mb-1">${t("tooltip.roe_titulo")}</p>
+    <div class="flex justify-between"><span>${t("kpi.ganancia_neto")}:</span><span class="font-mono">${formatEuro(summary.gananciaNeta)}</span></div>
+    <div class="flex justify-between"><span>÷ ${t("kpi.efectivo_inicial")}:</span><span class="font-mono">${formatEuro(purchaseCosts.efectivoTotalNecesario)}</span></div>
+    <div class="flex justify-between font-bold text-sky-300"><span>${t("tooltip.roe_total")}:</span><span class="font-mono">${(summary.roiCapitalPropioTotal * 100).toFixed(2)} %</span></div>
+    <div class="flex justify-between font-bold text-sky-300"><span>${t("tooltip.roe_cagr")}:</span><span class="font-mono">${(summary.roiAnualizado * 100).toFixed(2)} %</span></div>
+    <div class="border-t border-gray-700 pt-2 mt-2 space-y-1">
+      <p class="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">Leyenda ROI</p>
+      <div class="flex items-center gap-1.5"><span class="inline-block w-2 h-2 rounded-full bg-red-600 shrink-0"></span>${t("tooltip.roi_bajo")} <span class="text-gray-400">&lt; 5%</span></div>
+      <div class="flex items-center gap-1.5"><span class="inline-block w-2 h-2 rounded-full bg-sky-600 shrink-0"></span>${t("tooltip.roi_aceptable")} <span class="text-gray-400">5% – 10%</span></div>
+      <div class="flex items-center gap-1.5"><span class="inline-block w-2 h-2 rounded-full bg-emerald-600 shrink-0"></span>${t("tooltip.roi_excelente")} <span class="text-gray-400">≥ 10%</span></div>
+    </div>
+    <div class="border-t border-gray-700 pt-2 mt-2">
+      <div class="flex justify-between"><span>${t("tooltip.apalancamiento")}:</span><span class="font-mono text-emerald-300">${summary.apalancamiento.toFixed(2)}x</span></div>
+      <div class="text-[10px] text-gray-400 italic mt-1">${t("tooltip.apalancamiento_desc")}</div>
+    </div>`;
+}
+
+function roaTooltip(summary: SummaryData): string {
+  const baseFiscal = summary.costoAdquisicionTotal - summary.afaAcumulada;
+  return `
+    <p class="font-bold text-sky-300 mb-1">${t("tooltip.roa_titulo")}</p>
+    <div class="flex justify-between"><span>${t("tooltip.valor_venta")}:</span><span class="font-mono">${formatEuro(summary.valorPropiedadFutura)}</span></div>
+    <div class="flex justify-between"><span>− (${t("kpi.costo_adquisicion")} − ${t("math.afa_acumulada")}):</span><span class="font-mono text-red-300">−${formatEuro(baseFiscal)}</span></div>
+    <div class="flex justify-between font-medium border-b border-gray-800 pb-1"><span>= ${t("tooltip.ganancia_fiscal")}:</span><span class="font-mono">${formatEuro(summary.gananciaFiscal)}</span></div>
+    <div class="flex justify-between"><span>÷ ${t("kpi.costo_adquisicion")}:</span><span class="font-mono">${formatEuro(summary.costoAdquisicionTotal)}</span></div>
+    <div class="flex justify-between font-bold text-sky-300"><span>${t("tooltip.roa_total")}:</span><span class="font-mono">${(summary.roiProyectoTotal * 100).toFixed(2)} %</span></div>
+    <div class="flex justify-between font-bold text-sky-300"><span>${t("tooltip.roa_cagr")}:</span><span class="font-mono">${(summary.roiProyectoAnualizado * 100).toFixed(2)} %</span></div>
+    <div class="border-t border-gray-700 pt-2 mt-2 space-y-1">
+      <p class="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">Leyenda ROA</p>
+      <div class="flex items-center gap-1.5"><span class="inline-block w-2 h-2 rounded-full bg-red-600 shrink-0"></span>${t("tooltip.roi_bajo")} <span class="text-gray-400">&lt; 2,5%</span></div>
+      <div class="flex items-center gap-1.5"><span class="inline-block w-2 h-2 rounded-full bg-sky-600 shrink-0"></span>${t("tooltip.roi_aceptable")} <span class="text-gray-400">2,5% – 5%</span></div>
+      <div class="flex items-center gap-1.5"><span class="inline-block w-2 h-2 rounded-full bg-emerald-600 shrink-0"></span>${t("tooltip.roi_excelente")} <span class="text-gray-400">≥ 5%</span></div>
+    </div>
+    <div class="text-[10px] text-gray-400 italic mt-2 pt-1 border-t border-gray-700">${t("tooltip.roa_desc")}</div>`;
+}
+
 export function renderSummary(summary: SummaryData, purchaseCosts: PurchaseCosts): void {
-  (document.getElementById("tt-compra-orig") as HTMLElement).innerText = formatEuro(
-    purchaseCosts.efectivoTotalNecesario + purchaseCosts.montoFinanciar,
-  );
-  (document.getElementById("tt-venta-futura") as HTMLElement).innerText = formatEuro(summary.valorPropiedadFutura);
-  (document.getElementById("math-venta") as HTMLElement).innerText = formatEuro(summary.valorPropiedadFutura);
-  (document.getElementById("math-deuda") as HTMLElement).innerText = formatEuro(summary.deudaRestanteFinal);
-  (document.getElementById("math-efectivo") as HTMLElement).innerText = formatEuro(purchaseCosts.efectivoTotalNecesario);
-  (document.getElementById("math-final") as HTMLElement).innerText = formatEuro(summary.gananciaNeta);
+  const ttGanancia = document.getElementById("tt-ganancia-content");
+  if (ttGanancia) ttGanancia.innerHTML = gananciaTooltip(summary);
+
+  const ttRoe = document.getElementById("tt-roe-content");
+  if (ttRoe) ttRoe.innerHTML = roeTooltip(summary, purchaseCosts);
+
+  const ttRoa = document.getElementById("tt-roa-content");
+  if (ttRoa) ttRoa.innerHTML = roaTooltip(summary);
+
   (document.getElementById("kpi-retorno") as HTMLElement).innerText = formatEuro(summary.gananciaNeta);
   const roiDisplay = Number.isFinite(summary.roiAnualizado) ? (summary.roiAnualizado * 100).toFixed(2) + " %" : "0.00 %";
   (document.getElementById("kpi-roi") as HTMLElement).innerText = roiDisplay;
+  (document.getElementById("kpi-roi-total") as HTMLElement).innerText = (summary.roiCapitalPropioTotal * 100).toFixed(2);
 
-  const roiCard = document.getElementById("kpi-roi-card") as HTMLElement;
+  const roaDisplay = Number.isFinite(summary.roiProyectoAnualizado) ? (summary.roiProyectoAnualizado * 100).toFixed(2) + " %" : "0.00 %";
+  (document.getElementById("kpi-roi-proyecto") as HTMLElement).innerText = roaDisplay;
+  (document.getElementById("kpi-roi-proyecto-total") as HTMLElement).innerText = (summary.roiProyectoTotal * 100).toFixed(2);
+
+  const roiCard = document.getElementById("kpi-roi-card");
   if (roiCard) {
     const roi = Number.isFinite(summary.roiAnualizado) ? summary.roiAnualizado : 0;
     roiCard.className = roiCard.className.replace(/bg-\S+/g, "").trim();
     roiCard.classList.add(getRoiColorClass(roi));
   }
+
+  const roaCard = document.getElementById("kpi-roa-card");
+  if (roaCard) {
+    const roa = Number.isFinite(summary.roiProyectoAnualizado) ? summary.roiProyectoAnualizado : 0;
+    roaCard.className = roaCard.className.replace(/bg-\S+/g, "").trim();
+    roaCard.classList.add(getRoiProyectoColorClass(roa));
+  }
+
+  // Math desglose
+  (document.getElementById("math-venta") as HTMLElement).innerText = formatEuro(summary.valorPropiedadFutura);
+  (document.getElementById("math-deuda") as HTMLElement).innerText = formatEuro(summary.deudaRestanteFinal);
+  (document.getElementById("math-costo-adquisicion") as HTMLElement).innerText = formatEuro(summary.costoAdquisicionTotal);
+  (document.getElementById("math-afa-acumulada") as HTMLElement).innerText = formatEuro(summary.afaAcumulada);
+  (document.getElementById("math-efectivo") as HTMLElement).innerText = formatEuro(summary.totalCashflowAcumulado);
+  (document.getElementById("math-final") as HTMLElement).innerText = formatEuro(summary.gananciaNeta);
 }
 
 export function bindInputs(ids: string[], handler: () => void): void {

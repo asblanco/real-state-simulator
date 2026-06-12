@@ -50,4 +50,12 @@ export interface SummaryData {
   gananciaNeta: number;
   capitalTotalFinal: number;
   roiAnualizado: number;
+  costoAdquisicionTotal: number;
+  afaAcumulada: number;
+  gananciaVenta: number;
+  gananciaFiscal: number;
+  roiProyectoAnualizado: number;
+  roiCapitalPropioTotal: number;
+  roiProyectoTotal: number;
+  apalancamiento: number;
 }

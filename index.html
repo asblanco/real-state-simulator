@@ -18,7 +18,7 @@
 <body class="p-4 md:p-8">
 
     <div class="max-w-7xl mx-auto">
-        <!-- Cabecera Nombre Fijo -->
+        <!-- Cabecera -->
         <header class="mb-8 border-b border-gray-200 pb-6 flex items-start justify-between">
             <div>
                 <h1 class="text-3xl font-extrabold text-[#0A2540] tracking-tight" data-i18n="app.title">Simulador de Inversión Inmobiliaria</h1>
@@ -118,14 +118,33 @@
 
             <!-- CONTENIDO DE DASHBOARD (DERECHA) -->
             <div class="lg:col-span-3 space-y-6">
-                <!-- TARJETAS KPI -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <!-- TARJETAS KPI (2 filas de 3) -->
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+
+                    <!-- 1. Precio Total Inmueble -->
                     <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs">
                         <p class="text-xs font-bold text-gray-400 uppercase tracking-wider" data-i18n="kpi.precio_total">Precio Total Inmueble</p>
                         <p id="kpi-precio-total" class="text-xl font-black text-[#0A2540] mt-1">0 €</p>
                     </div>
 
-                    <!-- Efectivo Inicial con Tooltip -->
+                    <!-- 2. Costo Adquisición Total -->
+                    <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs relative group cursor-help">
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center">
+                            <span data-i18n="kpi.costo_adquisicion">Costo Adq. Total</span>
+                            <svg class="w-3.5 h-3.5 ml-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </p>
+                        <p id="kpi-costo-adquisicion" class="text-xl font-black text-[#0A2540] mt-1">0 €</p>
+                        <div class="absolute left-0 top-full mt-2 hidden group-hover:block bg-[#0A2540] text-white text-xs rounded-xl p-4 w-64 shadow-xl z-50 space-y-1.5 pointer-events-none">
+                            <p class="font-bold border-b border-gray-700 pb-1 mb-1 text-[#635BFF]" data-i18n="tooltip.desglose_costo">Desglose del Costo de Adquisición:</p>
+                            <div class="flex justify-between"><span data-i18n="tooltip.costo_precio">Precio (Piso+Parking):</span><span id="tt-costo-precio" class="font-mono">0 €</span></div>
+                            <div class="flex justify-between"><span data-i18n="tooltip.costo_itp">ITP (3,5%):</span><span id="tt-costo-itp" class="font-mono">0 €</span></div>
+                            <div class="flex justify-between"><span data-i18n="tooltip.costo_notario">Notaría (2,0%):</span><span id="tt-costo-notario" class="font-mono">0 €</span></div>
+                            <div class="flex justify-between"><span data-i18n="tooltip.costo_agencia">Agencia (3,57%):</span><span id="tt-costo-agencia" class="font-mono">0 €</span></div>
+                            <div class="border-t border-gray-700 pt-1 mt-1 flex justify-between font-bold text-emerald-400"><span data-i18n="tooltip.costo_total">Total Adquisición:</span><span id="tt-costo-total" class="font-mono">0 €</span></div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Efectivo Inicial con Tooltip -->
                     <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs relative group cursor-help">
                         <p class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center">
                             <span data-i18n="kpi.efectivo_inicial">Efectivo Inicial</span>
@@ -141,41 +160,42 @@
                         </div>
                     </div>
 
-                    <!-- Ganancia Año 10 con Tooltip -->
+                    <!-- 4. Ganancia Año 10 con Tooltip Expandido -->
                     <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs relative group cursor-help">
                         <p class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center">
                             <span data-i18n="kpi.ganancia_neto">Ganancia Neto Año 10</span>
                             <svg class="w-3.5 h-3.5 ml-1 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         </p>
                         <p id="kpi-retorno" class="text-xl font-black text-emerald-600 mt-1">0 €</p>
-                        <div class="absolute left-0 md:right-0 md:left-auto top-full mt-2 hidden group-hover:block bg-[#0A2540] text-white text-xs rounded-xl p-4 w-64 shadow-xl z-50 space-y-1.5 pointer-events-none">
-                            <p class="font-bold border-b border-gray-700 pb-1 mb-1 text-emerald-400" data-i18n="tooltip.tasacion">Tasación de Liquidación:</p>
-                            <div class="flex justify-between font-medium"><span data-i18n="tooltip.precio_adquisicion">Precio de Adquisición:</span><span id="tt-compra-orig" class="font-mono">0 €</span></div>
-                            <div class="flex justify-between font-bold text-emerald-400"><span data-i18n="tooltip.valor_venta">Valor de Venta (A10):</span><span id="tt-venta-futura" class="font-mono">0 €</span></div>
-                            <div class="text-[10px] text-gray-400 pt-1 border-t border-gray-700 mt-1 leading-tight" data-i18n="tooltip.valor_futuro_desc">Valor futuro aplicando la revalorización compuesta seleccionada.</div>
+                        <div id="tt-ganancia-content" class="absolute left-0 md:right-0 md:left-auto top-full mt-2 hidden group-hover:block bg-[#0A2540] text-white text-xs rounded-xl p-4 w-72 shadow-xl z-50 space-y-1.5 pointer-events-none">
                         </div>
                     </div>
 
+                    <!-- 5. ROI Capital Propio (ex-Rendimiento Anual, expandido) -->
                     <div id="kpi-roi-card" class="bg-[#635BFF] p-5 rounded-2xl text-white shadow-xs relative group cursor-help">
                         <p class="text-xs font-bold text-blue-100 uppercase tracking-wider flex items-center">
-                            <span data-i18n="kpi.roi">Rendimiento Anual (ROI)</span>
+                            <span data-i18n="kpi.roi">ROI Capital Propio</span>
                             <svg class="w-3.5 h-3.5 ml-1 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         </p>
-                        <p id="kpi-roi" class="text-xl font-black mt-1">0.00 %</p>
-                        <div class="absolute right-0 top-full mt-2 hidden group-hover:block bg-gray-900 text-white text-xs rounded-xl p-4 w-72 shadow-xl z-50 pointer-events-none leading-relaxed">
-                            <p class="font-bold text-[#635BFF] mb-1" data-i18n="tooltip.etf_title">Comparativa con ETFs</p>
-                            <span data-i18n="tooltip.etf_desc">Muestra el rendimiento anualizado equivalente (CAGR) que tendría que generar un fondo o ETF de acciones sobre tu capital aportado para igualar este beneficio neto inmobiliario.</span>
-                            <div class="border-t border-gray-700 pt-2 mt-2 space-y-1">
-                                <p class="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">Leyenda ROI</p>
-                                <div class="flex items-center gap-1.5"><span class="inline-block w-2 h-2 rounded-full bg-red-600 shrink-0"></span><span data-i18n="tooltip.roi_bajo">Rendimiento bajo</span> <span class="text-gray-400">&lt; 3.5%</span></div>
-                                <div class="flex items-center gap-1.5"><span class="inline-block w-2 h-2 rounded-full bg-sky-600 shrink-0"></span><span data-i18n="tooltip.roi_aceptable">Rendimiento aceptable</span> <span class="text-gray-400">3.5% – 7%</span></div>
-                                <div class="flex items-center gap-1.5"><span class="inline-block w-2 h-2 rounded-full bg-emerald-600 shrink-0"></span><span data-i18n="tooltip.roi_excelente">Rendimiento excelente</span> <span class="text-gray-400">≥ 7%</span></div>
-                            </div>
+                        <p class="text-xl font-black mt-1"><span id="kpi-roi">0.00 %</span> <span class="font-normal text-blue-200/70">| <span id="kpi-roi-total">0,00</span> % total</span></p>
+                        <div id="tt-roe-content" class="absolute right-0 top-full mt-2 hidden group-hover:block bg-gray-900 text-white text-xs rounded-xl p-4 w-72 shadow-xl z-50 pointer-events-none leading-relaxed">
                         </div>
                     </div>
+
+                    <!-- 6. ROI del Proyecto (NEW) -->
+                    <div id="kpi-roa-card" class="bg-[#635BFF] p-5 rounded-2xl text-white shadow-xs relative group cursor-help">
+                        <p class="text-xs font-bold text-blue-100 uppercase tracking-wider flex items-center">
+                            <span data-i18n="kpi.roi_proyecto">ROI del Proyecto</span>
+                            <svg class="w-3.5 h-3.5 ml-1 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </p>
+                        <p class="text-xl font-black mt-1"><span id="kpi-roi-proyecto">0.00 %</span> <span class="font-normal text-blue-200/70">| <span id="kpi-roi-proyecto-total">0,00</span> % total</span></p>
+                        <div id="tt-roa-content" class="absolute right-0 top-full mt-2 hidden group-hover:block bg-gray-900 text-white text-xs rounded-xl p-4 w-72 shadow-xl z-50 pointer-events-none leading-relaxed">
+                        </div>
+                    </div>
+
                 </div>
 
-                <!-- GRÁFICOS REFORZADOS -->
+                <!-- GRÁFICOS -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs h-80">
                         <canvas id="chartRent"></canvas>
@@ -184,15 +204,18 @@
                         <canvas id="chartCashflow"></canvas>
                     </div>
                 </div>
+                <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs h-80">
+                    <canvas id="chartEquity"></canvas>
+                </div>
 
-                <!-- DESGLOSE MATEMÁTICO INFERIOR -->
+                <!-- DESGLOSE MATEMÁTICO (6 columnas) -->
                 <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-xs">
                     <h3 class="text-base font-bold text-[#0A2540] mb-2" data-i18n="section.desglose_titulo">
                         Desglose Matemático de la Liquidación del Activo (Año 10)
                     </h3>
                     <p class="text-xs text-gray-400 mb-4" data-i18n="section.desglose_subtitulo">Valores en tiempo real según la tasa de revalorización compuesta.</p>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
                         <div class="p-3 bg-gray-50 border border-gray-100 rounded-xl">
                             <span class="text-[10px] font-bold text-gray-400 uppercase block tracking-wide" data-i18n="math.valor_venta">1. Valor de Venta Futuro</span>
                             <span id="math-venta" class="text-base font-extrabold text-gray-800 block mt-0.5">0 €</span>
@@ -202,11 +225,19 @@
                             <span id="math-deuda" class="text-base font-extrabold text-gray-800 block mt-0.5">0 €</span>
                         </div>
                         <div class="p-3 bg-gray-50 border border-gray-100 rounded-xl">
-                            <span class="text-[10px] font-bold text-gray-400 uppercase block tracking-wide" data-i18n="math.recuperacion_inversion">3. Recuperación Inversión</span>
+                            <span class="text-[10px] font-bold text-gray-400 uppercase block tracking-wide" data-i18n="math.costo_adquisicion">3. Costo Adq. Total</span>
+                            <span id="math-costo-adquisicion" class="text-base font-extrabold text-gray-800 block mt-0.5">0 €</span>
+                        </div>
+                        <div class="p-3 bg-gray-50 border border-gray-100 rounded-xl">
+                            <span class="text-[10px] font-bold text-gray-400 uppercase block tracking-wide" data-i18n="math.afa_acumulada">4. AfA Acumulada</span>
+                            <span id="math-afa-acumulada" class="text-base font-extrabold text-gray-800 block mt-0.5">0 €</span>
+                        </div>
+                        <div class="p-3 bg-gray-50 border border-gray-100 rounded-xl">
+                            <span class="text-[10px] font-bold text-gray-400 uppercase block tracking-wide" data-i18n="math.recuperacion_inversion">5. Cashflow 10A</span>
                             <span id="math-efectivo" class="text-base font-extrabold text-gray-800 block mt-0.5">0 €</span>
                         </div>
                         <div class="p-3 bg-gray-50 border border-gray-100 rounded-xl">
-                            <span class="text-[10px] font-bold text-gray-400 uppercase block tracking-wide" data-i18n="math.cashflow_venta">4. Cashflow 10A + Venta</span>
+                            <span class="text-[10px] font-bold text-gray-400 uppercase block tracking-wide" data-i18n="math.cashflow_venta">6. Ganancia Neta</span>
                             <span id="math-final" class="text-base font-extrabold text-gray-800 block mt-0.5">0 €</span>
                         </div>
                     </div>

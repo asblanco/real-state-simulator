@@ -1,4 +1,4 @@
-import { initCharts, updateCharts, lastYears, recreateCharts } from "./charts";
+import { initCharts, updateCharts, lastYears, lastParams, recreateCharts } from "./charts";
 import { computePurchaseCosts, calculateAllYears, computeSummary } from "./calculator";
 import { applyDefaults, readInputs, updateDisplayValues, renderKPIs, renderTable, renderSummary, bindInputs, bindToggle } from "./ui";
 import { setLocale, type Locale } from "./i18n";
@@ -28,7 +28,7 @@ function updateCalculations(): void {
   renderTable(years, params.reservaImprevistos, params.hausgeldTotal);
   const summary = computeSummary(params, years, purchaseCosts);
   renderSummary(summary, purchaseCosts);
-  updateCharts(years);
+  updateCharts(years, params);
 }
 
 const inputs = ["precio", "parking", "entrada", "interes", "tilgung", "alquiler", "alquiler-parking", "subida", "inflacion", "afa", "hausgeld", "reserva-imprevistos"];
@@ -40,13 +40,15 @@ updateCalculations();
 
 const chartRentCanvas = document.getElementById("chartRent") as HTMLCanvasElement | null;
 const chartCFCanvas = document.getElementById("chartCashflow") as HTMLCanvasElement | null;
+const chartEquityCanvas = document.getElementById("chartEquity") as HTMLCanvasElement | null;
 const ctxRent = chartRentCanvas?.getContext("2d");
 const ctxCF = chartCFCanvas?.getContext("2d");
-if (ctxRent && ctxCF) {
+const ctxEquity = chartEquityCanvas?.getContext("2d");
+if (ctxRent && ctxCF && ctxEquity) {
   requestAnimationFrame(() => {
     try {
-      initCharts(ctxRent, ctxCF);
-      if (lastYears.length) updateCharts(lastYears);
+      initCharts(ctxRent, ctxCF, ctxEquity);
+      if (lastYears.length) updateCharts(lastYears, lastParams);
     } catch (e) {
       console.error("Chart initialization failed", e);
     }

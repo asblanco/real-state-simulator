@@ -109,5 +109,21 @@ export function computeSummary(params: InputParams, years: YearData[], purchaseC
 
   const capitalTotalFinal = gananciaNeta + purchaseCosts.efectivoTotalNecesario;
   const roiAnualizado = (capitalTotalFinal / purchaseCosts.efectivoTotalNecesario) ** (1 / YEARS) - 1;
-  return { valorPropiedadFutura, deudaRestanteFinal, netoDeLaVenta, totalCashflowAcumulado, gananciaNeta, capitalTotalFinal, roiAnualizado };
+
+  const costoAdquisicionTotal = purchaseCosts.efectivoTotalNecesario + purchaseCosts.montoFinanciar;
+  const afaAnual = (params.precio * AFA_BUILDING_PCT * (1 / params.afaYears));
+  const afaAcumulada = afaAnual * YEARS;
+  const gananciaVenta = netoDeLaVenta - purchaseCosts.efectivoTotalNecesario;
+  const gananciaFiscal = valorPropiedadFutura - (costoAdquisicionTotal - afaAcumulada);
+  const roiCapitalPropioTotal = gananciaNeta / purchaseCosts.efectivoTotalNecesario;
+  const roiProyectoTotal = gananciaFiscal / costoAdquisicionTotal;
+  const roiProyectoAnualizado = (1 + roiProyectoTotal) ** (1 / YEARS) - 1;
+  const apalancamiento = roiCapitalPropioTotal > 0 && roiProyectoTotal > 0 ? roiCapitalPropioTotal / roiProyectoTotal : 0;
+
+  return {
+    valorPropiedadFutura, deudaRestanteFinal, netoDeLaVenta, totalCashflowAcumulado,
+    gananciaNeta, capitalTotalFinal, roiAnualizado,
+    costoAdquisicionTotal, afaAcumulada, gananciaVenta, gananciaFiscal,
+    roiProyectoAnualizado, roiCapitalPropioTotal, roiProyectoTotal, apalancamiento,
+  };
 }
