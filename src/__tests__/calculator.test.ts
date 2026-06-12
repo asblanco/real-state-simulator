@@ -14,6 +14,7 @@ const defaultParams: InputParams = {
   inflacionPct: 0.025,
   afaYears: 28,
   useFlatRate: false,
+  reservaImprevistos: 100,
 };
 
 const KALT_INITIAL = 1125 + 80; // 1205

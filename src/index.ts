@@ -8,13 +8,13 @@ function updateCalculations(): void {
   const purchaseCosts = computePurchaseCosts(params);
   renderKPIs(purchaseCosts, params);
   const years = calculateAllYears(params, purchaseCosts);
-  renderTable(years);
+  renderTable(years, params.reservaImprevistos);
   const summary = computeSummary(params, years, purchaseCosts);
   renderSummary(summary, purchaseCosts);
   updateCharts(years);
 }
 
-const inputs = ["precio", "parking", "entrada", "interes", "tilgung", "alquiler", "alquiler-parking", "subida", "inflacion", "afa"];
+const inputs = ["precio", "parking", "entrada", "interes", "tilgung", "alquiler", "alquiler-parking", "subida", "inflacion", "afa", "reserva-imprevistos"];
 bindInputs(inputs, updateCalculations);
 
 applyDefaults();

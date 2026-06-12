@@ -1,7 +1,7 @@
 export const HAUSGELD_TOTAL = 500;
 export const UMLAGEFAEHIG = 300;
 export const HAUSGELD_NO_TRANSF = HAUSGELD_TOTAL - UMLAGEFAEHIG; // 200
-export const RESERVA_IMPREVISTOS = 100;
+
 export const TAX_RATE = 0.42;
 export const ITP_RATE = 0.035;
 export const NOTARIO_RATE = 0.02;
@@ -26,4 +26,5 @@ export const DEFAULT_PARAMS: InputParams = {
   inflacionPct: 0.03,
   afaYears: AFA_RND_YEARS,
   useFlatRate: false,
+  reservaImprevistos: 100,
 };

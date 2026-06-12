@@ -14441,7 +14441,6 @@ var auto_default = Chart;
 var HAUSGELD_TOTAL = 500;
 var UMLAGEFAEHIG = 300;
 var HAUSGELD_NO_TRANSF = HAUSGELD_TOTAL - UMLAGEFAEHIG;
-var RESERVA_IMPREVISTOS = 100;
 var TAX_RATE = 0.42;
 var ITP_RATE = 0.035;
 var NOTARIO_RATE = 0.02;
@@ -14462,7 +14461,8 @@ var DEFAULT_PARAMS = {
   subidaPct: 0.02,
   inflacionPct: 0.03,
   afaYears: AFA_RND_YEARS,
-  useFlatRate: false
+  useFlatRate: false,
+  reservaImprevistos: 100
 };
 
 // src/charts.ts
@@ -14554,7 +14554,7 @@ function calculateYear(params, year, deudaRestante, cuotaMensualHipoteca) {
   const amortizacionAnual = cuotaAnualTotal - interesesAnuales;
   const amortizacionMensual = amortizacionAnual / MONTHS_PER_YEAR;
   const nuevaDeuda = deudaRestante - amortizacionAnual;
-  const gastosOperativosMensuales = HAUSGELD_TOTAL + RESERVA_IMPREVISTOS;
+  const gastosOperativosMensuales = HAUSGELD_TOTAL + params.reservaImprevistos;
   const cashflowPreTaxMensual = ingresoWarmMensual - cuotaMensualHipoteca - gastosOperativosMensuales;
   const ingresosBrutosAnuales = ingresoWarmMensual * MONTHS_PER_YEAR;
   const afaEdificioAnual = params.precio * AFA_BUILDING_PCT * (1 / params.afaYears);
@@ -14643,7 +14643,7 @@ function applyDefaults() {
   setVal("alquiler-parking", p.alquilerInicialParking);
   setVal("subida", p.subidaPct * 100);
   setVal("inflacion", (p.inflacionPct * 100).toFixed(1));
-  setVal("afa", p.afaYears.toString());
+  setVal("reserva-imprevistos", p.reservaImprevistos.toString());
   updateDisplayValues(p);
   document.getElementById("toggle-subida").checked = p.useFlatRate;
 }
@@ -14666,7 +14666,8 @@ function readInputs() {
     subidaPct: getVal("input-subida") / 100,
     inflacionPct: getVal("input-inflacion") / 100,
     afaYears: getVal("input-afa"),
-    useFlatRate: document.getElementById("toggle-subida").checked
+    useFlatRate: document.getElementById("toggle-subida").checked,
+    reservaImprevistos: getVal("input-reserva-imprevistos")
   };
 }
 function updateDisplayValues(params) {
@@ -14696,6 +14697,7 @@ function updateDisplayValues(params) {
   setText("val-inflacion", (params.inflacionPct * 100).toString());
   setText("val-afa", params.afaYears.toString());
   setText("val-afa-rate", `(${(100 / params.afaYears).toFixed(2)}%)`);
+  setText("val-reserva-imprevistos", params.reservaImprevistos.toString());
 }
 function renderKPIs(purchaseCosts, params) {
   const precioTotal = params.precio + params.parking;
@@ -14717,13 +14719,13 @@ function warmContent(y) {
     <div class="flex justify-between"><span>Umlage (Hausgeld+Rückl.):</span><span>+${formatEuro(y.umlageMensual)}</span></div>
     <div class="text-[9px] text-gray-400 pt-0.5 italic">Aplicado factor de escala: x${y.factorSubida.toFixed(2)}</div>`;
 }
-function cashflowContent(y) {
-  return `
+function cashflowContent(imprevistos2) {
+  return (y) => `
     <p class="font-bold text-blue-300 border-b border-gray-700 pb-0.5">Cálculo Cashflow Bruto:</p>
     <div class="flex justify-between"><span>Renta Warm:</span><span class="text-green-300">+${formatEuro(y.ingresoWarmMensual)}</span></div>
     <div class="flex justify-between"><span>− Hipoteca:</span><span class="text-red-300">-${formatEuro(y.hipotecaMensual)}</span></div>
     <div class="flex justify-between"><span>− Hausgeld:</span><span class="text-red-300">-${HAUSGELD_TOTAL} €</span></div>
-    <div class="flex justify-between"><span>− Imprevistos:</span><span class="text-red-300">-100 €</span></div>
+    <div class="flex justify-between"><span>− Imprevistos:</span><span class="text-red-300">-${imprevistos2} €</span></div>
     <div class="border-t border-gray-700 pt-0.5 mt-0.5 flex justify-between font-bold"><span>Cashflow Bruto:</span><span>${formatEuro(y.cashflowPreTaxMensual)}</span></div>`;
 }
 function hipotecaContent(y) {
@@ -14746,7 +14748,7 @@ function ahorroContent(y) {
     <div class="pl-2 text-gray-300">Ahorro = (−Base × 42% Tasa) / 12</div>
     <div class="flex justify-between border-t border-gray-700 pt-1 mt-1"><span>Ahorro Fiscal:</span><span class="text-emerald-300">+${formatEuro(y.devolucionFiscalMensual)}</span></div>`;
 }
-function renderTable(years) {
+function renderTable(years, reservaImprevistos) {
   const tbody = document.getElementById("tabla-proyeccion-body");
   tbody.innerHTML = "";
   for (const y of years) {
@@ -14776,7 +14778,7 @@ function renderTable(years) {
       return;
     const contentMap = {
       1: warmContent,
-      2: cashflowContent,
+      2: cashflowContent(imprevistos),
       3: hipotecaContent,
       4: baseFiscalContent,
       5: ahorroContent
@@ -14818,12 +14820,12 @@ function updateCalculations() {
   const purchaseCosts = computePurchaseCosts(params);
   renderKPIs(purchaseCosts, params);
   const years = calculateAllYears(params, purchaseCosts);
-  renderTable(years);
+  renderTable(years, params.reservaImprevistos);
   const summary = computeSummary(params, years, purchaseCosts);
   renderSummary(summary, purchaseCosts);
   updateCharts(years);
 }
-var inputs = ["precio", "parking", "entrada", "interes", "tilgung", "alquiler", "alquiler-parking", "subida", "inflacion", "afa"];
+var inputs = ["precio", "parking", "entrada", "interes", "tilgung", "alquiler", "alquiler-parking", "subida", "inflacion", "afa", "reserva-imprevistos"];
 bindInputs(inputs, updateCalculations);
 applyDefaults();
 bindToggle(updateCalculations);

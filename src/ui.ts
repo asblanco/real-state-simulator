@@ -44,7 +44,7 @@ export function applyDefaults(): void {
   setVal("alquiler-parking", p.alquilerInicialParking);
   setVal("subida", p.subidaPct * 100);
   setVal("inflacion", (p.inflacionPct * 100).toFixed(1));
-  setVal("afa", p.afaYears.toString());
+  setVal("reserva-imprevistos", p.reservaImprevistos.toString());
   updateDisplayValues(p);
   (document.getElementById("toggle-subida") as HTMLInputElement).checked = p.useFlatRate;
 }
@@ -71,6 +71,7 @@ export function readInputs(): InputParams {
     inflacionPct: getVal("input-inflacion") / 100,
     afaYears: getVal("input-afa"),
     useFlatRate: (document.getElementById("toggle-subida") as HTMLInputElement).checked,
+    reservaImprevistos: getVal("input-reserva-imprevistos"),
   };
 }
 
@@ -99,6 +100,7 @@ export function updateDisplayValues(params: InputParams): void {
   setText("val-inflacion", (params.inflacionPct * 100).toString());
   setText("val-afa", params.afaYears.toString());
   setText("val-afa-rate", `(${(100 / params.afaYears).toFixed(2)}%)`);
+  setText("val-reserva-imprevistos", params.reservaImprevistos.toString());
 }
 
 export function renderKPIs(purchaseCosts: PurchaseCosts, params: InputParams): void {
@@ -124,13 +126,13 @@ function warmContent(y: YearData): string {
     <div class="text-[9px] text-gray-400 pt-0.5 italic">Aplicado factor de escala: x${y.factorSubida.toFixed(2)}</div>`;
 }
 
-function cashflowContent(y: YearData): string {
-  return `
+function cashflowContent(imprevistos: number): (y: YearData) => string {
+  return (y: YearData) => `
     <p class="font-bold text-blue-300 border-b border-gray-700 pb-0.5">Cálculo Cashflow Bruto:</p>
     <div class="flex justify-between"><span>Renta Warm:</span><span class="text-green-300">+${formatEuro(y.ingresoWarmMensual)}</span></div>
     <div class="flex justify-between"><span>− Hipoteca:</span><span class="text-red-300">-${formatEuro(y.hipotecaMensual)}</span></div>
     <div class="flex justify-between"><span>− Hausgeld:</span><span class="text-red-300">-${HAUSGELD_TOTAL} €</span></div>
-    <div class="flex justify-between"><span>− Imprevistos:</span><span class="text-red-300">-100 €</span></div>
+    <div class="flex justify-between"><span>− Imprevistos:</span><span class="text-red-300">-${imprevistos} €</span></div>
     <div class="border-t border-gray-700 pt-0.5 mt-0.5 flex justify-between font-bold"><span>Cashflow Bruto:</span><span>${formatEuro(y.cashflowPreTaxMensual)}</span></div>`;
 }
 
@@ -157,7 +159,7 @@ function ahorroContent(y: YearData): string {
     <div class="flex justify-between border-t border-gray-700 pt-1 mt-1"><span>Ahorro Fiscal:</span><span class="text-emerald-300">+${formatEuro(y.devolucionFiscalMensual)}</span></div>`;
 }
 
-export function renderTable(years: YearData[]): void {
+export function renderTable(years: YearData[], reservaImprevistos: number): void {
   const tbody = document.getElementById("tabla-proyeccion-body") as HTMLElement;
   tbody.innerHTML = "";
   for (const y of years) {
@@ -191,7 +193,7 @@ export function renderTable(years: YearData[]): void {
 
     const contentMap: Record<number, (y: YearData) => string> = {
       1: warmContent,
-      2: cashflowContent,
+      2: cashflowContent(imprevistos),
       3: hipotecaContent,
       4: baseFiscalContent,
       5: ahorroContent,

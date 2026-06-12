@@ -10,6 +10,7 @@ export interface InputParams {
   inflacionPct: number;
   afaYears: number;
   useFlatRate: boolean;
+  reservaImprevistos: number;
 }
 
 export interface YearData {

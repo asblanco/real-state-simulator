@@ -1,7 +1,6 @@
 import type { InputParams, YearData, PurchaseCosts, SummaryData } from "./types";
 import {
   HAUSGELD_TOTAL,
-  RESERVA_IMPREVISTOS,
   TAX_RATE,
   ITP_RATE,
   NOTARIO_RATE,
@@ -57,7 +56,7 @@ export function calculateYear(
   const amortizacionMensual = amortizacionAnual / MONTHS_PER_YEAR;
   const nuevaDeuda = deudaRestante - amortizacionAnual;
 
-  const gastosOperativosMensuales = HAUSGELD_TOTAL + RESERVA_IMPREVISTOS;
+  const gastosOperativosMensuales = HAUSGELD_TOTAL + params.reservaImprevistos;
   const cashflowPreTaxMensual = ingresoWarmMensual - cuotaMensualHipoteca - gastosOperativosMensuales;
 
   const ingresosBrutosAnuales = ingresoWarmMensual * MONTHS_PER_YEAR;
