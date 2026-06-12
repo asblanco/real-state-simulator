@@ -1,0 +1,96 @@
+{
+  "app.title": "Real Estate Investment Simulator",
+  "app.subtitle": "Asset calculation with annual scaling and 10-year tax projection.",
+
+  "panel.variables": "Variables",
+  "section.inmueble": "Property & Financing",
+  "section.alquiler": "Rental",
+
+  "slider.precio_piso": "Apartment Price:",
+  "slider.precio_parking": "Parking Price:",
+  "slider.entrada": "Down Payment (Equity):",
+  "slider.interes": "Mortgage Interest Rate:",
+  "slider.tilgung": "Repayment Rate:",
+  "slider.revalorizacion": "Annual Appreciation:",
+  "slider.alquiler_piso": "Initial Apartment Rent:",
+  "slider.alquiler_parking": "Initial Parking Rent:",
+  "slider.subida_anual": "Annual Increase:",
+  "slider.depreciacion": "Depreciation (Years):",
+  "slider.anos": "years",
+  "slider.reserva_imprevistos": "Contingency Reserve:",
+
+  "kpi.precio_total": "Total Property Price",
+  "kpi.efectivo_inicial": "Initial Cash Outlay",
+  "kpi.ganancia_neto": "Net Gain Year 10",
+  "kpi.roi": "Annual Return (ROI)",
+
+  "tooltip.desglose_fondos": "Fund Breakdown:",
+  "tooltip.entrada_pura": "Down Payment:",
+  "tooltip.impuestos": "Taxes (ITP 3.5%):",
+  "tooltip.notaria": "Notary & Registry (2.0%):",
+  "tooltip.agencia": "Agency (3.57%):",
+  "tooltip.tasacion": "Liquidation Valuation:",
+  "tooltip.precio_adquisicion": "Purchase Price:",
+  "tooltip.valor_venta": "Sale Value (Y10):",
+  "tooltip.valor_futuro_desc": "Future value based on the selected compound appreciation rate.",
+  "tooltip.etf_title": "ETF Comparison",
+  "tooltip.etf_desc": "Shows the equivalent annualized return (CAGR) a stock fund or ETF would need to generate on your invested capital to match this net real estate profit.",
+
+  "section.desglose_titulo": "Mathematical Breakdown of Asset Liquidation (Year 10)",
+  "section.desglose_subtitulo": "Real-time values based on the compound appreciation rate.",
+
+  "math.valor_venta": "1. Future Sale Value",
+  "math.deuda_hipoteca": "2. Mortgage Debt",
+  "math.recuperacion_inversion": "3. Investment Recovery",
+  "math.cashflow_venta": "4. 10Y Cashflow + Sale",
+
+  "section.tabla_titulo": "2. Real Estate Development & Tax Optimization Table",
+  "section.tabla_subtitulo": "Monthly breakdown of progressive depreciation against taxable income savings.",
+
+  "toggle.compuesto": "Compound",
+  "toggle.lineal": "Linear",
+
+  "table.anno": "Year",
+  "table.alquiler_warm": "Warm Rent",
+  "table.hipoteca": "Mortgage (Total)",
+  "table.cashflow_bruto": "Gross Cashflow",
+  "table.base_fiscal": "Tax Base",
+  "table.ahorro_fiscal": "Tax Savings",
+  "table.neto_posttax": "Net Post-Tax",
+
+  "chart.rental_label": "Monthly Warm Rent (€)",
+  "chart.rental_title": "Scaled Monthly Warm Rent (Apartment + Parking + Umlage)",
+  "chart.cashflow_label": "Monthly Post-Tax Cashflow (€)",
+  "chart.cashflow_title": "Net Monthly Cash Flow (After-Tax)",
+
+  "chart.axis_prefix": "Year ",
+
+  "ui.flat_format": "€/month",
+  "ui.flat_format_active": "€/month — active",
+
+  "tooltip.warm_titulo": "Warm Rent Composition:",
+  "tooltip.warm_piso": "Apartment Rent:",
+  "tooltip.warm_parking": "Parking Rent:",
+  "tooltip.warm_umlage": "Umlage (HOA+Reserve):",
+  "tooltip.warm_factor": "Applied scale factor: x",
+
+  "tooltip.cashflow_titulo": "Gross Cashflow Calculation:",
+  "tooltip.cashflow_renta": "Warm Rent:",
+  "tooltip.cashflow_hipoteca": "− Mortgage:",
+  "tooltip.cashflow_hausgeld": "− HOA Fee:",
+  "tooltip.cashflow_imprevistos": "− Contingency:",
+  "tooltip.cashflow_resultado": "Gross Cashflow:",
+
+  "tooltip.hipoteca_titulo": "Mortgage Breakdown:",
+  "tooltip.hipoteca_intereses": "Interest:",
+  "tooltip.hipoteca_amortizacion": "Repayment:",
+
+  "tooltip.fiscal_titulo": "Monthly Tax Base:",
+  "tooltip.fiscal_formula": "= Warm Income − Interest − Depr. − HOA",
+  "tooltip.fiscal_resultado": "Tax Base:",
+
+  "tooltip.ahorro_titulo": "Tax Savings Calculation:",
+  "tooltip.ahorro_condicion": "If Tax Base < 0:",
+  "tooltip.ahorro_formula": "Savings = (−Base × 42% Rate) / 12",
+  "tooltip.ahorro_resultado": "Tax Savings:"
+}

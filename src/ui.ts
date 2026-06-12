@@ -1,6 +1,7 @@
 import type { InputParams, YearData, PurchaseCosts, SummaryData } from "./types";
 import { DEFAULT_PARAMS, HAUSGELD_TOTAL } from "./constants";
 import { computeFlatRatePct } from "./calculator";
+import { t } from "./i18n";
 
 let tooltipAnchor: HTMLElement | null = null;
 let tooltipListenersAttached = false;
@@ -90,15 +91,8 @@ export function updateDisplayValues(params: InputParams): void {
   const base = params.alquilerInicialPiso + params.alquilerInicialParking;
   const flatX = p === 0 ? 0 : (base * ((1 + p) ** 10 - 1) / p - 10 * base) / 45;
   setText("val-subida", (p * 100).toString());
-  if (params.useFlatRate) {
-    setText("val-subida-flat", `(~${Math.round(flatX)}€/mes año — activo)`);
-    setText("label-compuesto", "Compuesto");
-    setText("label-lineal", "Lineal");
-  } else {
-    setText("val-subida-flat", `(~${Math.round(flatX)}€/mes año)`);
-    setText("label-compuesto", "Compuesto");
-    setText("label-lineal", "Lineal");
-  }
+  const suffix = params.useFlatRate ? t("ui.flat_format_active") : t("ui.flat_format");
+  setText("val-subida-flat", `(~${Math.round(flatX)}${suffix})`);
   setText("val-inflacion", (params.inflacionPct * 100).toString());
   setText("val-afa", params.afaYears.toString());
   setText("val-afa-rate", `(${(100 / params.afaYears).toFixed(2)}%)`);
@@ -121,44 +115,44 @@ function svgIcon(): string {
 
 function warmContent(y: YearData): string {
   return `
-    <p class="font-bold text-blue-300 border-b border-gray-700 pb-0.5">Composición Renta Warm:</p>
-    <div class="flex justify-between"><span>Alquiler Piso:</span><span>${formatEuro(y.mensualPiso)}</span></div>
-    <div class="flex justify-between"><span>Alquiler Parking:</span><span>${formatEuro(y.mensualParking)}</span></div>
-    <div class="flex justify-between"><span>Umlage (Hausgeld+Rückl.):</span><span>+${formatEuro(y.umlageMensual)}</span></div>
-    <div class="text-[9px] text-gray-400 pt-0.5 italic">Aplicado factor de escala: x${y.factorSubida.toFixed(2)}</div>`;
+    <p class="font-bold text-blue-300 border-b border-gray-700 pb-0.5">${t("tooltip.warm_titulo")}</p>
+    <div class="flex justify-between"><span>${t("tooltip.warm_piso")}</span><span>${formatEuro(y.mensualPiso)}</span></div>
+    <div class="flex justify-between"><span>${t("tooltip.warm_parking")}</span><span>${formatEuro(y.mensualParking)}</span></div>
+    <div class="flex justify-between"><span>${t("tooltip.warm_umlage")}</span><span>+${formatEuro(y.umlageMensual)}</span></div>
+    <div class="text-[9px] text-gray-400 pt-0.5 italic">${t("tooltip.warm_factor")}${y.factorSubida.toFixed(2)}</div>`;
 }
 
 function cashflowContent(imprevistos: number): (y: YearData) => string {
   return (y: YearData) => `
-    <p class="font-bold text-blue-300 border-b border-gray-700 pb-0.5">Cálculo Cashflow Bruto:</p>
-    <div class="flex justify-between"><span>Renta Warm:</span><span class="text-green-300">+${formatEuro(y.ingresoWarmMensual)}</span></div>
-    <div class="flex justify-between"><span>− Hipoteca:</span><span class="text-red-300">-${formatEuro(y.hipotecaMensual)}</span></div>
-    <div class="flex justify-between"><span>− Hausgeld:</span><span class="text-red-300">-${HAUSGELD_TOTAL} €</span></div>
-    <div class="flex justify-between"><span>− Imprevistos:</span><span class="text-red-300">-${imprevistos} €</span></div>
-    <div class="border-t border-gray-700 pt-0.5 mt-0.5 flex justify-between font-bold"><span>Cashflow Bruto:</span><span>${formatEuro(y.cashflowPreTaxMensual)}</span></div>`;
+    <p class="font-bold text-blue-300 border-b border-gray-700 pb-0.5">${t("tooltip.cashflow_titulo")}</p>
+    <div class="flex justify-between"><span>${t("tooltip.cashflow_renta")}</span><span class="text-green-300">+${formatEuro(y.ingresoWarmMensual)}</span></div>
+    <div class="flex justify-between"><span>${t("tooltip.cashflow_hipoteca")}</span><span class="text-red-300">-${formatEuro(y.hipotecaMensual)}</span></div>
+    <div class="flex justify-between"><span>${t("tooltip.cashflow_hausgeld")}</span><span class="text-red-300">-${HAUSGELD_TOTAL} €</span></div>
+    <div class="flex justify-between"><span>${t("tooltip.cashflow_imprevistos")}</span><span class="text-red-300">-${imprevistos} €</span></div>
+    <div class="border-t border-gray-700 pt-0.5 mt-0.5 flex justify-between font-bold"><span>${t("tooltip.cashflow_resultado")}</span><span>${formatEuro(y.cashflowPreTaxMensual)}</span></div>`;
 }
 
 function hipotecaContent(y: YearData): string {
   return `
-    <p class="font-bold text-blue-300 border-b border-gray-700 pb-0.5">Desglose Hipoteca:</p>
-    <div class="flex justify-between"><span>Intereses (Zins):</span><span class="text-red-300">${formatEuro(y.interesesMensuales)}</span></div>
-    <div class="flex justify-between"><span>Amortización (Tilgung):</span><span class="text-emerald-300">${formatEuro(y.amortizacionMensual)}</span></div>`;
+    <p class="font-bold text-blue-300 border-b border-gray-700 pb-0.5">${t("tooltip.hipoteca_titulo")}</p>
+    <div class="flex justify-between"><span>${t("tooltip.hipoteca_intereses")}</span><span class="text-red-300">${formatEuro(y.interesesMensuales)}</span></div>
+    <div class="flex justify-between"><span>${t("tooltip.hipoteca_amortizacion")}</span><span class="text-emerald-300">${formatEuro(y.amortizacionMensual)}</span></div>`;
 }
 
 function baseFiscalContent(y: YearData): string {
   return `
-    <p class="font-bold text-amber-300 border-b border-gray-700 pb-0.5">Base Fiscal Mensual:</p>
-    <div class="text-gray-300">= Ingresos Warm − Intereses − AfA − Hausgeld</div>
+    <p class="font-bold text-amber-300 border-b border-gray-700 pb-0.5">${t("tooltip.fiscal_titulo")}</p>
+    <div class="text-gray-300">${t("tooltip.fiscal_formula")}</div>
     <div class="text-gray-300">= ${formatEuro(y.ingresoWarmMensual)} − ${formatEuro(y.interesesMensuales)} − ${formatEuro(y.afaMensual)} − ${HAUSGELD_TOTAL}</div>
-    <div class="border-t border-gray-700 pt-1 mt-1 flex justify-between font-bold"><span>Base Fiscal:</span><span class="text-amber-300">${formatEuro(y.resultadoFiscalMensual)}</span></div>`;
+    <div class="border-t border-gray-700 pt-1 mt-1 flex justify-between font-bold"><span>${t("tooltip.fiscal_resultado")}</span><span class="text-amber-300">${formatEuro(y.resultadoFiscalMensual)}</span></div>`;
 }
 
 function ahorroContent(y: YearData): string {
   return `
-    <p class="font-bold text-emerald-300 border-b border-gray-700 pb-0.5">Cálculo Ahorro Fiscal:</p>
-    <div class="text-gray-300">Si Base Fiscal &lt; 0:</div>
-    <div class="pl-2 text-gray-300">Ahorro = (−Base × 42% Tasa) / 12</div>
-    <div class="flex justify-between border-t border-gray-700 pt-1 mt-1"><span>Ahorro Fiscal:</span><span class="text-emerald-300">+${formatEuro(y.devolucionFiscalMensual)}</span></div>`;
+    <p class="font-bold text-emerald-300 border-b border-gray-700 pb-0.5">${t("tooltip.ahorro_titulo")}</p>
+    <div class="text-gray-300">${t("tooltip.ahorro_condicion")}</div>
+    <div class="pl-2 text-gray-300">${t("tooltip.ahorro_formula")}</div>
+    <div class="flex justify-between border-t border-gray-700 pt-1 mt-1"><span>${t("tooltip.ahorro_resultado")}</span><span class="text-emerald-300">+${formatEuro(y.devolucionFiscalMensual)}</span></div>`;
 }
 
 export function renderTable(years: YearData[], reservaImprevistos: number): void {

@@ -14465,17 +14465,304 @@ var DEFAULT_PARAMS = {
   reservaImprevistos: 100
 };
 
+// src/locales/es.json
+var es_default = {
+  "app.title": "Simulador de Inversión Inmobiliaria",
+  "app.subtitle": "Cálculo patrimonial con escalonamiento anual y proyección fiscal a 10 años.",
+  "panel.variables": "Variables",
+  "section.inmueble": "Inmueble y Financiación",
+  "section.alquiler": "Alquiler",
+  "slider.precio_piso": "Precio Piso:",
+  "slider.precio_parking": "Precio Parking:",
+  "slider.entrada": "Entrada (Eigenkapital):",
+  "slider.interes": "Interés Hipoteca (Zins):",
+  "slider.tilgung": "Amortización (Tilgung):",
+  "slider.revalorizacion": "Revalorización Anual Inmueble:",
+  "slider.alquiler_piso": "Alquiler Inicial Piso:",
+  "slider.alquiler_parking": "Alquiler Inicial Parking:",
+  "slider.subida_anual": "Subida Anual:",
+  "slider.depreciacion": "Depreciación (Años):",
+  "slider.anos": "años",
+  "slider.reserva_imprevistos": "Reserva Imprevistos:",
+  "kpi.precio_total": "Precio Total Inmueble",
+  "kpi.efectivo_inicial": "Efectivo Inicial",
+  "kpi.ganancia_neto": "Ganancia Neto Año 10",
+  "kpi.roi": "Rendimiento Anual (ROI)",
+  "tooltip.desglose_fondos": "Desglose de Fondos:",
+  "tooltip.entrada_pura": "Entrada pura:",
+  "tooltip.impuestos": "Impuestos (ITP 3.5%):",
+  "tooltip.notaria": "Notaría y Reg. (2.0%):",
+  "tooltip.agencia": "Agencia (3.57%):",
+  "tooltip.tasacion": "Tasación de Liquidación:",
+  "tooltip.precio_adquisicion": "Precio de Adquisición:",
+  "tooltip.valor_venta": "Valor de Venta (A10):",
+  "tooltip.valor_futuro_desc": "Valor futuro aplicando la revalorización compuesta seleccionada.",
+  "tooltip.etf_title": "Comparativa con ETFs",
+  "tooltip.etf_desc": "Muestra el rendimiento anualizado equivalente (CAGR) que tendría que generar un fondo o ETF de acciones sobre tu capital aportado para igualar este beneficio neto inmobiliario.",
+  "section.desglose_titulo": "Desglose Matemático de la Liquidación del Activo (Año 10)",
+  "section.desglose_subtitulo": "Valores en tiempo real según la tasa de revalorización compuesta.",
+  "math.valor_venta": "1. Valor de Venta Futuro",
+  "math.deuda_hipoteca": "2. Deuda Hipoteca",
+  "math.recuperacion_inversion": "3. Recuperación Inversión",
+  "math.cashflow_venta": "4. Cashflow 10A + Venta",
+  "section.tabla_titulo": "2. Cuadro de Desarrollo Inmobiliario y Optimización Fiscal",
+  "section.tabla_subtitulo": "Desglose mensual de amortización progresiva frente al ahorro de la base imponible del Finanzamt.",
+  "toggle.compuesto": "Compuesto",
+  "toggle.lineal": "Lineal",
+  "table.anno": "Año",
+  "table.alquiler_warm": "Alquiler Warm",
+  "table.hipoteca": "Hipoteca (Total)",
+  "table.cashflow_bruto": "Cashflow Bruto",
+  "table.base_fiscal": "Base Fiscal",
+  "table.ahorro_fiscal": "Ahorro Fiscal",
+  "table.neto_posttax": "Neto Post-Tax",
+  "chart.rental_label": "Renta Warm Mensual (€)",
+  "chart.rental_title": "Renta Warm Mensual Escalada (Piso + Parking + Umlage)",
+  "chart.cashflow_label": "Cashflow Mensual Post-Tax (€)",
+  "chart.cashflow_title": "Flujo Líquido Neto Mensual (Post-Impuestos)",
+  "chart.axis_prefix": "Año ",
+  "ui.flat_format": "€/mes año",
+  "ui.flat_format_active": "€/mes año — activo",
+  "tooltip.warm_titulo": "Composición Renta Warm:",
+  "tooltip.warm_piso": "Alquiler Piso:",
+  "tooltip.warm_parking": "Alquiler Parking:",
+  "tooltip.warm_umlage": "Umlage (Hausgeld+Rückl.):",
+  "tooltip.warm_factor": "Aplicado factor de escala: x",
+  "tooltip.cashflow_titulo": "Cálculo Cashflow Bruto:",
+  "tooltip.cashflow_renta": "Renta Warm:",
+  "tooltip.cashflow_hipoteca": "− Hipoteca:",
+  "tooltip.cashflow_hausgeld": "− Hausgeld:",
+  "tooltip.cashflow_imprevistos": "− Imprevistos:",
+  "tooltip.cashflow_resultado": "Cashflow Bruto:",
+  "tooltip.hipoteca_titulo": "Desglose Hipoteca:",
+  "tooltip.hipoteca_intereses": "Intereses (Zins):",
+  "tooltip.hipoteca_amortizacion": "Amortización (Tilgung):",
+  "tooltip.fiscal_titulo": "Base Fiscal Mensual:",
+  "tooltip.fiscal_formula": "= Ingresos Warm − Intereses − AfA − Hausgeld",
+  "tooltip.fiscal_resultado": "Base Fiscal:",
+  "tooltip.ahorro_titulo": "Cálculo Ahorro Fiscal:",
+  "tooltip.ahorro_condicion": "Si Base Fiscal < 0:",
+  "tooltip.ahorro_formula": "Ahorro = (−Base × 42% Tasa) / 12",
+  "tooltip.ahorro_resultado": "Ahorro Fiscal:"
+};
+
+// src/locales/en.json
+var en_default = {
+  "app.title": "Real Estate Investment Simulator",
+  "app.subtitle": "Asset calculation with annual scaling and 10-year tax projection.",
+  "panel.variables": "Variables",
+  "section.inmueble": "Property & Financing",
+  "section.alquiler": "Rental",
+  "slider.precio_piso": "Apartment Price:",
+  "slider.precio_parking": "Parking Price:",
+  "slider.entrada": "Down Payment (Equity):",
+  "slider.interes": "Mortgage Interest Rate:",
+  "slider.tilgung": "Repayment Rate:",
+  "slider.revalorizacion": "Annual Appreciation:",
+  "slider.alquiler_piso": "Initial Apartment Rent:",
+  "slider.alquiler_parking": "Initial Parking Rent:",
+  "slider.subida_anual": "Annual Increase:",
+  "slider.depreciacion": "Depreciation (Years):",
+  "slider.anos": "years",
+  "slider.reserva_imprevistos": "Contingency Reserve:",
+  "kpi.precio_total": "Total Property Price",
+  "kpi.efectivo_inicial": "Initial Cash Outlay",
+  "kpi.ganancia_neto": "Net Gain Year 10",
+  "kpi.roi": "Annual Return (ROI)",
+  "tooltip.desglose_fondos": "Fund Breakdown:",
+  "tooltip.entrada_pura": "Down Payment:",
+  "tooltip.impuestos": "Taxes (ITP 3.5%):",
+  "tooltip.notaria": "Notary & Registry (2.0%):",
+  "tooltip.agencia": "Agency (3.57%):",
+  "tooltip.tasacion": "Liquidation Valuation:",
+  "tooltip.precio_adquisicion": "Purchase Price:",
+  "tooltip.valor_venta": "Sale Value (Y10):",
+  "tooltip.valor_futuro_desc": "Future value based on the selected compound appreciation rate.",
+  "tooltip.etf_title": "ETF Comparison",
+  "tooltip.etf_desc": "Shows the equivalent annualized return (CAGR) a stock fund or ETF would need to generate on your invested capital to match this net real estate profit.",
+  "section.desglose_titulo": "Mathematical Breakdown of Asset Liquidation (Year 10)",
+  "section.desglose_subtitulo": "Real-time values based on the compound appreciation rate.",
+  "math.valor_venta": "1. Future Sale Value",
+  "math.deuda_hipoteca": "2. Mortgage Debt",
+  "math.recuperacion_inversion": "3. Investment Recovery",
+  "math.cashflow_venta": "4. 10Y Cashflow + Sale",
+  "section.tabla_titulo": "2. Real Estate Development & Tax Optimization Table",
+  "section.tabla_subtitulo": "Monthly breakdown of progressive depreciation against taxable income savings.",
+  "toggle.compuesto": "Compound",
+  "toggle.lineal": "Linear",
+  "table.anno": "Year",
+  "table.alquiler_warm": "Warm Rent",
+  "table.hipoteca": "Mortgage (Total)",
+  "table.cashflow_bruto": "Gross Cashflow",
+  "table.base_fiscal": "Tax Base",
+  "table.ahorro_fiscal": "Tax Savings",
+  "table.neto_posttax": "Net Post-Tax",
+  "chart.rental_label": "Monthly Warm Rent (€)",
+  "chart.rental_title": "Scaled Monthly Warm Rent (Apartment + Parking + Umlage)",
+  "chart.cashflow_label": "Monthly Post-Tax Cashflow (€)",
+  "chart.cashflow_title": "Net Monthly Cash Flow (After-Tax)",
+  "chart.axis_prefix": "Year ",
+  "ui.flat_format": "€/month",
+  "ui.flat_format_active": "€/month — active",
+  "tooltip.warm_titulo": "Warm Rent Composition:",
+  "tooltip.warm_piso": "Apartment Rent:",
+  "tooltip.warm_parking": "Parking Rent:",
+  "tooltip.warm_umlage": "Umlage (HOA+Reserve):",
+  "tooltip.warm_factor": "Applied scale factor: x",
+  "tooltip.cashflow_titulo": "Gross Cashflow Calculation:",
+  "tooltip.cashflow_renta": "Warm Rent:",
+  "tooltip.cashflow_hipoteca": "− Mortgage:",
+  "tooltip.cashflow_hausgeld": "− HOA Fee:",
+  "tooltip.cashflow_imprevistos": "− Contingency:",
+  "tooltip.cashflow_resultado": "Gross Cashflow:",
+  "tooltip.hipoteca_titulo": "Mortgage Breakdown:",
+  "tooltip.hipoteca_intereses": "Interest:",
+  "tooltip.hipoteca_amortizacion": "Repayment:",
+  "tooltip.fiscal_titulo": "Monthly Tax Base:",
+  "tooltip.fiscal_formula": "= Warm Income − Interest − Depr. − HOA",
+  "tooltip.fiscal_resultado": "Tax Base:",
+  "tooltip.ahorro_titulo": "Tax Savings Calculation:",
+  "tooltip.ahorro_condicion": "If Tax Base < 0:",
+  "tooltip.ahorro_formula": "Savings = (−Base × 42% Rate) / 12",
+  "tooltip.ahorro_resultado": "Tax Savings:"
+};
+
+// src/locales/de.json
+var de_default = {
+  "app.title": "Simulator für Immobilieninvestitionen",
+  "app.subtitle": "Vermögensberechnung mit jährlicher Staffelung und 10-Jahres-Steuerprognose.",
+  "panel.variables": "Variablen",
+  "section.inmueble": "Immobilie & Finanzierung",
+  "section.alquiler": "Miete",
+  "slider.precio_piso": "Wohnungspreis:",
+  "slider.precio_parking": "Stellplatzpreis:",
+  "slider.entrada": "Eigenkapital:",
+  "slider.interes": "Hypothekenzins:",
+  "slider.tilgung": "Tilgung:",
+  "slider.revalorizacion": "Jährliche Wertsteigerung:",
+  "slider.alquiler_piso": "Anfangsmiete Wohnung:",
+  "slider.alquiler_parking": "Anfangsmiete Stellplatz:",
+  "slider.subida_anual": "Jährliche Steigerung:",
+  "slider.depreciacion": "Abschreibung (Jahre):",
+  "slider.anos": "Jahre",
+  "slider.reserva_imprevistos": "Instandhaltungsrücklage:",
+  "kpi.precio_total": "Gesamtkaufpreis",
+  "kpi.efectivo_inicial": "Anfangskapital",
+  "kpi.ganancia_neto": "Nettogewinn Jahr 10",
+  "kpi.roi": "Jährliche Rendite (ROI)",
+  "tooltip.desglose_fondos": "Mittelaufteilung:",
+  "tooltip.entrada_pura": "Eigenkapital:",
+  "tooltip.impuestos": "Steuern (GrESt 3,5%):",
+  "tooltip.notaria": "Notar & Grundbuch (2,0%):",
+  "tooltip.agencia": "Makler (3,57%):",
+  "tooltip.tasacion": "Veräußerungsbewertung:",
+  "tooltip.precio_adquisicion": "Anschaffungspreis:",
+  "tooltip.valor_venta": "Verkaufswert (J10):",
+  "tooltip.valor_futuro_desc": "Zukünftiger Wert basierend auf der ausgewählten zusammengesetzten Wertsteigerungsrate.",
+  "tooltip.etf_title": "ETF-Vergleich",
+  "tooltip.etf_desc": "Zeigt die jährliche Durchschnittsrendite (CAGR), die ein Aktienfonds oder ETF auf Ihr eingesetztes Kapital erzielen müsste, um diesen Nettogewinn aus Immobilien zu erreichen.",
+  "section.desglose_titulo": "Mathematische Aufschlüsselung der Vermögensliquidation (Jahr 10)",
+  "section.desglose_subtitulo": "Echtzeitwerte basierend auf dem zusammengesetzten Wertsteigerungssatz.",
+  "math.valor_venta": "1. Zukünftiger Verkaufswert",
+  "math.deuda_hipoteca": "2. Restschuld",
+  "math.recuperacion_inversion": "3. Investitionsrückfluss",
+  "math.cashflow_venta": "4. 10J Cashflow + Verkauf",
+  "section.tabla_titulo": "2. Immobilienentwicklung & Steueroptimierungstabelle",
+  "section.tabla_subtitulo": "Monatliche Aufschlüsselung der progressiven Abschreibung gegenüber den Einsparungen bei der Steuerbemessungsgrundlage.",
+  "toggle.compuesto": "Zinseszins",
+  "toggle.lineal": "Linear",
+  "table.anno": "Jahr",
+  "table.alquiler_warm": "Warmmiete",
+  "table.hipoteca": "Hypothek (Gesamt)",
+  "table.cashflow_bruto": "Brutto-Cashflow",
+  "table.base_fiscal": "Bemessungsgrundlage",
+  "table.ahorro_fiscal": "Steuerersparnis",
+  "table.neto_posttax": "Netto nach Steuern",
+  "chart.rental_label": "Monatliche Warmmiete (€)",
+  "chart.rental_title": "Gestaffelte monatliche Warmmiete (Wohnung + Stellplatz + Umlage)",
+  "chart.cashflow_label": "Monatlicher Cashflow nach Steuern (€)",
+  "chart.cashflow_title": "Monatlicher Nettocashflow (nach Steuern)",
+  "chart.axis_prefix": "Jahr ",
+  "ui.flat_format": "€/Monat",
+  "ui.flat_format_active": "€/Monat — aktiv",
+  "tooltip.warm_titulo": "Warmmietzusammensetzung:",
+  "tooltip.warm_piso": "Wohnungsmiete:",
+  "tooltip.warm_parking": "Stellplatzmiete:",
+  "tooltip.warm_umlage": "Umlage (Hausgeld+Rückl.):",
+  "tooltip.warm_factor": "Angewandter Skalierungsfaktor: x",
+  "tooltip.cashflow_titulo": "Brutto-Cashflow-Berechnung:",
+  "tooltip.cashflow_renta": "Warmmiete:",
+  "tooltip.cashflow_hipoteca": "− Hypothek:",
+  "tooltip.cashflow_hausgeld": "− Hausgeld:",
+  "tooltip.cashflow_imprevistos": "− Rücklage:",
+  "tooltip.cashflow_resultado": "Brutto-Cashflow:",
+  "tooltip.hipoteca_titulo": "Hypothekenaufschlüsselung:",
+  "tooltip.hipoteca_intereses": "Zinsen:",
+  "tooltip.hipoteca_amortizacion": "Tilgung:",
+  "tooltip.fiscal_titulo": "Monatliche Bemessungsgrundlage:",
+  "tooltip.fiscal_formula": "= Warmeinnahmen − Zinsen − AfA − Hausgeld",
+  "tooltip.fiscal_resultado": "Bemessungsgrundlage:",
+  "tooltip.ahorro_titulo": "Steuerersparnis-Berechnung:",
+  "tooltip.ahorro_condicion": "Wenn Bemessungsgrundlage < 0:",
+  "tooltip.ahorro_formula": "Ersparnis = (−Basis × 42% Satz) / 12",
+  "tooltip.ahorro_resultado": "Steuerersparnis:"
+};
+
+// src/i18n.ts
+var locales = { es: es_default, en: en_default, de: de_default };
+var FALLBACK_LOCALE = "es";
+var current = FALLBACK_LOCALE;
+function t(key) {
+  return locales[current]?.[key] ?? locales[FALLBACK_LOCALE]?.[key] ?? key;
+}
+function setLocale(locale) {
+  current = locale;
+  document.documentElement.lang = locale;
+  translateDOM();
+  translateMeta();
+  window.dispatchEvent(new CustomEvent("localechange", { detail: { locale } }));
+}
+function translateDOM() {
+  document.querySelectorAll("[data-i18n]").forEach((el) => {
+    const key = el.getAttribute("data-i18n");
+    if (key) {
+      el.textContent = t(key);
+    }
+  });
+}
+function translateMeta() {
+  document.querySelectorAll("[data-i18n-content]").forEach((el) => {
+    const key = el.getAttribute("data-i18n-content");
+    if (key) {
+      el.setAttribute("content", t(key));
+    }
+  });
+}
+
 // src/charts.ts
 var chartRent;
 var chartCF;
+var _ctxRent = null;
+var _ctxCF = null;
+function buildLabels() {
+  return Array.from({ length: YEARS }, (_, i) => `${t("chart.axis_prefix")}${i + 1}`);
+}
 function initCharts(ctxRent, ctxCF) {
-  const labels = Array.from({ length: YEARS }, (_, i) => `Año ${i + 1}`);
-  chartRent = new auto_default(ctxRent, {
+  _ctxRent = ctxRent;
+  _ctxCF = ctxCF;
+  createCharts();
+}
+function createCharts() {
+  if (!_ctxRent || !_ctxCF)
+    return;
+  destroyCharts();
+  const labels = buildLabels();
+  chartRent = new auto_default(_ctxRent, {
     type: "line",
     data: {
       labels,
       datasets: [{
-        label: "Renta Warm Mensual (€)",
+        label: t("chart.rental_label"),
         data: [],
         borderColor: "#0A2540",
         tension: 0,
@@ -14486,15 +14773,15 @@ function initCharts(ctxRent, ctxCF) {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: { title: { display: true, text: "Renta Warm Mensual Escalada (Piso + Parking + Umlage)" } }
+      plugins: { title: { display: true, text: t("chart.rental_title") } }
     }
   });
-  chartCF = new auto_default(ctxCF, {
+  chartCF = new auto_default(_ctxCF, {
     type: "bar",
     data: {
       labels,
       datasets: [{
-        label: "Cashflow Mensual Post-Tax (€)",
+        label: t("chart.cashflow_label"),
         data: [],
         backgroundColor: "#635BFF",
         borderRadius: 4
@@ -14503,9 +14790,22 @@ function initCharts(ctxRent, ctxCF) {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: { title: { display: true, text: "Flujo Líquido Neto Mensual (Post-Impuestos)" } }
+      plugins: { title: { display: true, text: t("chart.cashflow_title") } }
     }
   });
+}
+function destroyCharts() {
+  if (chartRent) {
+    chartRent.destroy();
+    chartRent = undefined;
+  }
+  if (chartCF) {
+    chartCF.destroy();
+    chartCF = undefined;
+  }
+}
+function recreateCharts() {
+  createCharts();
 }
 var lastYears = [];
 function updateCharts(years) {
@@ -14687,15 +14987,8 @@ function updateDisplayValues(params) {
   const base = params.alquilerInicialPiso + params.alquilerInicialParking;
   const flatX = p === 0 ? 0 : (base * ((1 + p) ** 10 - 1) / p - 10 * base) / 45;
   setText("val-subida", (p * 100).toString());
-  if (params.useFlatRate) {
-    setText("val-subida-flat", `(~${Math.round(flatX)}€/mes año — activo)`);
-    setText("label-compuesto", "Compuesto");
-    setText("label-lineal", "Lineal");
-  } else {
-    setText("val-subida-flat", `(~${Math.round(flatX)}€/mes año)`);
-    setText("label-compuesto", "Compuesto");
-    setText("label-lineal", "Lineal");
-  }
+  const suffix = params.useFlatRate ? t("ui.flat_format_active") : t("ui.flat_format");
+  setText("val-subida-flat", `(~${Math.round(flatX)}${suffix})`);
   setText("val-inflacion", (params.inflacionPct * 100).toString());
   setText("val-afa", params.afaYears.toString());
   setText("val-afa-rate", `(${(100 / params.afaYears).toFixed(2)}%)`);
@@ -14715,40 +15008,40 @@ function svgIcon() {
 }
 function warmContent(y) {
   return `
-    <p class="font-bold text-blue-300 border-b border-gray-700 pb-0.5">Composición Renta Warm:</p>
-    <div class="flex justify-between"><span>Alquiler Piso:</span><span>${formatEuro(y.mensualPiso)}</span></div>
-    <div class="flex justify-between"><span>Alquiler Parking:</span><span>${formatEuro(y.mensualParking)}</span></div>
-    <div class="flex justify-between"><span>Umlage (Hausgeld+Rückl.):</span><span>+${formatEuro(y.umlageMensual)}</span></div>
-    <div class="text-[9px] text-gray-400 pt-0.5 italic">Aplicado factor de escala: x${y.factorSubida.toFixed(2)}</div>`;
+    <p class="font-bold text-blue-300 border-b border-gray-700 pb-0.5">${t("tooltip.warm_titulo")}</p>
+    <div class="flex justify-between"><span>${t("tooltip.warm_piso")}</span><span>${formatEuro(y.mensualPiso)}</span></div>
+    <div class="flex justify-between"><span>${t("tooltip.warm_parking")}</span><span>${formatEuro(y.mensualParking)}</span></div>
+    <div class="flex justify-between"><span>${t("tooltip.warm_umlage")}</span><span>+${formatEuro(y.umlageMensual)}</span></div>
+    <div class="text-[9px] text-gray-400 pt-0.5 italic">${t("tooltip.warm_factor")}${y.factorSubida.toFixed(2)}</div>`;
 }
 function cashflowContent(imprevistos) {
   return (y) => `
-    <p class="font-bold text-blue-300 border-b border-gray-700 pb-0.5">Cálculo Cashflow Bruto:</p>
-    <div class="flex justify-between"><span>Renta Warm:</span><span class="text-green-300">+${formatEuro(y.ingresoWarmMensual)}</span></div>
-    <div class="flex justify-between"><span>− Hipoteca:</span><span class="text-red-300">-${formatEuro(y.hipotecaMensual)}</span></div>
-    <div class="flex justify-between"><span>− Hausgeld:</span><span class="text-red-300">-${HAUSGELD_TOTAL} €</span></div>
-    <div class="flex justify-between"><span>− Imprevistos:</span><span class="text-red-300">-${imprevistos} €</span></div>
-    <div class="border-t border-gray-700 pt-0.5 mt-0.5 flex justify-between font-bold"><span>Cashflow Bruto:</span><span>${formatEuro(y.cashflowPreTaxMensual)}</span></div>`;
+    <p class="font-bold text-blue-300 border-b border-gray-700 pb-0.5">${t("tooltip.cashflow_titulo")}</p>
+    <div class="flex justify-between"><span>${t("tooltip.cashflow_renta")}</span><span class="text-green-300">+${formatEuro(y.ingresoWarmMensual)}</span></div>
+    <div class="flex justify-between"><span>${t("tooltip.cashflow_hipoteca")}</span><span class="text-red-300">-${formatEuro(y.hipotecaMensual)}</span></div>
+    <div class="flex justify-between"><span>${t("tooltip.cashflow_hausgeld")}</span><span class="text-red-300">-${HAUSGELD_TOTAL} €</span></div>
+    <div class="flex justify-between"><span>${t("tooltip.cashflow_imprevistos")}</span><span class="text-red-300">-${imprevistos} €</span></div>
+    <div class="border-t border-gray-700 pt-0.5 mt-0.5 flex justify-between font-bold"><span>${t("tooltip.cashflow_resultado")}</span><span>${formatEuro(y.cashflowPreTaxMensual)}</span></div>`;
 }
 function hipotecaContent(y) {
   return `
-    <p class="font-bold text-blue-300 border-b border-gray-700 pb-0.5">Desglose Hipoteca:</p>
-    <div class="flex justify-between"><span>Intereses (Zins):</span><span class="text-red-300">${formatEuro(y.interesesMensuales)}</span></div>
-    <div class="flex justify-between"><span>Amortización (Tilgung):</span><span class="text-emerald-300">${formatEuro(y.amortizacionMensual)}</span></div>`;
+    <p class="font-bold text-blue-300 border-b border-gray-700 pb-0.5">${t("tooltip.hipoteca_titulo")}</p>
+    <div class="flex justify-between"><span>${t("tooltip.hipoteca_intereses")}</span><span class="text-red-300">${formatEuro(y.interesesMensuales)}</span></div>
+    <div class="flex justify-between"><span>${t("tooltip.hipoteca_amortizacion")}</span><span class="text-emerald-300">${formatEuro(y.amortizacionMensual)}</span></div>`;
 }
 function baseFiscalContent(y) {
   return `
-    <p class="font-bold text-amber-300 border-b border-gray-700 pb-0.5">Base Fiscal Mensual:</p>
-    <div class="text-gray-300">= Ingresos Warm − Intereses − AfA − Hausgeld</div>
+    <p class="font-bold text-amber-300 border-b border-gray-700 pb-0.5">${t("tooltip.fiscal_titulo")}</p>
+    <div class="text-gray-300">${t("tooltip.fiscal_formula")}</div>
     <div class="text-gray-300">= ${formatEuro(y.ingresoWarmMensual)} − ${formatEuro(y.interesesMensuales)} − ${formatEuro(y.afaMensual)} − ${HAUSGELD_TOTAL}</div>
-    <div class="border-t border-gray-700 pt-1 mt-1 flex justify-between font-bold"><span>Base Fiscal:</span><span class="text-amber-300">${formatEuro(y.resultadoFiscalMensual)}</span></div>`;
+    <div class="border-t border-gray-700 pt-1 mt-1 flex justify-between font-bold"><span>${t("tooltip.fiscal_resultado")}</span><span class="text-amber-300">${formatEuro(y.resultadoFiscalMensual)}</span></div>`;
 }
 function ahorroContent(y) {
   return `
-    <p class="font-bold text-emerald-300 border-b border-gray-700 pb-0.5">Cálculo Ahorro Fiscal:</p>
-    <div class="text-gray-300">Si Base Fiscal &lt; 0:</div>
-    <div class="pl-2 text-gray-300">Ahorro = (−Base × 42% Tasa) / 12</div>
-    <div class="flex justify-between border-t border-gray-700 pt-1 mt-1"><span>Ahorro Fiscal:</span><span class="text-emerald-300">+${formatEuro(y.devolucionFiscalMensual)}</span></div>`;
+    <p class="font-bold text-emerald-300 border-b border-gray-700 pb-0.5">${t("tooltip.ahorro_titulo")}</p>
+    <div class="text-gray-300">${t("tooltip.ahorro_condicion")}</div>
+    <div class="pl-2 text-gray-300">${t("tooltip.ahorro_formula")}</div>
+    <div class="flex justify-between border-t border-gray-700 pt-1 mt-1"><span>${t("tooltip.ahorro_resultado")}</span><span class="text-emerald-300">+${formatEuro(y.devolucionFiscalMensual)}</span></div>`;
 }
 function renderTable(years, reservaImprevistos) {
   const tbody = document.getElementById("tabla-proyeccion-body");
@@ -14820,6 +15113,19 @@ function bindInputs(ids, handler) {
 }
 
 // src/index.ts
+var langSelect = document.getElementById("lang-select");
+if (langSelect) {
+  const browserLang = navigator.language?.slice(0, 2);
+  const initial = browserLang === "en" || browserLang === "de" ? browserLang : "es";
+  langSelect.value = initial;
+  setLocale(initial);
+  langSelect.addEventListener("change", () => {
+    const locale = langSelect.value;
+    setLocale(locale);
+    recreateCharts();
+    updateCalculations();
+  });
+}
 function updateCalculations() {
   const params = readInputs();
   updateDisplayValues(params);

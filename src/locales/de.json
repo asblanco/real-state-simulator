@@ -1,0 +1,96 @@
+{
+  "app.title": "Simulator für Immobilieninvestitionen",
+  "app.subtitle": "Vermögensberechnung mit jährlicher Staffelung und 10-Jahres-Steuerprognose.",
+
+  "panel.variables": "Variablen",
+  "section.inmueble": "Immobilie & Finanzierung",
+  "section.alquiler": "Miete",
+
+  "slider.precio_piso": "Wohnungspreis:",
+  "slider.precio_parking": "Stellplatzpreis:",
+  "slider.entrada": "Eigenkapital:",
+  "slider.interes": "Hypothekenzins:",
+  "slider.tilgung": "Tilgung:",
+  "slider.revalorizacion": "Jährliche Wertsteigerung:",
+  "slider.alquiler_piso": "Anfangsmiete Wohnung:",
+  "slider.alquiler_parking": "Anfangsmiete Stellplatz:",
+  "slider.subida_anual": "Jährliche Steigerung:",
+  "slider.depreciacion": "Abschreibung (Jahre):",
+  "slider.anos": "Jahre",
+  "slider.reserva_imprevistos": "Instandhaltungsrücklage:",
+
+  "kpi.precio_total": "Gesamtkaufpreis",
+  "kpi.efectivo_inicial": "Anfangskapital",
+  "kpi.ganancia_neto": "Nettogewinn Jahr 10",
+  "kpi.roi": "Jährliche Rendite (ROI)",
+
+  "tooltip.desglose_fondos": "Mittelaufteilung:",
+  "tooltip.entrada_pura": "Eigenkapital:",
+  "tooltip.impuestos": "Steuern (GrESt 3,5%):",
+  "tooltip.notaria": "Notar & Grundbuch (2,0%):",
+  "tooltip.agencia": "Makler (3,57%):",
+  "tooltip.tasacion": "Veräußerungsbewertung:",
+  "tooltip.precio_adquisicion": "Anschaffungspreis:",
+  "tooltip.valor_venta": "Verkaufswert (J10):",
+  "tooltip.valor_futuro_desc": "Zukünftiger Wert basierend auf der ausgewählten zusammengesetzten Wertsteigerungsrate.",
+  "tooltip.etf_title": "ETF-Vergleich",
+  "tooltip.etf_desc": "Zeigt die jährliche Durchschnittsrendite (CAGR), die ein Aktienfonds oder ETF auf Ihr eingesetztes Kapital erzielen müsste, um diesen Nettogewinn aus Immobilien zu erreichen.",
+
+  "section.desglose_titulo": "Mathematische Aufschlüsselung der Vermögensliquidation (Jahr 10)",
+  "section.desglose_subtitulo": "Echtzeitwerte basierend auf dem zusammengesetzten Wertsteigerungssatz.",
+
+  "math.valor_venta": "1. Zukünftiger Verkaufswert",
+  "math.deuda_hipoteca": "2. Restschuld",
+  "math.recuperacion_inversion": "3. Investitionsrückfluss",
+  "math.cashflow_venta": "4. 10J Cashflow + Verkauf",
+
+  "section.tabla_titulo": "2. Immobilienentwicklung & Steueroptimierungstabelle",
+  "section.tabla_subtitulo": "Monatliche Aufschlüsselung der progressiven Abschreibung gegenüber den Einsparungen bei der Steuerbemessungsgrundlage.",
+
+  "toggle.compuesto": "Zinseszins",
+  "toggle.lineal": "Linear",
+
+  "table.anno": "Jahr",
+  "table.alquiler_warm": "Warmmiete",
+  "table.hipoteca": "Hypothek (Gesamt)",
+  "table.cashflow_bruto": "Brutto-Cashflow",
+  "table.base_fiscal": "Bemessungsgrundlage",
+  "table.ahorro_fiscal": "Steuerersparnis",
+  "table.neto_posttax": "Netto nach Steuern",
+
+  "chart.rental_label": "Monatliche Warmmiete (€)",
+  "chart.rental_title": "Gestaffelte monatliche Warmmiete (Wohnung + Stellplatz + Umlage)",
+  "chart.cashflow_label": "Monatlicher Cashflow nach Steuern (€)",
+  "chart.cashflow_title": "Monatlicher Nettocashflow (nach Steuern)",
+
+  "chart.axis_prefix": "Jahr ",
+
+  "ui.flat_format": "€/Monat",
+  "ui.flat_format_active": "€/Monat — aktiv",
+
+  "tooltip.warm_titulo": "Warmmietzusammensetzung:",
+  "tooltip.warm_piso": "Wohnungsmiete:",
+  "tooltip.warm_parking": "Stellplatzmiete:",
+  "tooltip.warm_umlage": "Umlage (Hausgeld+Rückl.):",
+  "tooltip.warm_factor": "Angewandter Skalierungsfaktor: x",
+
+  "tooltip.cashflow_titulo": "Brutto-Cashflow-Berechnung:",
+  "tooltip.cashflow_renta": "Warmmiete:",
+  "tooltip.cashflow_hipoteca": "− Hypothek:",
+  "tooltip.cashflow_hausgeld": "− Hausgeld:",
+  "tooltip.cashflow_imprevistos": "− Rücklage:",
+  "tooltip.cashflow_resultado": "Brutto-Cashflow:",
+
+  "tooltip.hipoteca_titulo": "Hypothekenaufschlüsselung:",
+  "tooltip.hipoteca_intereses": "Zinsen:",
+  "tooltip.hipoteca_amortizacion": "Tilgung:",
+
+  "tooltip.fiscal_titulo": "Monatliche Bemessungsgrundlage:",
+  "tooltip.fiscal_formula": "= Warmeinnahmen − Zinsen − AfA − Hausgeld",
+  "tooltip.fiscal_resultado": "Bemessungsgrundlage:",
+
+  "tooltip.ahorro_titulo": "Steuerersparnis-Berechnung:",
+  "tooltip.ahorro_condicion": "Wenn Bemessungsgrundlage < 0:",
+  "tooltip.ahorro_formula": "Ersparnis = (−Basis × 42% Satz) / 12",
+  "tooltip.ahorro_resultado": "Steuerersparnis:"
+}

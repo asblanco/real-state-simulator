@@ -1,0 +1,95 @@
+{
+  "app.title": "Simulador de Inversión Inmobiliaria",
+  "app.subtitle": "Cálculo patrimonial con escalonamiento anual y proyección fiscal a 10 años.",
+
+  "panel.variables": "Variables",
+  "section.inmueble": "Inmueble y Financiación",
+  "section.alquiler": "Alquiler",
+
+  "slider.precio_piso": "Precio Piso:",
+  "slider.precio_parking": "Precio Parking:",
+  "slider.entrada": "Entrada (Eigenkapital):",
+  "slider.interes": "Interés Hipoteca (Zins):",
+  "slider.tilgung": "Amortización (Tilgung):",
+  "slider.revalorizacion": "Revalorización Anual Inmueble:",
+  "slider.alquiler_piso": "Alquiler Inicial Piso:",
+  "slider.alquiler_parking": "Alquiler Inicial Parking:",
+  "slider.subida_anual": "Subida Anual:",
+  "slider.depreciacion": "Depreciación (Años):",
+  "slider.anos": "años",
+  "slider.reserva_imprevistos": "Reserva Imprevistos:",
+
+  "kpi.precio_total": "Precio Total Inmueble",
+  "kpi.efectivo_inicial": "Efectivo Inicial",
+  "kpi.ganancia_neto": "Ganancia Neto Año 10",
+  "kpi.roi": "Rendimiento Anual (ROI)",
+
+  "tooltip.desglose_fondos": "Desglose de Fondos:",
+  "tooltip.entrada_pura": "Entrada pura:",
+  "tooltip.impuestos": "Impuestos (ITP 3.5%):",
+  "tooltip.notaria": "Notaría y Reg. (2.0%):",
+  "tooltip.agencia": "Agencia (3.57%):",
+  "tooltip.tasacion": "Tasación de Liquidación:",
+  "tooltip.precio_adquisicion": "Precio de Adquisición:",
+  "tooltip.valor_venta": "Valor de Venta (A10):",
+  "tooltip.valor_futuro_desc": "Valor futuro aplicando la revalorización compuesta seleccionada.",
+  "tooltip.etf_title": "Comparativa con ETFs",
+  "tooltip.etf_desc": "Muestra el rendimiento anualizado equivalente (CAGR) que tendría que generar un fondo o ETF de acciones sobre tu capital aportado para igualar este beneficio neto inmobiliario.",
+
+  "section.desglose_titulo": "Desglose Matemático de la Liquidación del Activo (Año 10)",
+  "section.desglose_subtitulo": "Valores en tiempo real según la tasa de revalorización compuesta.",
+
+  "math.valor_venta": "1. Valor de Venta Futuro",
+  "math.deuda_hipoteca": "2. Deuda Hipoteca",
+  "math.recuperacion_inversion": "3. Recuperación Inversión",
+  "math.cashflow_venta": "4. Cashflow 10A + Venta",
+
+  "section.tabla_titulo": "2. Cuadro de Desarrollo Inmobiliario y Optimización Fiscal",
+  "section.tabla_subtitulo": "Desglose mensual de amortización progresiva frente al ahorro de la base imponible del Finanzamt.",
+
+  "toggle.compuesto": "Compuesto",
+  "toggle.lineal": "Lineal",
+
+  "table.anno": "Año",
+  "table.alquiler_warm": "Alquiler Warm",
+  "table.hipoteca": "Hipoteca (Total)",
+  "table.cashflow_bruto": "Cashflow Bruto",
+  "table.base_fiscal": "Base Fiscal",
+  "table.ahorro_fiscal": "Ahorro Fiscal",
+  "table.neto_posttax": "Neto Post-Tax",
+
+  "chart.rental_label": "Renta Warm Mensual (€)",
+  "chart.rental_title": "Renta Warm Mensual Escalada (Piso + Parking + Umlage)",
+  "chart.cashflow_label": "Cashflow Mensual Post-Tax (€)",
+  "chart.cashflow_title": "Flujo Líquido Neto Mensual (Post-Impuestos)",
+  "chart.axis_prefix": "Año ",
+
+  "ui.flat_format": "€/mes año",
+  "ui.flat_format_active": "€/mes año — activo",
+
+  "tooltip.warm_titulo": "Composición Renta Warm:",
+  "tooltip.warm_piso": "Alquiler Piso:",
+  "tooltip.warm_parking": "Alquiler Parking:",
+  "tooltip.warm_umlage": "Umlage (Hausgeld+Rückl.):",
+  "tooltip.warm_factor": "Aplicado factor de escala: x",
+
+  "tooltip.cashflow_titulo": "Cálculo Cashflow Bruto:",
+  "tooltip.cashflow_renta": "Renta Warm:",
+  "tooltip.cashflow_hipoteca": "− Hipoteca:",
+  "tooltip.cashflow_hausgeld": "− Hausgeld:",
+  "tooltip.cashflow_imprevistos": "− Imprevistos:",
+  "tooltip.cashflow_resultado": "Cashflow Bruto:",
+
+  "tooltip.hipoteca_titulo": "Desglose Hipoteca:",
+  "tooltip.hipoteca_intereses": "Intereses (Zins):",
+  "tooltip.hipoteca_amortizacion": "Amortización (Tilgung):",
+
+  "tooltip.fiscal_titulo": "Base Fiscal Mensual:",
+  "tooltip.fiscal_formula": "= Ingresos Warm − Intereses − AfA − Hausgeld",
+  "tooltip.fiscal_resultado": "Base Fiscal:",
+
+  "tooltip.ahorro_titulo": "Cálculo Ahorro Fiscal:",
+  "tooltip.ahorro_condicion": "Si Base Fiscal < 0:",
+  "tooltip.ahorro_formula": "Ahorro = (−Base × 42% Tasa) / 12",
+  "tooltip.ahorro_resultado": "Ahorro Fiscal:"
+}

@@ -1,6 +1,23 @@
-import { initCharts, updateCharts, lastYears } from "./charts";
+import { initCharts, updateCharts, lastYears, recreateCharts } from "./charts";
 import { computePurchaseCosts, calculateAllYears, computeSummary } from "./calculator";
 import { applyDefaults, readInputs, updateDisplayValues, renderKPIs, renderTable, renderSummary, bindInputs, bindToggle } from "./ui";
+import { setLocale, type Locale } from "./i18n";
+
+// Initialize locale before any rendering
+const langSelect = document.getElementById("lang-select") as HTMLSelectElement | null;
+if (langSelect) {
+  const browserLang = navigator.language?.slice(0, 2);
+  const initial: Locale = (browserLang === "en" || browserLang === "de") ? browserLang : "es";
+  langSelect.value = initial;
+  setLocale(initial);
+
+  langSelect.addEventListener("change", () => {
+    const locale = langSelect.value as Locale;
+    setLocale(locale);
+    recreateCharts();
+    updateCalculations();
+  });
+}
 
 function updateCalculations(): void {
   const params = readInputs();
