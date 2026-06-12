@@ -6,7 +6,7 @@
   "scripts": {
     "build": "bun build src/index.ts --outdir dist",
     "test": "bun test",
-    "dev": "bun build src/index.ts --outdir dist --watch"
+    "dev": "bun build src/index.ts --outdir dist --watch & sleep 1 && bunx browser-sync start --server --files 'dist/**/*, index.html, styles.css' --no-notify --no-open"
   },
   "devDependencies": {
     "@types/bun": "latest",
