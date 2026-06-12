@@ -147,12 +147,11 @@ function baseFiscalContent(y: YearData): string {
     <div class="border-t border-gray-700 pt-1 mt-1 flex justify-between font-bold"><span>${t("tooltip.fiscal_resultado")}</span><span class="text-amber-300">${formatEuro(y.resultadoFiscalMensual)}</span></div>`;
 }
 
-function ahorroContent(y: YearData): string {
+function ahorroHeaderContent(): string {
   return `
     <p class="font-bold text-emerald-300 border-b border-gray-700 pb-0.5">${t("tooltip.ahorro_titulo")}</p>
     <div class="text-gray-300">${t("tooltip.ahorro_condicion")}</div>
-    <div class="pl-2 text-gray-300">${t("tooltip.ahorro_formula")}</div>
-    <div class="flex justify-between border-t border-gray-700 pt-1 mt-1"><span>${t("tooltip.ahorro_resultado")}</span><span class="text-emerald-300">+${formatEuro(y.devolucionFiscalMensual)}</span></div>`;
+    <div class="pl-2 text-gray-300">${t("tooltip.ahorro_formula")}</div>`;
 }
 
 export function renderTable(years: YearData[], reservaImprevistos: number): void {
@@ -166,12 +165,12 @@ export function renderTable(years: YearData[], reservaImprevistos: number): void
     const icon = svgIcon();
     row.innerHTML = `
       <td class="text-center font-bold text-gray-500">${y.year}</td>
-      <td class="font-semibold"><div class="flex items-center gap-1">${formatEuro(y.ingresoWarmMensual)}<span class="tt" data-col="1">${icon}</span></div></td>
-      <td class="text-amber-700 bg-amber-50/40 font-medium"><div class="flex items-center gap-1">${formatEuro(-y.hipotecaMensual)}<span class="tt" data-col="2">${icon}</span></div></td>
-      <td class="text-gray-600"><div class="flex items-center gap-1">${formatEuro(y.cashflowPreTaxMensual)}<span class="tt" data-col="3">${icon}</span></div></td>
-      <td class="text-[#635BFF] font-mono"><div class="flex items-center gap-1">${formatEuro(y.resultadoFiscalMensual)}<span class="tt" data-col="4">${icon}</span></div></td>
-      <td class="text-emerald-700 bg-emerald-50/40 font-medium"><div class="flex items-center gap-1">+${formatEuro(y.devolucionFiscalMensual)}<span class="tt" data-col="5">${icon}</span></div></td>
-      <td class="bg-blue-50/60 text-[#635BFF] font-extrabold text-right pr-6">${formatEuro(y.cashflowNetoPostTaxMensual)}</td>
+      <td class="text-center font-semibold"><div class="flex items-center justify-center gap-1">${formatEuro(y.ingresoWarmMensual)}<span class="tt" data-col="1">${icon}</span></div></td>
+      <td class="text-center text-amber-700 bg-amber-50/40 font-medium"><div class="flex items-center justify-center gap-1">${formatEuro(-y.hipotecaMensual)}<span class="tt" data-col="2">${icon}</span></div></td>
+      <td class="text-center text-gray-600"><div class="flex items-center justify-center gap-1">${formatEuro(y.cashflowPreTaxMensual)}<span class="tt" data-col="3">${icon}</span></div></td>
+      <td class="text-center text-[#635BFF] font-mono"><div class="flex items-center justify-center gap-1">${formatEuro(y.resultadoFiscalMensual)}<span class="tt" data-col="4">${icon}</span></div></td>
+      <td class="text-center text-emerald-700 bg-emerald-50/40 font-medium">+${formatEuro(y.devolucionFiscalMensual)}</td>
+      <td class="text-center bg-blue-50/60 text-[#635BFF] font-extrabold">${formatEuro(y.cashflowNetoPostTaxMensual)}</td>
     `;
 
     // Store year data reference for tooltip event delegation
@@ -196,7 +195,6 @@ export function renderTable(years: YearData[], reservaImprevistos: number): void
       2: hipotecaContent,
       3: cashflowContent(currentImprevistos),
       4: baseFiscalContent,
-      5: ahorroContent,
     };
     const fn = contentMap[col];
     if (fn) showTooltip(fn(y), target);
@@ -208,6 +206,16 @@ export function renderTable(years: YearData[], reservaImprevistos: number): void
     const related = (e.relatedTarget as HTMLElement)?.closest?.(".tt");
     if (!related) hideTooltip();
   });
+
+  const headerIcon = document.getElementById("tt-header-ahorro");
+  if (headerIcon) {
+    headerIcon.addEventListener("mouseenter", () => {
+      showTooltip(ahorroHeaderContent(), headerIcon);
+    });
+    headerIcon.addEventListener("mouseleave", () => {
+      hideTooltip();
+    });
+  }
 }
 
 export function renderSummary(summary: SummaryData, purchaseCosts: PurchaseCosts): void {
