@@ -1,4 +1,23 @@
 import type { InputParams, YearData, PurchaseCosts, SummaryData } from "./types";
+import { DEFAULT_PARAMS } from "./constants";
+
+export function applyDefaults(): void {
+  const p = DEFAULT_PARAMS;
+  const setVal = (id: string, val: number | string) => {
+    ((document.getElementById(`input-${id}`) as HTMLInputElement).value = String(val));
+  };
+  setVal("precio", p.precio);
+  setVal("parking", p.parking);
+  setVal("entrada", p.entradaPct * 100);
+  setVal("interes", (p.interesPct * 100).toFixed(2));
+  setVal("tilgung", (p.tilgungPct * 100).toFixed(1));
+  setVal("alquiler", p.alquilerInicialPiso);
+  setVal("alquiler-parking", p.alquilerInicialParking);
+  setVal("subida", p.subidaPct * 100);
+  setVal("inflacion", (p.inflacionPct * 100).toFixed(1));
+  setVal("afa", (p.afaPct * 100).toFixed(1));
+  updateDisplayValues(p);
+}
 
 export function formatEuro(val: number): string {
   return Math.round(val).toLocaleString("de-DE") + " €";

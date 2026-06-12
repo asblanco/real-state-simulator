@@ -14449,6 +14449,18 @@ var AFA_FLAT_1 = 400;
 var AFA_FLAT_2 = 1000;
 var YEARS = 10;
 var MONTHS_PER_YEAR = 12;
+var DEFAULT_PARAMS = {
+  precio: 340000,
+  parking: 15000,
+  entradaPct: 0.15,
+  interesPct: 0.0422,
+  tilgungPct: 0.01,
+  alquilerInicialPiso: 1125,
+  alquilerInicialParking: 80,
+  subidaPct: 0.15,
+  inflacionPct: 0.025,
+  afaPct: 0.035
+};
 
 // src/charts.ts
 var chartRent;
@@ -14575,6 +14587,23 @@ function computeSummary(params, years, purchaseCosts) {
 }
 
 // src/ui.ts
+function applyDefaults() {
+  const p = DEFAULT_PARAMS;
+  const setVal = (id, val) => {
+    document.getElementById(`input-${id}`).value = String(val);
+  };
+  setVal("precio", p.precio);
+  setVal("parking", p.parking);
+  setVal("entrada", p.entradaPct * 100);
+  setVal("interes", (p.interesPct * 100).toFixed(2));
+  setVal("tilgung", (p.tilgungPct * 100).toFixed(1));
+  setVal("alquiler", p.alquilerInicialPiso);
+  setVal("alquiler-parking", p.alquilerInicialParking);
+  setVal("subida", p.subidaPct * 100);
+  setVal("inflacion", (p.inflacionPct * 100).toFixed(1));
+  setVal("afa", (p.afaPct * 100).toFixed(1));
+  updateDisplayValues(p);
+}
 function formatEuro(val) {
   return Math.round(val).toLocaleString("de-DE") + " €";
 }
@@ -14681,4 +14710,5 @@ var chartCFCanvas = document.getElementById("chartCashflow");
 initCharts(chartRentCanvas.getContext("2d"), chartCFCanvas.getContext("2d"));
 var inputs = ["precio", "parking", "entrada", "interes", "tilgung", "alquiler", "alquiler-parking", "subida", "inflacion", "afa"];
 bindInputs(inputs, updateCalculations);
+applyDefaults();
 updateCalculations();

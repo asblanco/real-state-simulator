@@ -1,6 +1,6 @@
 import { initCharts, updateCharts } from "./charts";
 import { computePurchaseCosts, calculateAllYears, computeSummary } from "./calculator";
-import { readInputs, updateDisplayValues, renderKPIs, renderTable, renderSummary, bindInputs } from "./ui";
+import { applyDefaults, readInputs, updateDisplayValues, renderKPIs, renderTable, renderSummary, bindInputs } from "./ui";
 
 function updateCalculations(): void {
   const params = readInputs();
@@ -21,4 +21,5 @@ initCharts(chartRentCanvas.getContext("2d")!, chartCFCanvas.getContext("2d")!);
 const inputs = ["precio", "parking", "entrada", "interes", "tilgung", "alquiler", "alquiler-parking", "subida", "inflacion", "afa"];
 bindInputs(inputs, updateCalculations);
 
+applyDefaults();
 updateCalculations();

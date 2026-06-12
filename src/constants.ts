@@ -9,3 +9,18 @@ export const AFA_FLAT_1 = 400;
 export const AFA_FLAT_2 = 1000;
 export const YEARS = 10;
 export const MONTHS_PER_YEAR = 12;
+
+import type { InputParams } from "./types";
+
+export const DEFAULT_PARAMS: InputParams = {
+  precio: 340_000,
+  parking: 15_000,
+  entradaPct: 0.15,
+  interesPct: 0.0422,
+  tilgungPct: 0.01,
+  alquilerInicialPiso: 1125,
+  alquilerInicialParking: 80,
+  subidaPct: 0.15,
+  inflacionPct: 0.025,
+  afaPct: 0.035,
+};
