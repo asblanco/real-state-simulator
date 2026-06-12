@@ -26,6 +26,12 @@ jobs:
       - run: npx tailwindcss -i src/tailwind-input.css -o dist/tailwind.css
       - run: bun test --path-ignore-patterns='e2e/**'
       - run: bun run build
+      - run: |
+          npx playwright install chromium
+          python3 -m http.server 8080 & sleep 1
+          bun run e2e/e2e.test.ts
+        env:
+          BASE_URL: "http://localhost:8080"
       - uses: actions/upload-pages-artifact@v3
         with:
           path: .
