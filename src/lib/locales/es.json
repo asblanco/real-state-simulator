@@ -175,8 +175,10 @@
   "etf.fi_title": "Independencia Financiera",
   "etf.fi_year": "Año {year}",
   "etf.fi_income": "{income} €/mes sostenibles",
-  "etf.fi_desc": "Desde el año {year}, tu cartera de ETFs genera ingresos pasivos suficientes para cubrir el alquiler indefinidamente — sin necesidad de seguir aportando.",
-  "etf.fi_not_reached": "No se alcanza la independencia financiera dentro de esta proyección.",
+  "etf.fi_desc": "Desde el año {year}, tu cartera genera {income} €/mes — puedes dejar de aportar y retirar esa cantidad mensualmente sin agotar el capital.",
+  "etf.fi_not_reached": "No se alcanza la independencia financiera dentro de esta proyección. Aumenta tu aporte o reduce tu retiro objetivo.",
+  "etf.swr_label": "Tasa de Retiro Seguro (SWR)",
+  "etf.target_withdrawal_label": "Retiro Mensual Objetivo",
   "etf.monthly_rent": "Alquiler Mensual",
   "etf.sustainable_withdrawal": "Retiro Sostenible"
 }

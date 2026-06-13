@@ -1,5 +1,5 @@
 import type { InputParams, YearData, SummaryData, PurchaseCosts, EtfComparison, EtfYearData } from "./types";
-import { MONTHS_PER_YEAR, SWR_RATE } from "./constants";
+import { MONTHS_PER_YEAR } from "./constants";
 
 function etfFutureValue(
   initialCapital: number,
@@ -66,7 +66,7 @@ export function computeEtfComparison(
     if ((m + 1) % MONTHS_PER_YEAR === 0) {
       const yearIdx = (m + 1) / MONTHS_PER_YEAR - 1;
       const monthlyRentAtYear = years[yearIdx].ingresoWarmMensual;
-      const sustainableWithdrawal = etfValue * SWR_RATE / MONTHS_PER_YEAR;
+      const sustainableWithdrawal = etfValue * params.swrPct / MONTHS_PER_YEAR;
       yearByYear.push({
         year: yearIdx + 1,
         etfValue: Math.round(etfValue),
@@ -93,7 +93,7 @@ export function computeEtfComparison(
   let fiYear: number | null = null;
   let fiMonthlyIncome = 0;
   for (const yy of yearByYear) {
-    if (yy.sustainableWithdrawal >= yy.monthlyRentAtYear) {
+    if (yy.sustainableWithdrawal >= params.targetWithdrawal) {
       fiYear = yy.year;
       fiMonthlyIncome = yy.sustainableWithdrawal;
       break;

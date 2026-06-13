@@ -72,6 +72,24 @@
           oninput={(e) => updateParam("extraMonthlyContribution", parseFloat(e.target.value))}
           class="w-full accent-[#635BFF]">
       </div>
+
+      <div class="pt-3 mt-3 border-t border-gray-200">
+        <label class="block text-xs font-semibold text-gray-500 mb-1">{$t("etf.swr_label")} <span class="text-[#635BFF] font-bold">{($params.swrPct * 100).toFixed(1)}</span>%</label>
+        <input type="range" min="1" max="10" step="0.25" value={$params.swrPct * 100}
+          oninput={(e) => updateParam("swrPct", parseFloat(e.target.value) / 100)}
+          class="w-full accent-[#635BFF]">
+        <div class="flex justify-between text-[10px] text-gray-400 mt-0.5">
+          <span>1%</span>
+          <span>10%</span>
+        </div>
+      </div>
+
+      <div class="pt-3 mt-3 border-t border-gray-200">
+        <label class="block text-xs font-semibold text-gray-500 mb-1">{$t("etf.target_withdrawal_label")} <span class="text-[#635BFF] font-bold">{$params.targetWithdrawal}</span> €</label>
+        <input type="range" min="0" max="5000" step="100" value={$params.targetWithdrawal}
+          oninput={(e) => updateParam("targetWithdrawal", parseFloat(e.target.value))}
+          class="w-full accent-[#635BFF]">
+      </div>
     </aside>
     {:else}
     <aside class="bg-white p-3 rounded-2xl border border-gray-200 shadow-xs lg:col-span-1 space-y-2 lg:sticky lg:top-6 z-40 max-h-[calc(100vh-3rem)] overflow-y-auto">

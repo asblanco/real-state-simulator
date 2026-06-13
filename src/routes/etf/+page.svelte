@@ -45,7 +45,7 @@
             <span class="text-3xl font-black text-emerald-800">{ti("etf.fi_year", { year: $etfComparison.fiYear })}</span>
             <span class="text-xl font-bold text-emerald-600">— {ti("etf.fi_income", { income: $etfComparison.fiMonthlyIncome.toLocaleString("de-DE") })}</span>
           </div>
-          <p class="text-sm text-emerald-700 mt-1">{ti("etf.fi_desc", { year: $etfComparison.fiYear })}</p>
+          <p class="text-sm text-emerald-700 mt-1">{ti("etf.fi_desc", { year: $etfComparison.fiYear, income: $etfComparison.fiMonthlyIncome.toLocaleString("de-DE") })}</p>
         </div>
       </div>
     </div>
@@ -169,7 +169,7 @@
         </thead>
         <tbody>
           {#each $etfComparison.yearByYear as y, i}
-            <tr class="{i % 2 === 0 ? 'bg-white' : 'bg-[#F9FAFB]'} {y.sustainableWithdrawal >= y.monthlyRentAtYear ? 'bg-emerald-50' : ''}">
+            <tr class="{i % 2 === 0 ? 'bg-white' : 'bg-[#F9FAFB]'} {y.sustainableWithdrawal >= $params.targetWithdrawal ? 'bg-emerald-50' : ''}">
               <td class="text-center font-bold text-gray-500 text-sm">{y.year}</td>
               <td class="text-center font-mono text-sm text-emerald-700">{fmt(y.reTotalWealth)}</td>
               <td class="text-center font-mono text-sm text-[#635BFF]">{fmt(y.etfValue)}</td>
@@ -177,7 +177,7 @@
                 {y.etfValue - y.reTotalWealth >= 0 ? '+' : ''}{fmt(y.etfValue - y.reTotalWealth)}
               </td>
               <td class="text-center font-mono text-sm text-red-600">{fmt(y.monthlyRentAtYear)}</td>
-              <td class="text-center font-mono text-sm {y.sustainableWithdrawal >= y.monthlyRentAtYear ? 'text-emerald-600 font-bold' : 'text-gray-500'}">
+              <td class="text-center font-mono text-sm {y.sustainableWithdrawal >= $params.targetWithdrawal ? 'text-emerald-600 font-bold' : 'text-gray-500'}">
                 {fmt(y.sustainableWithdrawal)}
               </td>
               <td class="text-center font-mono text-sm text-gray-500">{fmt(y.cumulativeContribution)}</td>

@@ -175,8 +175,10 @@
   "etf.fi_title": "Financial Independence",
   "etf.fi_year": "Year {year}",
   "etf.fi_income": "{income} €/month sustainable",
-  "etf.fi_desc": "From year {year}, your ETF portfolio generates enough passive income to cover the rent indefinitely — no more contributions needed.",
-  "etf.fi_not_reached": "Financial independence not reached within this projection period.",
+  "etf.fi_desc": "From year {year}, your ETF portfolio generates {income} €/month — you can stop contributing and withdraw that amount monthly without depleting the capital.",
+  "etf.fi_not_reached": "Financial independence not reached within this projection period. Increase your contribution or lower your target withdrawal.",
+  "etf.swr_label": "Safe Withdrawal Rate (SWR)",
+  "etf.target_withdrawal_label": "Target Monthly Withdrawal",
   "etf.monthly_rent": "Monthly Rent",
   "etf.sustainable_withdrawal": "Sustainable W/drawal"
 }

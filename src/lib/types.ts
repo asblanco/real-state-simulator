@@ -13,6 +13,8 @@ export interface InputParams {
   useFlatRate: boolean;
   reservaImprevistos: number;
   extraMonthlyContribution: number;
+  swrPct: number;
+  targetWithdrawal: number;
   years: number;
 }
 

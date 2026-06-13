@@ -17,7 +17,10 @@ export const ETF_CAGR_DEFAULT = 0.07;
 export const ETF_CAGR_MIN = 0.01;
 export const ETF_CAGR_MAX = 0.15;
 
-export const SWR_RATE = 0.04; // Safe withdrawal rate (4% rule, Trinity Study)
+export const SWR_DEFAULT = 0.04;
+export const SWR_MIN = 0.01;
+export const SWR_MAX = 0.10;
+export const TARGET_WITHDRAWAL_DEFAULT = 1000;
 
 import type { InputParams } from "./types";
 
@@ -36,5 +39,7 @@ export const DEFAULT_PARAMS: InputParams = {
   useFlatRate: false,
   reservaImprevistos: 100,
   extraMonthlyContribution: 0,
+  swrPct: SWR_DEFAULT,
+  targetWithdrawal: TARGET_WITHDRAWAL_DEFAULT,
   years: YEARS_DEFAULT,
 };

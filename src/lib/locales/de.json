@@ -175,8 +175,10 @@
   "etf.fi_title": "Finanzielle Freiheit",
   "etf.fi_year": "Jahr {year}",
   "etf.fi_income": "{income} €/Monat nachhaltig",
-  "etf.fi_desc": "Ab Jahr {year} generiert Ihr ETF-Portfolio genügend passives Einkommen, um die Miete auf unbestimmte Zeit zu decken — ohne weitere Einzahlungen.",
-  "etf.fi_not_reached": "Finanzielle Freiheit innerhalb dieses Prognosezeitraums nicht erreicht.",
+  "etf.fi_desc": "Ab Jahr {year} generiert Ihr ETF-Portfolio {income} €/Monat — Sie können die Einzahlungen stoppen und diesen Betrag monatlich entnehmen, ohne das Kapital zu erschöpfen.",
+  "etf.fi_not_reached": "Finanzielle Freiheit innerhalb dieses Prognosezeitraums nicht erreicht. Erhöhen Sie Ihren Beitrag oder senken Sie Ihr Entnahmeziel.",
+  "etf.swr_label": "Sichere Entnahmerate (SWR)",
+  "etf.target_withdrawal_label": "Monatliches Entnahmeziel",
   "etf.monthly_rent": "Monatsmiete",
   "etf.sustainable_withdrawal": "Nachhaltige Entnahme"
 }
