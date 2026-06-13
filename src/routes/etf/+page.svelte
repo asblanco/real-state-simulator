@@ -24,18 +24,24 @@
   let gapColors = $derived(diffData.map(v => v >= 0 ? "rgba(16, 185, 129, 0.3)" : "rgba(239, 68, 68, 0.3)"));
   let investedData = $derived($etfComparison.yearByYear.map(y => y.cumulativeContribution));
 
+  let showCumulative = $state(false);
+
   let contributionLabels = $derived([
     $t("chart.axis_prefix") + "0",
     ...$etfComparison.yearByYear.map(y => $t("chart.axis_prefix") + y.year),
   ]);
-  let contributionData = $derived([
-    $purchaseCosts.efectivoTotalNecesario,
-    ...$etfComparison.yearByYear.map((y, i) =>
-      i === 0
-        ? y.cumulativeContribution - $purchaseCosts.efectivoTotalNecesario
-        : y.cumulativeContribution - $etfComparison.yearByYear[i - 1].cumulativeContribution,
-    ),
-  ]);
+  let contributionData = $derived(
+    showCumulative
+      ? [$purchaseCosts.efectivoTotalNecesario, ...$etfComparison.yearByYear.map(y => y.cumulativeContribution)]
+      : [
+          $purchaseCosts.efectivoTotalNecesario,
+          ...$etfComparison.yearByYear.map((y, i) =>
+            i === 0
+              ? y.cumulativeContribution - $purchaseCosts.efectivoTotalNecesario
+              : y.cumulativeContribution - $etfComparison.yearByYear[i - 1].cumulativeContribution,
+          ),
+        ],
+  );
 </script>
 
 <div class="space-y-5 pb-12">
@@ -169,20 +175,29 @@
     />
   </div>
 
-  <!-- CHART 2: Annual Contribution -->
+  <!-- CHART 2: Annual / Cumulative Contribution -->
   <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs h-72">
-    <Chart
-      type="bar"
-      labels={contributionLabels}
-      datasets={[{
-        label: $t("etf.extra_contribution"),
-        data: contributionData,
-        backgroundColor: "rgba(99, 91, 255, 0.7)",
-        borderRadius: 4,
-      }]}
-      showValues={true}
-      title={$t("etf.chart_contribution_title")}
-    />
+    <div class="flex items-center justify-between mb-2">
+      <span class="text-sm font-bold text-[#0A2540]">{$t("etf.chart_contribution_title")}</span>
+      <label class="flex items-center gap-2 cursor-pointer">
+        <span class="text-xs text-gray-500 font-medium">{showCumulative ? "Acum." : "Anual"}</span>
+        <input type="checkbox" class="toggle toggle-sm" bind:checked={showCumulative} />
+      </label>
+    </div>
+    <div class="h-[calc(100%-2rem)]">
+      <Chart
+        type="bar"
+        labels={contributionLabels}
+        datasets={[{
+          label: showCumulative ? $t("etf.total_invested") : $t("etf.extra_contribution"),
+          data: contributionData,
+          backgroundColor: showCumulative ? "rgba(16, 185, 129, 0.7)" : "rgba(99, 91, 255, 0.7)",
+          borderRadius: 4,
+        }]}
+        showValues={true}
+        title=""
+      />
+    </div>
   </div>
 
   <!-- YEAR TABLE -->
