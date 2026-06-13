@@ -22,3 +22,7 @@ depends = ["install"]
 [tasks.test]
 run = "bun test --path-ignore-patterns='e2e/**'"
 description = "Run unit tests"
+
+[tasks.test-e2e]
+run = "bun run preview -- --port 8080 & SERVER_PID=$!; sleep 2 && bun test e2e/; kill $SERVER_PID 2>/dev/null"
+description = "Run e2e tests (starts preview server)"

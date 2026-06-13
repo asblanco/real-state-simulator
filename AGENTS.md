@@ -6,7 +6,8 @@ Frontend-only real estate investment simulator. Built with SvelteKit + Tailwind 
 
 - `mise run install` — install dependencies
 - `mise run build` — build SvelteKit app to `dist/`
-- `mise run test` — run unit tests
+- `mise run test` — run unit tests (excludes e2e)
+- `mise run test-e2e` — run e2e tests (starts preview server on :8080)
 - `mise run dev` — start Vite dev server with HMR
 - `bun run preview` — preview production build locally
 
