@@ -13,7 +13,7 @@ export interface InputParams {
   useFlatRate: boolean;
   reservaImprevistos: number;
   extraMonthlyContribution: number;
-  swrPct: number;
+  swrPct: number; // Safe withdrawal rate (e.g. 0.04 = 4% rule)
   targetWithdrawal: number;
   years: number;
 }
