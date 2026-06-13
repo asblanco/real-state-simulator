@@ -79,4 +79,4 @@ if (errors.length) errors.forEach(e => console.log(`     ${e}`));
 console.log(`\n${passed + failed} tests, ${passed} passed, ${failed} failed`);
 
 await browser.close();
-process.exit(failed > 0 ? 1 : 0);
+if (failed > 0) throw new Error(`${failed} test(s) failed`);

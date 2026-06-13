@@ -85,4 +85,4 @@ assert(cardErrors === 0, `No errors after tooltip hover (got ${cardErrors})`);
 console.log(`\n${passed + failed} tests, ${passed} passed, ${failed} failed`);
 
 await browser.close();
-process.exit(failed > 0 ? 1 : 0);
+if (failed > 0) throw new Error(`${failed} test(s) failed`);

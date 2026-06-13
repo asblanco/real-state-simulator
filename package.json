@@ -8,6 +8,7 @@
     "dev": "vite dev",
     "preview": "vite preview",
     "test": "bun test",
+    "test:e2e": "bun run preview -- --port 8080 & SERVER_PID=$!; sleep 2 && bun test e2e/; kill $SERVER_PID 2>/dev/null",
     "sync": "bun run build && bunx browser-sync start --server dist --files 'dist/**/*' --no-notify --no-open"
   },
   "devDependencies": {
