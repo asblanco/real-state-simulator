@@ -23,8 +23,6 @@
   let diffData = $derived($etfComparison.yearByYear.map(y => y.etfValue - y.reTotalWealth));
   let gapColors = $derived(diffData.map(v => v >= 0 ? "rgba(16, 185, 129, 0.3)" : "rgba(239, 68, 68, 0.3)"));
   let investedData = $derived($etfComparison.yearByYear.map(y => y.cumulativeContribution));
-  let netGainData = $derived($etfComparison.yearByYear.map(y => y.etfValue - y.cumulativeContribution));
-  let netGainColors = $derived(netGainData.map(v => v >= 0 ? "rgba(16, 185, 129, 0.25)" : "rgba(239, 68, 68, 0.25)"));
 </script>
 
 <div class="space-y-5 pb-12">
@@ -149,27 +147,6 @@
         },
       ]}
       title={$t("etf.chart_title")}
-    />
-  </div>
-
-  <!-- CHART 2: Net Gain (ETF − Capital Invested) -->
-  <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs h-80">
-    <Chart
-      type="line"
-      labels={$etfComparison.yearByYear.map(y => $t("chart.axis_prefix") + y.year)}
-      datasets={[
-        {
-          label: $t("etf.net_gain_loss"),
-          data: netGainData,
-          borderColor: "rgb(99, 91, 255)",
-          borderWidth: 2,
-          backgroundColor: netGainColors,
-          fill: true,
-          pointRadius: 3,
-          pointBackgroundColor: "rgb(99, 91, 255)",
-        },
-      ]}
-      title={$t("etf.chart_gain_title")}
     />
   </div>
 
