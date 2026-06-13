@@ -15,8 +15,8 @@ function getKpiValue(id: string) {
   return page.evaluate((sel) => {
     const el = document.getElementById(sel);
     if (!el) return null;
-    const p = el.querySelector("p:last-child");
-    return p?.textContent?.trim() ?? null;
+    const ps = el.querySelectorAll("p");
+    return ps.length >= 2 ? ps[1].textContent?.trim() ?? null : null;
   }, id);
 }
 
