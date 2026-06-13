@@ -29,7 +29,7 @@ Frontend-only real estate investment simulator. Built with SvelteKit + Tailwind 
 
 ### State Management (Svelte stores)
 - `src/lib/stores/params.ts` — writable store for input parameters
-- `src/lib/stores/computed.ts` — derived stores (purchaseCosts, years, summary, etfComparison)
+- `src/lib/stores/computed.ts` — derived stores (purchaseCosts, years, summary, etfComparison, yearlyWealth)
 
 ### UI Components
 - `src/lib/components/Chart.svelte` — Chart.js wrapper
@@ -39,10 +39,6 @@ Frontend-only real estate investment simulator. Built with SvelteKit + Tailwind 
 ### Routes (multi-view SPA)
 - `src/routes/+layout.svelte` — app shell (header, sidebar sliders, navbar)
 - `src/routes/+page.svelte` — Dashboard (KPIs + charts + table + math breakdown)
-- `src/routes/rental/+page.svelte` — detailed rental income view
-- `src/routes/mortgage/+page.svelte` — amortization schedule
-- `src/routes/fiscal/+page.svelte` — tax optimization breakdown
-- `src/routes/wealth/+page.svelte` — wealth evolution
 - `src/routes/etf/+page.svelte` — RE vs ETF comparison
 
 ### Internationalization
