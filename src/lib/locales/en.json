@@ -154,7 +154,8 @@
   "etf.breakeven_desc": "CAGR needed for ETF to match the property's return.",
   "etf.wins": "ETF wins by",
   "etf.re_wins": "Property wins by",
-  "etf.chart_title": "Comparative Evolution: Real Estate vs ETF",
+  "etf.chart_title": "Wealth Evolution: Real Estate vs ETF",
+  "etf.chart_income_title": "Annual Rent vs Sustainable Withdrawal",
   "etf.legend_re": "Real Estate",
   "etf.legend_etf": "ETF",
   "etf.year_table": "Year-by-Year Comparison",
@@ -165,6 +166,8 @@
   "etf.avg_monthly_saving": "Avg Monthly Savings vs Buying",
   "etf.crossover": "Crossover Year",
   "etf.extra_contribution": "Extra Monthly Contribution",
+  "etf.total_invested": "Capital Invested",
+  "etf.net_gain_loss": "Gain/Loss",
 
   "etf.model_desc": "Rent vs Buy Model",
   "etf.model_detail": "Instead of buying, you rent the same property and invest the difference (savings from not paying mortgage + ownership costs) in an ETF.",

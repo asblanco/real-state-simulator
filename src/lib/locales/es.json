@@ -154,7 +154,8 @@
   "etf.breakeven_desc": "CAGR que necesita el ETF para igualar la rentabilidad del inmueble.",
   "etf.wins": "ETF gana por",
   "etf.re_wins": "Inmueble gana por",
-  "etf.chart_title": "Evolución Comparada: Inmueble vs ETF",
+  "etf.chart_title": "Evolución Patrimonial: Inmueble vs ETF",
+  "etf.chart_income_title": "Renta Anual vs Retiro Sostenible",
   "etf.legend_re": "Inmueble",
   "etf.legend_etf": "ETF",
   "etf.year_table": "Comparativa Año a Año",
@@ -165,6 +166,8 @@
   "etf.avg_monthly_saving": "Ahorro Mensual Medio vs Comprar",
   "etf.crossover": "Año de Cruce",
   "etf.extra_contribution": "Aporte Extra Mensual",
+  "etf.total_invested": "Capital Aportado",
+  "etf.net_gain_loss": "Ganancia/Pérdida",
 
   "etf.model_desc": "Modelo Renta vs Comprar",
   "etf.model_detail": "En lugar de comprar, alquilas el mismo inmueble e inviertes la diferencia (ahorro por no pagar hipoteca + gastos de propietario) en un ETF.",

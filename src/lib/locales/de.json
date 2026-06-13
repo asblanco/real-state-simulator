@@ -154,7 +154,8 @@
   "etf.breakeven_desc": "CAGR, die der ETF benötigt, um die Rendite der Immobilie zu erreichen.",
   "etf.wins": "ETF gewinnt um",
   "etf.re_wins": "Immobilie gewinnt um",
-  "etf.chart_title": "Vergleichende Entwicklung: Immobilie vs ETF",
+  "etf.chart_title": "Vermögensentwicklung: Immobilie vs ETF",
+  "etf.chart_income_title": "Jahresmiete vs Nachhaltige Entnahme",
   "etf.legend_re": "Immobilie",
   "etf.legend_etf": "ETF",
   "etf.year_table": "Jährlicher Vergleich",
@@ -165,6 +166,8 @@
   "etf.avg_monthly_saving": "Durchschnittliche monatliche Ersparnis vs Kauf",
   "etf.crossover": "Schnittpunkt-Jahr",
   "etf.extra_contribution": "Zusätzlicher Monatsbeitrag",
+  "etf.total_invested": "Investiertes Kapital",
+  "etf.net_gain_loss": "Gewinn/Verlust",
 
   "etf.model_desc": "Miete vs Kauf Modell",
   "etf.model_detail": "Statt zu kaufen, mieten Sie dieselbe Immobilie und investieren die Differenz (Einsparungen durch keine Hypothek + Eigentümerkosten) in einen ETF.",

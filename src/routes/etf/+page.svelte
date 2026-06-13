@@ -24,6 +24,7 @@
   let gapColors = $derived(diffData.map(v => v >= 0 ? "rgba(16, 185, 129, 0.3)" : "rgba(239, 68, 68, 0.3)"));
   let annualRentData = $derived($etfComparison.yearByYear.map(y => y.monthlyRentAtYear * 12));
   let annualSwData = $derived($etfComparison.yearByYear.map(y => y.sustainableWithdrawal * 12));
+  let investedData = $derived($etfComparison.yearByYear.map(y => y.cumulativeContribution));
 </script>
 
 <div class="space-y-5 pb-12">
@@ -105,8 +106,8 @@
     </div>
   </div>
 
-  <!-- COMPARISON CHART + RENT / SW LINES -->
-  <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs h-96">
+  <!-- CHART 1: Wealth Evolution -->
+  <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs h-64">
     <Chart
       type="line"
       labels={$etfComparison.yearByYear.map(y => $t("chart.axis_prefix") + y.year)}
@@ -130,20 +131,11 @@
           pointBackgroundColor: "rgb(99, 91, 255)",
         },
         {
-          label: $t("etf.monthly_rent") + " (anual)",
-          data: annualRentData,
-          borderColor: "rgb(239, 68, 68)",
+          label: $t("etf.total_invested"),
+          data: investedData,
+          borderColor: "rgb(156, 163, 175)",
           borderWidth: 1.5,
-          borderDash: [6, 3],
-          fill: false,
-          pointRadius: 0,
-        },
-        {
-          label: $t("etf.sustainable_withdrawal") + " (anual)",
-          data: annualSwData,
-          borderColor: "rgb(16, 185, 129)",
-          borderWidth: 1.5,
-          borderDash: [4, 4],
+          borderDash: [3, 3],
           fill: false,
           pointRadius: 0,
         },
@@ -160,6 +152,37 @@
     />
   </div>
 
+  <!-- CHART 2: Annual Income -->
+  <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs h-48">
+    <Chart
+      type="line"
+      labels={$etfComparison.yearByYear.map(y => $t("chart.axis_prefix") + y.year)}
+      datasets={[
+        {
+          label: $t("etf.monthly_rent") + " (anual)",
+          data: annualRentData,
+          borderColor: "rgb(239, 68, 68)",
+          borderWidth: 2,
+          borderDash: [6, 3],
+          fill: false,
+          pointRadius: 3,
+          pointBackgroundColor: "rgb(239, 68, 68)",
+        },
+        {
+          label: $t("etf.sustainable_withdrawal") + " (anual)",
+          data: annualSwData,
+          borderColor: "rgb(16, 185, 129)",
+          borderWidth: 2,
+          borderDash: [4, 4],
+          fill: false,
+          pointRadius: 3,
+          pointBackgroundColor: "rgb(16, 185, 129)",
+        },
+      ]}
+      title={$t("etf.chart_income_title")}
+    />
+  </div>
+
   <!-- YEAR TABLE -->
   <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs">
     <h3 class="text-sm font-bold text-[#0A2540] mb-3">{$t("etf.year_table")}</h3>
@@ -173,6 +196,8 @@
             <th class="text-center bg-gray-200">{$t("etf.table_gap")}</th>
             <th class="text-center bg-gray-200">{$t("etf.monthly_rent")}</th>
             <th class="text-center bg-gray-200">{$t("etf.sustainable_withdrawal")}</th>
+            <th class="text-center bg-gray-200">{$t("etf.total_invested")}</th>
+            <th class="text-center bg-gray-200">{$t("etf.net_gain_loss")}</th>
           </tr>
         </thead>
         <tbody>
@@ -187,6 +212,10 @@
               <td class="text-center font-mono text-sm text-red-600">{fmt(y.monthlyRentAtYear)}</td>
               <td class="text-center font-mono text-sm {y.sustainableWithdrawal >= y.monthlyRentAtYear ? 'text-emerald-600 font-bold' : 'text-gray-500'}">
                 {fmt(y.sustainableWithdrawal)}
+              </td>
+              <td class="text-center font-mono text-sm text-gray-500">{fmt(y.cumulativeContribution)}</td>
+              <td class="text-center font-mono text-sm {y.etfValue - y.cumulativeContribution >= 0 ? 'text-emerald-600' : 'text-orange-600'}">
+                {y.etfValue - y.cumulativeContribution >= 0 ? '+' : ''}{fmt(y.etfValue - y.cumulativeContribution)}
               </td>
             </tr>
           {/each}

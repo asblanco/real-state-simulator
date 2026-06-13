@@ -57,10 +57,12 @@ export function computeEtfComparison(
   const monthlyCashflows = computeMonthlyCashflows(params, years, purchaseCosts);
 
   let etfValue = initialCapital;
+  let cumulativeContribution = initialCapital;
   const yearByYear: EtfYearData[] = [];
 
   for (let m = 0; m < years.length * MONTHS_PER_YEAR; m++) {
     etfValue = etfValue * (1 + monthlyRate) + monthlyCashflows[m];
+    cumulativeContribution += monthlyCashflows[m];
     if ((m + 1) % MONTHS_PER_YEAR === 0) {
       const yearIdx = (m + 1) / MONTHS_PER_YEAR - 1;
       const monthlyRentAtYear = years[yearIdx].ingresoWarmMensual;
@@ -70,6 +72,7 @@ export function computeEtfComparison(
         etfValue: Math.round(etfValue),
         reTotalWealth: computeReWealthAtYear(params, years, yearIdx),
         monthlyContribution: Math.round(monthlyCashflows[m]),
+        cumulativeContribution: Math.round(cumulativeContribution),
         monthlyRentAtYear: Math.round(monthlyRentAtYear),
         sustainableWithdrawal: Math.round(sustainableWithdrawal),
       });

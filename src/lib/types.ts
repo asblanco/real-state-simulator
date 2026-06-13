@@ -68,6 +68,7 @@ export interface EtfYearData {
   etfValue: number;
   reTotalWealth: number;
   monthlyContribution: number;
+  cumulativeContribution: number;
   monthlyRentAtYear: number;
   sustainableWithdrawal: number;
 }
