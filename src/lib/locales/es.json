@@ -180,5 +180,7 @@
   "etf.swr_label": "Tasa de Retiro Seguro (SWR)",
   "etf.target_withdrawal_label": "Retiro Mensual Objetivo",
   "etf.monthly_rent": "Alquiler Mensual",
-  "etf.sustainable_withdrawal": "Retiro Sostenible"
+  "etf.sustainable_withdrawal": "Retiro Sostenible",
+  "etf.sustainable_withdrawal_net": "Retiro Neto",
+  "etf.tax_country": "País Fiscal"
 }

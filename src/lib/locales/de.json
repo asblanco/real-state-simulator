@@ -180,5 +180,7 @@
   "etf.swr_label": "Sichere Entnahmerate (SWR)",
   "etf.target_withdrawal_label": "Monatliches Entnahmeziel",
   "etf.monthly_rent": "Monatsmiete",
-  "etf.sustainable_withdrawal": "Nachhaltige Entnahme"
+  "etf.sustainable_withdrawal": "Nachhaltige Entnahme",
+  "etf.sustainable_withdrawal_net": "Netto-Entnahme",
+  "etf.tax_country": "Steuerland"
 }

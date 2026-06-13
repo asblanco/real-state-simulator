@@ -22,6 +22,13 @@ export const SWR_MIN = 0.01;
 export const SWR_MAX = 0.10;
 export const TARGET_WITHDRAWAL_DEFAULT = 1000;
 
+export const TAX_COUNTRIES = {
+  de: { taxRate: 0.26375, taxableRatio: 0.7, allowance: 1000 },
+  es: { taxRate: 0.26, taxableRatio: 1.0, allowance: 0 },
+} as const;
+
+export type TaxCountry = keyof typeof TAX_COUNTRIES;
+
 import type { InputParams } from "./types";
 
 export const DEFAULT_PARAMS: InputParams = {
@@ -41,5 +48,6 @@ export const DEFAULT_PARAMS: InputParams = {
   extraMonthlyContribution: 0,
   swrPct: SWR_DEFAULT,
   targetWithdrawal: TARGET_WITHDRAWAL_DEFAULT,
+  taxCountry: "de",
   years: YEARS_DEFAULT,
 };

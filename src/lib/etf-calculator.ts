@@ -1,5 +1,5 @@
 import type { InputParams, YearData, SummaryData, PurchaseCosts, EtfComparison, EtfYearData } from "./types";
-import { MONTHS_PER_YEAR } from "./constants";
+import { MONTHS_PER_YEAR, TAX_COUNTRIES } from "./constants";
 
 function etfFutureValue(
   initialCapital: number,
@@ -67,6 +67,13 @@ export function computeEtfComparison(
       const yearIdx = (m + 1) / MONTHS_PER_YEAR - 1;
       const monthlyRentAtYear = years[yearIdx].ingresoWarmMensual;
       const sustainableWithdrawal = etfValue * params.swrPct / MONTHS_PER_YEAR;
+      const cfg = TAX_COUNTRIES[params.taxCountry];
+      const annualSW = sustainableWithdrawal * MONTHS_PER_YEAR;
+      const gainRatio = Math.max(0, (etfValue - cumulativeContribution) / etfValue);
+      const taxableGain = annualSW * gainRatio * cfg.taxableRatio;
+      const taxableAfterAllowance = Math.max(0, taxableGain - cfg.allowance);
+      const tax = taxableAfterAllowance * cfg.taxRate;
+      const sustainableWithdrawalNet = (annualSW - tax) / MONTHS_PER_YEAR;
       yearByYear.push({
         year: yearIdx + 1,
         etfValue: Math.round(etfValue),
@@ -75,6 +82,7 @@ export function computeEtfComparison(
         cumulativeContribution: Math.round(cumulativeContribution),
         monthlyRentAtYear: Math.round(monthlyRentAtYear),
         sustainableWithdrawal: Math.round(sustainableWithdrawal),
+        sustainableWithdrawalNet: Math.round(sustainableWithdrawalNet),
       });
     }
   }
@@ -92,10 +100,12 @@ export function computeEtfComparison(
 
   let fiYear: number | null = null;
   let fiMonthlyIncome = 0;
+  let fiMonthlyIncomeNet = 0;
   for (const yy of yearByYear) {
     if (yy.sustainableWithdrawal >= params.targetWithdrawal) {
       fiYear = yy.year;
       fiMonthlyIncome = yy.sustainableWithdrawal;
+      fiMonthlyIncomeNet = yy.sustainableWithdrawalNet;
       break;
     }
   }
@@ -130,6 +140,7 @@ export function computeEtfComparison(
     crossoverYear,
     fiYear,
     fiMonthlyIncome,
+    fiMonthlyIncomeNet,
     yearByYear,
     scenario5: scenarioRate(0.05),
     scenario7: scenarioRate(0.07),

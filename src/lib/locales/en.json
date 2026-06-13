@@ -180,5 +180,7 @@
   "etf.swr_label": "Safe Withdrawal Rate (SWR)",
   "etf.target_withdrawal_label": "Target Monthly Withdrawal",
   "etf.monthly_rent": "Monthly Rent",
-  "etf.sustainable_withdrawal": "Sustainable W/drawal"
+  "etf.sustainable_withdrawal": "Sustainable W/drawal",
+  "etf.sustainable_withdrawal_net": "Net W/drawal",
+  "etf.tax_country": "Tax Country"
 }

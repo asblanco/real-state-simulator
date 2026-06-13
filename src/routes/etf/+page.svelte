@@ -44,6 +44,7 @@
           <div class="flex items-baseline gap-3 mt-1 flex-wrap">
             <span class="text-3xl font-black text-emerald-800">{ti("etf.fi_year", { year: $etfComparison.fiYear })}</span>
             <span class="text-xl font-bold text-emerald-600">— {ti("etf.fi_income", { income: $etfComparison.fiMonthlyIncome.toLocaleString("de-DE") })}</span>
+            <span class="text-base text-emerald-500 font-semibold">→ {fmt($etfComparison.fiMonthlyIncomeNet)} neto</span>
           </div>
           <p class="text-sm text-emerald-700 mt-1">{ti("etf.fi_desc", { year: $etfComparison.fiYear, income: $etfComparison.fiMonthlyIncome.toLocaleString("de-DE") })}</p>
         </div>
@@ -163,6 +164,7 @@
             <th class="text-center bg-gray-200">{$t("etf.table_gap")}</th>
             <th class="text-center bg-gray-200">{$t("etf.monthly_rent")}</th>
             <th class="text-center bg-gray-200">{$t("etf.sustainable_withdrawal")}</th>
+            <th class="text-center bg-gray-200">{$t("etf.sustainable_withdrawal_net")}</th>
             <th class="text-center bg-gray-200">{$t("etf.total_invested")}</th>
             <th class="text-center bg-gray-200">{$t("etf.net_gain_loss")}</th>
           </tr>
@@ -180,6 +182,7 @@
               <td class="text-center font-mono text-sm {y.sustainableWithdrawal >= $params.targetWithdrawal ? 'text-emerald-600 font-bold' : 'text-gray-500'}">
                 {fmt(y.sustainableWithdrawal)}
               </td>
+              <td class="text-center font-mono text-sm text-gray-500">{fmt(y.sustainableWithdrawalNet)}</td>
               <td class="text-center font-mono text-sm text-gray-500">{fmt(y.cumulativeContribution)}</td>
               <td class="text-center font-mono text-sm {y.etfValue - y.cumulativeContribution >= 0 ? 'text-emerald-600' : 'text-orange-600'}">
                 {y.etfValue - y.cumulativeContribution >= 0 ? '+' : ''}{fmt(y.etfValue - y.cumulativeContribution)}

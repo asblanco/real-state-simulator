@@ -15,6 +15,7 @@ export interface InputParams {
   extraMonthlyContribution: number;
   swrPct: number; // Safe withdrawal rate (e.g. 0.04 = 4% rule)
   targetWithdrawal: number;
+  taxCountry: "de" | "es";
   years: number;
 }
 
@@ -73,6 +74,7 @@ export interface EtfYearData {
   cumulativeContribution: number;
   monthlyRentAtYear: number;
   sustainableWithdrawal: number;
+  sustainableWithdrawalNet: number;
 }
 
 export interface EtfComparison {
@@ -84,6 +86,7 @@ export interface EtfComparison {
   crossoverYear: number | null;
   fiYear: number | null;
   fiMonthlyIncome: number;
+  fiMonthlyIncomeNet: number;
   yearByYear: EtfYearData[];
   scenario5: number;
   scenario7: number;

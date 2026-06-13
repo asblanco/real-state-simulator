@@ -90,6 +90,16 @@
           oninput={(e) => updateParam("targetWithdrawal", parseFloat(e.target.value))}
           class="w-full accent-[#635BFF]">
       </div>
+
+      <div class="pt-3 mt-3 border-t border-gray-200">
+        <label class="block text-xs font-semibold text-gray-500 mb-2">{$t("etf.tax_country")}</label>
+        <div class="flex gap-2">
+          <button onclick={() => updateParam("taxCountry", "de")}
+            class="flex-1 text-xs font-bold py-2 rounded-lg transition-colors {$params.taxCountry === 'de' ? 'bg-[#635BFF] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'} cursor-pointer">🇩🇪 DE</button>
+          <button onclick={() => updateParam("taxCountry", "es")}
+            class="flex-1 text-xs font-bold py-2 rounded-lg transition-colors {$params.taxCountry === 'es' ? 'bg-[#635BFF] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'} cursor-pointer">🇪🇸 ES</button>
+        </div>
+      </div>
     </aside>
     {:else}
     <aside class="bg-white p-3 rounded-2xl border border-gray-200 shadow-xs lg:col-span-1 space-y-2 lg:sticky lg:top-6 z-40 max-h-[calc(100vh-3rem)] overflow-y-auto">
