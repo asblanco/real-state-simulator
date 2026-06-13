@@ -17,8 +17,6 @@
     return (annual * 100).toFixed(2) + " % | " + (total * 100).toFixed(2) + " % total";
   }
 
-  let showDetails = $state(false);
-
   // Pre-compute tooltip HTML via $derived for reactive consistency
   let costoAdqTooltip = $derived(htmlCostoAdq($params, $purchaseCosts));
   let inversionInicialTooltip = $derived(htmlInversionInicial($params, $purchaseCosts));
@@ -202,18 +200,6 @@
     </div>
   </div>
 
-  <!-- DETAILS TOGGLE -->
-  <button
-    onclick={() => showDetails = !showDetails}
-    class="w-full text-xs font-bold text-gray-400 uppercase tracking-wider py-3 px-4 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 cursor-pointer"
-  >
-    {showDetails ? 'Ocultar detalles' : 'Ver más detalles'}
-    <svg class="w-4 h-4 transition-transform {showDetails ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-    </svg>
-  </button>
-
-  {#if showDetails}
 <div class="space-y-6 pb-12">
     <!-- FISCAL BREAKDOWN -->
     <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-xs">
@@ -277,5 +263,4 @@
       </div>
     </div>
   </div>
-  {/if}
 </div>
