@@ -1,18 +1,26 @@
 import { chromium } from "playwright";
+import { beforeAll, afterAll, test, expect } from "bun:test";
 
 const BASE = process.env.BASE_URL || "http://localhost:8080";
 
-const browser = await chromium.launch({ headless: true });
-const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
-
+let browser: any;
+let page: any;
 const errors: string[] = [];
-page.on("pageerror", err => errors.push(err.message));
 
-await page.goto(BASE, { waitUntil: "networkidle" });
-await page.waitForTimeout(2000);
+beforeAll(async () => {
+  browser = await chromium.launch({ headless: true });
+  page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  page.on("pageerror", (err: any) => errors.push(err.message));
+  await page.goto(BASE, { waitUntil: "networkidle" });
+  await page.waitForTimeout(2000);
+});
+
+afterAll(async () => {
+  await browser.close();
+});
 
 function getKpiValue(id: string) {
-  return page.evaluate((sel) => {
+  return page.evaluate((sel: string) => {
     const el = document.getElementById(sel);
     if (!el) return null;
     const ps = el.querySelectorAll("p");
@@ -21,14 +29,14 @@ function getKpiValue(id: string) {
 }
 
 function getTableRowCount(tableId: string) {
-  return page.evaluate((sel) => {
+  return page.evaluate((sel: string) => {
     const tbody = document.getElementById(sel);
     return tbody?.querySelectorAll("tr").length ?? 0;
   }, tableId);
 }
 
 function canvasHasData(id: string) {
-  return page.evaluate((sel) => {
+  return page.evaluate((sel: string) => {
     const c = document.getElementById(sel) as HTMLCanvasElement | null;
     if (!c) return false;
     const ctx = c.getContext("2d")!;
@@ -44,45 +52,54 @@ function canvasHasData(id: string) {
   }, id);
 }
 
-let passed = 0;
-let failed = 0;
+test("no page errors", () => {
+  expect(errors.length).toBe(0);
+});
 
-function assert(condition: boolean, msg: string) {
-  if (condition) { passed++; console.log(`  ✓ ${msg}`); }
-  else { failed++; console.log(`  ✗ ${msg}`); }
-}
+test("Precio Total KPI shows value", async () => {
+  const v = await getKpiValue("kpi-precio-total");
+  expect(v).not.toBeNull();
+  expect(v).not.toBe("0 €");
+  expect(v).toMatch(/€$/);
+});
 
-console.log("\nE2E: Real State Simulator\n");
+test("Efectivo Inicial KPI shows value", async () => {
+  const v = await getKpiValue("kpi-efectivo-inicial");
+  expect(v).not.toBeNull();
+  expect(v).not.toBe("0 €");
+  expect(v).toMatch(/€$/);
+});
 
-assert(errors.length === 0, `No page errors (got ${errors.length})`);
-if (errors.length) errors.forEach(e => console.log(`     ${e}`));
+test("Ganancia Neta KPI shows value", async () => {
+  const v = await getKpiValue("kpi-ganancia-neta");
+  expect(v).not.toBeNull();
+  expect(v).not.toBe("0 €");
+  expect(v).toMatch(/€$/);
+});
 
-const precioTotal = await getKpiValue("kpi-precio-total");
-assert(precioTotal !== null && precioTotal !== "0 €" && precioTotal.endsWith("€"), `Precio Total = ${precioTotal}`);
+test("ROE KPI shows percentage", async () => {
+  const v = await getKpiValue("kpi-roe");
+  expect(v).not.toBeNull();
+  expect(v).toContain("%");
+  expect(v).not.toContain("0.00");
+});
 
-const efectivo = await getKpiValue("kpi-efectivo-inicial");
-assert(efectivo !== null && efectivo !== "0 €" && efectivo.endsWith("€"), `Efectivo Inicial = ${efectivo}`);
+test("projection table has at least 10 rows", async () => {
+  const rows = await getTableRowCount("tabla-proyeccion-body");
+  expect(rows).toBeGreaterThanOrEqual(10);
+});
 
-const ganancia = await getKpiValue("kpi-ganancia-neta");
-assert(ganancia !== null && ganancia !== "0 €" && ganancia.endsWith("€"), `Ganancia Neta = ${ganancia}`);
+test("cashflow chart has rendered content", async () => {
+  expect(await canvasHasData("chart-cashflow")).toBe(true);
+});
 
-const roe = await getKpiValue("kpi-roe");
-assert(roe !== null && roe.includes("%") && !roe.includes("0.00"), `ROE = ${roe}`);
+test("wealth chart has rendered content", async () => {
+  expect(await canvasHasData("chart-wealth")).toBe(true);
+});
 
-const tableRows = await getTableRowCount("tabla-proyeccion-body");
-assert(tableRows >= 10, `Proyección table has ${tableRows} rows (≥10)`);
-
-assert(await canvasHasData("chart-cashflow"), "Cashflow chart has visible content");
-assert(await canvasHasData("chart-wealth"), "Wealth chart has visible content");
-
-// Test tooltip: hover over a KPI card with tooltip
-const tooltipCard = page.locator("#kpi-costo-adquisicion");
-await tooltipCard.hover();
-await page.waitForTimeout(500);
-const cardErrors = errors.length;
-assert(cardErrors === 0, `No errors after tooltip hover (got ${cardErrors})`);
-
-console.log(`\n${passed + failed} tests, ${passed} passed, ${failed} failed`);
-
-await browser.close();
-if (failed > 0) throw new Error(`${failed} test(s) failed`);
+test("tooltip hover does not cause errors", async () => {
+  const card = page.locator("#kpi-costo-adquisicion");
+  await card.hover();
+  await page.waitForTimeout(500);
+  expect(errors.length).toBe(0);
+});

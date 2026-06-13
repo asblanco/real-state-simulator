@@ -1,18 +1,26 @@
 import { chromium } from "playwright";
+import { beforeAll, afterAll, test, expect } from "bun:test";
 
 const BASE = process.env.BASE_URL || "http://localhost:8080";
 
-const browser = await chromium.launch({ headless: true });
-const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
-
+let browser: any;
+let page: any;
 const errors: string[] = [];
-page.on("pageerror", err => errors.push(err.message));
 
-await page.goto(BASE, { waitUntil: "networkidle" });
-await page.waitForTimeout(2000);
+beforeAll(async () => {
+  browser = await chromium.launch({ headless: true });
+  page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  page.on("pageerror", (err: any) => errors.push(err.message));
+  await page.goto(BASE, { waitUntil: "networkidle" });
+  await page.waitForTimeout(2000);
+});
+
+afterAll(async () => {
+  await browser.close();
+});
 
 async function canvasHasData(canvasId: string): Promise<boolean> {
-  const result = await page.evaluate((id) => {
+  const result = await page.evaluate((id: string) => {
     const c = document.getElementById(id) as HTMLCanvasElement | null;
     if (!c) return "no-canvas";
     const ctx = c.getContext("2d")!;
@@ -36,7 +44,7 @@ async function canvasHasData(canvasId: string): Promise<boolean> {
 }
 
 async function switchLanguage(value: string): Promise<void> {
-  await page.evaluate((v) => {
+  await page.evaluate((v: string) => {
     const sel = document.getElementById("lang-select") as HTMLSelectElement;
     sel.value = v;
     sel.dispatchEvent(new Event("change", { bubbles: true }));
@@ -44,39 +52,41 @@ async function switchLanguage(value: string): Promise<void> {
   await page.waitForTimeout(1500);
 }
 
-let passed = 0;
-let failed = 0;
+test("cashflow chart has content before language switch", async () => {
+  expect(await canvasHasData("chart-cashflow")).toBe(true);
+});
 
-function assert(condition: boolean, msg: string) {
-  if (condition) { passed++; console.log(`  ✓ ${msg}`); }
-  else { failed++; console.log(`  ✗ ${msg}`); }
-}
+test("wealth chart has content before language switch", async () => {
+  expect(await canvasHasData("chart-wealth")).toBe(true);
+});
 
-console.log("\nE2E: Language Switch – Chart Rendering\n");
+test("cashflow chart has content after switch to EN", async () => {
+  await switchLanguage("en");
+  expect(await canvasHasData("chart-cashflow")).toBe(true);
+});
 
-// Baseline: charts rendered with data on initial load (Spanish)
-assert(await canvasHasData("chart-cashflow"), "Cashflow chart has content before language switch");
-assert(await canvasHasData("chart-wealth"), "Wealth chart has content before language switch");
+test("wealth chart has content after switch to EN", async () => {
+  expect(await canvasHasData("chart-wealth")).toBe(true);
+});
 
-// Switch to English
-await switchLanguage("en");
-assert(await canvasHasData("chart-cashflow"), "Cashflow chart has content after switch to EN");
-assert(await canvasHasData("chart-wealth"), "Wealth chart has content after switch to EN");
+test("cashflow chart has content after switch to DE", async () => {
+  await switchLanguage("de");
+  expect(await canvasHasData("chart-cashflow")).toBe(true);
+});
 
-// Switch to German
-await switchLanguage("de");
-assert(await canvasHasData("chart-cashflow"), "Cashflow chart has content after switch to DE");
-assert(await canvasHasData("chart-wealth"), "Wealth chart has content after switch to DE");
+test("wealth chart has content after switch to DE", async () => {
+  expect(await canvasHasData("chart-wealth")).toBe(true);
+});
 
-// Switch back to Spanish
-await switchLanguage("es");
-assert(await canvasHasData("chart-cashflow"), "Cashflow chart has content after switch back to ES");
-assert(await canvasHasData("chart-wealth"), "Wealth chart has content after switch back to ES");
+test("cashflow chart has content after switch back to ES", async () => {
+  await switchLanguage("es");
+  expect(await canvasHasData("chart-cashflow")).toBe(true);
+});
 
-assert(errors.length === 0, `No page errors (got ${errors.length})`);
-if (errors.length) errors.forEach(e => console.log(`     ${e}`));
+test("wealth chart has content after switch back to ES", async () => {
+  expect(await canvasHasData("chart-wealth")).toBe(true);
+});
 
-console.log(`\n${passed + failed} tests, ${passed} passed, ${failed} failed`);
-
-await browser.close();
-if (failed > 0) throw new Error(`${failed} test(s) failed`);
+test("no page errors during language switches", () => {
+  expect(errors.length).toBe(0);
+});
