@@ -65,6 +65,13 @@
           oninput={(e) => updateParam("years", parseInt(e.target.value))}
           class="w-full accent-[#635BFF]">
       </div>
+
+      <div class="pt-3 mt-3 border-t border-gray-200">
+        <label class="block text-xs font-semibold text-gray-500 mb-1">{$t("etf.extra_contribution")} <span class="text-[#635BFF] font-bold">{$params.extraMonthlyContribution}</span> €</label>
+        <input type="range" min="0" max="2000" step="50" value={$params.extraMonthlyContribution}
+          oninput={(e) => updateParam("extraMonthlyContribution", parseFloat(e.target.value))}
+          class="w-full accent-[#635BFF]">
+      </div>
     </aside>
     {:else}
     <aside class="bg-white p-3 rounded-2xl border border-gray-200 shadow-xs lg:col-span-1 space-y-2 lg:sticky lg:top-6 z-40 max-h-[calc(100vh-3rem)] overflow-y-auto">

@@ -163,7 +163,17 @@
   "etf.etf_value": "Valor ETF",
   "etf.table_gap": "Diferencia",
   "etf.avg_monthly_saving": "Ahorro Mensual Medio vs Comprar",
+  "etf.crossover": "Año de Cruce",
+  "etf.extra_contribution": "Aporte Extra Mensual",
 
   "etf.model_desc": "Modelo Renta vs Comprar",
-  "etf.model_detail": "En lugar de comprar, alquilas el mismo inmueble e inviertes la diferencia (ahorro por no pagar hipoteca + gastos de propietario) en un ETF."
+  "etf.model_detail": "En lugar de comprar, alquilas el mismo inmueble e inviertes la diferencia (ahorro por no pagar hipoteca + gastos de propietario) en un ETF.",
+
+  "etf.fi_title": "Independencia Financiera",
+  "etf.fi_year": "Año {year}",
+  "etf.fi_income": "{income} €/mes sostenibles",
+  "etf.fi_desc": "Desde el año {year}, tu cartera de ETFs genera ingresos pasivos suficientes para cubrir el alquiler indefinidamente — sin necesidad de seguir aportando.",
+  "etf.fi_not_reached": "No se alcanza la independencia financiera dentro de esta proyección.",
+  "etf.monthly_rent": "Alquiler Mensual",
+  "etf.sustainable_withdrawal": "Retiro Sostenible"
 }

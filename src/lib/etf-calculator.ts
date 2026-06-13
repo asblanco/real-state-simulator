@@ -1,5 +1,5 @@
 import type { InputParams, YearData, SummaryData, PurchaseCosts, EtfComparison, EtfYearData } from "./types";
-import { MONTHS_PER_YEAR } from "./constants";
+import { MONTHS_PER_YEAR, SWR_RATE } from "./constants";
 
 function etfFutureValue(
   initialCapital: number,
@@ -24,7 +24,7 @@ function computeMonthlyCashflows(
       const ingresoAlquiler = y.mensualPiso + y.mensualParking + y.umlageMensual;
       const costePropietario = y.hipotecaMensual + params.hausgeldTotal + params.reservaImprevistos;
       const diff = costePropietario - ingresoAlquiler;
-      cashflows.push(diff);
+      cashflows.push(diff + params.extraMonthlyContribution);
     }
   }
   return cashflows;
@@ -63,11 +63,15 @@ export function computeEtfComparison(
     etfValue = etfValue * (1 + monthlyRate) + monthlyCashflows[m];
     if ((m + 1) % MONTHS_PER_YEAR === 0) {
       const yearIdx = (m + 1) / MONTHS_PER_YEAR - 1;
+      const monthlyRentAtYear = years[yearIdx].ingresoWarmMensual;
+      const sustainableWithdrawal = etfValue * SWR_RATE / MONTHS_PER_YEAR;
       yearByYear.push({
         year: yearIdx + 1,
         etfValue: Math.round(etfValue),
         reTotalWealth: computeReWealthAtYear(params, years, yearIdx),
         monthlyContribution: Math.round(monthlyCashflows[m]),
+        monthlyRentAtYear: Math.round(monthlyRentAtYear),
+        sustainableWithdrawal: Math.round(sustainableWithdrawal),
       });
     }
   }
@@ -79,6 +83,16 @@ export function computeEtfComparison(
   for (const yy of yearByYear) {
     if (yy.etfValue >= yy.reTotalWealth) {
       crossoverYear = yy.year;
+      break;
+    }
+  }
+
+  let fiYear: number | null = null;
+  let fiMonthlyIncome = 0;
+  for (const yy of yearByYear) {
+    if (yy.sustainableWithdrawal >= yy.monthlyRentAtYear) {
+      fiYear = yy.year;
+      fiMonthlyIncome = yy.sustainableWithdrawal;
       break;
     }
   }
@@ -111,6 +125,8 @@ export function computeEtfComparison(
     gap: etfFinalValue - reFinalWealth,
     breakevenCagr,
     crossoverYear,
+    fiYear,
+    fiMonthlyIncome,
     yearByYear,
     scenario5: scenarioRate(0.05),
     scenario7: scenarioRate(0.07),

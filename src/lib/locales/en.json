@@ -163,7 +163,17 @@
   "etf.etf_value": "ETF Value",
   "etf.table_gap": "Gap",
   "etf.avg_monthly_saving": "Avg Monthly Savings vs Buying",
+  "etf.crossover": "Crossover Year",
+  "etf.extra_contribution": "Extra Monthly Contribution",
 
   "etf.model_desc": "Rent vs Buy Model",
-  "etf.model_detail": "Instead of buying, you rent the same property and invest the difference (savings from not paying mortgage + ownership costs) in an ETF."
+  "etf.model_detail": "Instead of buying, you rent the same property and invest the difference (savings from not paying mortgage + ownership costs) in an ETF.",
+
+  "etf.fi_title": "Financial Independence",
+  "etf.fi_year": "Year {year}",
+  "etf.fi_income": "{income} €/month sustainable",
+  "etf.fi_desc": "From year {year}, your ETF portfolio generates enough passive income to cover the rent indefinitely — no more contributions needed.",
+  "etf.fi_not_reached": "Financial independence not reached within this projection period.",
+  "etf.monthly_rent": "Monthly Rent",
+  "etf.sustainable_withdrawal": "Sustainable W/drawal"
 }

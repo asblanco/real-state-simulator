@@ -12,6 +12,7 @@ export interface InputParams {
   hausgeldTotal: number;
   useFlatRate: boolean;
   reservaImprevistos: number;
+  extraMonthlyContribution: number;
   years: number;
 }
 
@@ -67,6 +68,8 @@ export interface EtfYearData {
   etfValue: number;
   reTotalWealth: number;
   monthlyContribution: number;
+  monthlyRentAtYear: number;
+  sustainableWithdrawal: number;
 }
 
 export interface EtfComparison {
@@ -76,6 +79,8 @@ export interface EtfComparison {
   gap: number;
   breakevenCagr: number;
   crossoverYear: number | null;
+  fiYear: number | null;
+  fiMonthlyIncome: number;
   yearByYear: EtfYearData[];
   scenario5: number;
   scenario7: number;

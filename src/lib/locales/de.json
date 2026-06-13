@@ -163,7 +163,17 @@
   "etf.etf_value": "ETF-Wert",
   "etf.table_gap": "Differenz",
   "etf.avg_monthly_saving": "Durchschnittliche monatliche Ersparnis vs Kauf",
+  "etf.crossover": "Schnittpunkt-Jahr",
+  "etf.extra_contribution": "Zusätzlicher Monatsbeitrag",
 
   "etf.model_desc": "Miete vs Kauf Modell",
-  "etf.model_detail": "Statt zu kaufen, mieten Sie dieselbe Immobilie und investieren die Differenz (Einsparungen durch keine Hypothek + Eigentümerkosten) in einen ETF."
+  "etf.model_detail": "Statt zu kaufen, mieten Sie dieselbe Immobilie und investieren die Differenz (Einsparungen durch keine Hypothek + Eigentümerkosten) in einen ETF.",
+
+  "etf.fi_title": "Finanzielle Freiheit",
+  "etf.fi_year": "Jahr {year}",
+  "etf.fi_income": "{income} €/Monat nachhaltig",
+  "etf.fi_desc": "Ab Jahr {year} generiert Ihr ETF-Portfolio genügend passives Einkommen, um die Miete auf unbestimmte Zeit zu decken — ohne weitere Einzahlungen.",
+  "etf.fi_not_reached": "Finanzielle Freiheit innerhalb dieses Prognosezeitraums nicht erreicht.",
+  "etf.monthly_rent": "Monatsmiete",
+  "etf.sustainable_withdrawal": "Nachhaltige Entnahme"
 }

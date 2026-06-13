@@ -17,6 +17,8 @@ export const ETF_CAGR_DEFAULT = 0.07;
 export const ETF_CAGR_MIN = 0.01;
 export const ETF_CAGR_MAX = 0.15;
 
+export const SWR_RATE = 0.04; // Safe withdrawal rate (4% rule, Trinity Study)
+
 import type { InputParams } from "./types";
 
 export const DEFAULT_PARAMS: InputParams = {
@@ -33,5 +35,6 @@ export const DEFAULT_PARAMS: InputParams = {
   hausgeldTotal: HAUSGELD_TOTAL,
   useFlatRate: false,
   reservaImprevistos: 100,
+  extraMonthlyContribution: 0,
   years: YEARS_DEFAULT,
 };
