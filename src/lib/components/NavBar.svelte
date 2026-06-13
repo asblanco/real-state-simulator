@@ -1,10 +1,11 @@
 <script lang="ts">
   import { page } from "$app/stores";
+  import { base } from "$app/paths";
   import { t } from "../i18n";
 
   const tabs = [
-    { path: "/", key: "nav.dashboard" },
-    { path: "/etf", key: "nav.etf" },
+    { path: `${base}/`, key: "nav.dashboard" },
+    { path: `${base}/etf`, key: "nav.etf" },
   ];
 </script>
 
