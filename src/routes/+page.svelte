@@ -1,189 +1,115 @@
 <script lang="ts">
   import { params } from "$lib/stores/params";
   import { t } from "$lib/i18n";
-  import { purchaseCosts, years, summary, roiColor, roaColor, afaAnual, totalIntereses, totalAmortizacion, totalAhorroFiscal, pctInteres, pctAmortizacion, yearlyWealth } from "$lib/stores/computed";
+  import { purchaseCosts, years, summary, roiColor, roaColor, yearlyWealth } from "$lib/stores/computed";
   import KpiCard from "$lib/components/KpiCard.svelte";
   import Chart from "$lib/components/Chart.svelte";
-  import Tooltip from "$lib/components/Tooltip.svelte";
-  import type { YearData } from "$lib/types";
 
   function fmt(n: number): string {
     return Math.round(n).toLocaleString("de-DE") + " €";
   }
 
-  let tab = $state<"resumen" | "graficos" | "proyeccion" | "fiscal">("resumen");
+  function pct(n: number): string {
+    return (n * 100).toFixed(2) + "%";
+  }
 
-  function warmTooltip(y: YearData): string {
+  function pctDisplay(annual: number, total: number): string {
+    return (annual * 100).toFixed(2) + " % | " + (total * 100).toFixed(2) + " % total";
+  }
+
+  let showDetails = $state(false);
+
+  // Pre-compute tooltip HTML via $derived for reactive consistency
+  let costoAdqTooltip = $derived(htmlCostoAdq($params, $purchaseCosts));
+  let inversionInicialTooltip = $derived(htmlInversionInicial($params, $purchaseCosts));
+  let gananciaNetaTooltip = $derived(htmlGananciaNeta($summary, $purchaseCosts));
+
+  function htmlCostoAdq(p: { precio: number; parking: number }, pc: { costeITP: number; costeNotario: number; costeAgencia: number; efectivoTotalNecesario: number; montoFinanciar: number }): string {
     return `
-      <p class="font-bold text-blue-300 border-b border-gray-700 pb-0.5">${$t("tooltip.warm_titulo")}</p>
-      <div class="flex justify-between"><span>${$t("tooltip.warm_piso")}</span><span>${fmt(y.mensualPiso)}</span></div>
-      <div class="flex justify-between"><span>${$t("tooltip.warm_parking")}</span><span>${fmt(y.mensualParking)}</span></div>
-      <div class="flex justify-between"><span>${$t("tooltip.warm_umlage")}</span><span>+${fmt(y.umlageMensual)}</span></div>
-      <div class="text-[9px] text-gray-400 pt-0.5 italic">${$t("tooltip.warm_factor")}${y.factorSubida.toFixed(2)}</div>
+      <p class="font-bold border-b border-gray-700 pb-1 mb-1 text-[#635BFF]">Desglose Costo Adquisición</p>
+      <div class="flex justify-between"><span>Precio compra:</span><span class="font-mono">${fmt(p.precio + p.parking)}</span></div>
+      <div class="flex justify-between"><span>ITP (3,5%):</span><span class="font-mono">${fmt(pc.costeITP)}</span></div>
+      <div class="flex justify-between"><span>Notaría (2%):</span><span class="font-mono">${fmt(pc.costeNotario)}</span></div>
+      <div class="flex justify-between"><span>Agencia (3,57%):</span><span class="font-mono">${fmt(pc.costeAgencia)}</span></div>
+      <div class="border-t border-gray-700 pt-1 mt-1 flex justify-between font-bold text-emerald-400"><span>Total:</span><span class="font-mono">${fmt(pc.efectivoTotalNecesario + pc.montoFinanciar)}</span></div>
     `;
   }
 
-  function hipotecaTooltip(y: YearData): string {
+  function htmlInversionInicial(p: { entradaPct: number }, pc: { capitalPropioEntrada: number; costeITP: number; costeNotario: number; costeAgencia: number; efectivoTotalNecesario: number }): string {
     return `
-      <p class="font-bold text-blue-300 border-b border-gray-700 pb-0.5">${$t("tooltip.hipoteca_titulo")}</p>
-      <div class="flex justify-between"><span>${$t("tooltip.hipoteca_intereses")}</span><span class="text-red-300">${fmt(y.interesesMensuales)}</span></div>
-      <div class="flex justify-between"><span>${$t("tooltip.hipoteca_amortizacion")}</span><span class="text-emerald-300">${fmt(y.amortizacionMensual)}</span></div>
+      <p class="font-bold border-b border-gray-700 pb-1 mb-1 text-[#635BFF]">Desglose Inversión Inicial</p>
+      <div class="flex justify-between"><span>Entrada (${(p.entradaPct * 100).toFixed(0)}%):</span><span class="font-mono">${fmt(pc.capitalPropioEntrada)}</span></div>
+      <div class="flex justify-between"><span>ITP (3,5%):</span><span class="font-mono">${fmt(pc.costeITP)}</span></div>
+      <div class="flex justify-between"><span>Notaría (2%):</span><span class="font-mono">${fmt(pc.costeNotario)}</span></div>
+      <div class="flex justify-between"><span>Agencia (3,57%):</span><span class="font-mono">${fmt(pc.costeAgencia)}</span></div>
+      <div class="border-t border-gray-700 pt-1 mt-1 flex justify-between font-bold text-emerald-400"><span>Total efectivo:</span><span class="font-mono">${fmt(pc.efectivoTotalNecesario)}</span></div>
     `;
   }
 
-  function cashflowTooltip(y: YearData): string {
+  function htmlGananciaNeta(s: { valorPropiedadFutura: number; deudaRestanteFinal: number; netoDeLaVenta: number; totalCashflowAcumulado: number; gananciaNeta: number }, pc: { efectivoTotalNecesario: number }): string {
     return `
-      <p class="font-bold text-blue-300 border-b border-gray-700 pb-0.5">${$t("tooltip.cashflow_titulo")}</p>
-      <div class="flex justify-between"><span>${$t("tooltip.cashflow_renta")}</span><span class="text-green-300">+${fmt(y.ingresoWarmMensual)}</span></div>
-      <div class="flex justify-between"><span>${$t("tooltip.cashflow_hipoteca")}</span><span class="text-red-300">-${fmt(y.hipotecaMensual)}</span></div>
-      <div class="flex justify-between"><span>${$t("tooltip.cashflow_hausgeld")}</span><span class="text-red-300">-${$params.hausgeldTotal} €</span></div>
-      <div class="flex justify-between"><span>${$t("tooltip.cashflow_imprevistos")}</span><span class="text-red-300">-${$params.reservaImprevistos} €</span></div>
-      <div class="border-t border-gray-700 pt-0.5 mt-0.5 flex justify-between font-bold"><span>${$t("tooltip.cashflow_resultado")}</span><span>${fmt(y.cashflowPreTaxMensual)}</span></div>
+      <p class="font-bold text-emerald-400 border-b border-gray-700 pb-1 mb-1">Desglose Ganancia Neta</p>
+      <div class="flex justify-between"><span>Valor venta futuro:</span><span class="font-mono">${fmt(s.valorPropiedadFutura)}</span></div>
+      <div class="flex justify-between"><span>− Deuda restante:</span><span class="font-mono text-red-300">−${fmt(s.deudaRestanteFinal)}</span></div>
+      <div class="flex justify-between border-b border-gray-800 pb-1"><span>= Neto de venta:</span><span class="font-mono">${fmt(s.netoDeLaVenta)}</span></div>
+      <div class="flex justify-between"><span>+ Cashflow acumulado:</span><span class="font-mono text-green-300">+${fmt(s.totalCashflowAcumulado)}</span></div>
+      <div class="flex justify-between"><span>− Inversión inicial:</span><span class="font-mono text-red-300">−${fmt(pc.efectivoTotalNecesario)}</span></div>
+      <div class="border-t border-gray-700 pt-1 mt-1 flex justify-between font-bold text-emerald-400"><span>= Ganancia neta:</span><span class="font-mono">${fmt(s.gananciaNeta)}</span></div>
     `;
   }
 
-  function fiscalTooltip(y: YearData): string {
-    return `
-      <p class="font-bold text-amber-300 border-b border-gray-700 pb-0.5">${$t("tooltip.fiscal_titulo")}</p>
-      <div class="text-gray-300">${$t("tooltip.fiscal_formula")}</div>
-      <div class="text-gray-300">= ${fmt(y.ingresoWarmMensual)} − ${fmt(y.interesesMensuales)} − ${fmt(y.afaMensual)} − ${$params.hausgeldTotal}</div>
-      <div class="border-t border-gray-700 pt-1 mt-1 flex justify-between font-bold"><span>${$t("tooltip.fiscal_resultado")}</span><span class="text-amber-300">${fmt(y.resultadoFiscalMensual)}</span></div>
-    `;
-  }
+  let keyYears = $derived.by(() => {
+    const all = $yearlyWealth;
+    const indices = new Set<number>();
+    indices.add(0);
+    if (all.length > 4) indices.add(4);
+    if (all.length > 9) indices.add(9);
+    if (all.length > 14) indices.add(14);
+    if (all.length > 19) indices.add(19);
+    if (all.length > 24) indices.add(24);
+    indices.add(all.length - 1);
+    return [...indices].sort((a, b) => a - b).map(i => all[i]);
+  });
 
-  const ahorroHeaderContent = `
-    <p class="font-bold text-emerald-300 border-b border-gray-700 pb-0.5">${$t("tooltip.ahorro_titulo")}</p>
-    <div class="text-gray-300">${$t("tooltip.ahorro_condicion")}</div>
-    <div class="pl-2 text-gray-300">${$t("tooltip.ahorro_formula")}</div>
-  `;
 </script>
 
-<nav class="flex gap-1 border-b border-gray-200 mb-6 overflow-x-auto" role="tablist">
-  <button role="tab" class="px-4 py-2.5 text-sm font-bold whitespace-nowrap rounded-t-lg transition-colors {tab === 'resumen' ? 'text-[#635BFF] border-b-2 border-[#635BFF] bg-white' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}" onclick={() => tab = 'resumen'}>Resumen</button>
-  <button role="tab" class="px-4 py-2.5 text-sm font-bold whitespace-nowrap rounded-t-lg transition-colors {tab === 'graficos' ? 'text-[#635BFF] border-b-2 border-[#635BFF] bg-white' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}" onclick={() => tab = 'graficos'}>Gráficos</button>
-  <button role="tab" class="px-4 py-2.5 text-sm font-bold whitespace-nowrap rounded-t-lg transition-colors {tab === 'proyeccion' ? 'text-[#635BFF] border-b-2 border-[#635BFF] bg-white' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}" onclick={() => tab = 'proyeccion'}>Proyección</button>
-  <button role="tab" class="px-4 py-2.5 text-sm font-bold whitespace-nowrap rounded-t-lg transition-colors {tab === 'fiscal' ? 'text-[#635BFF] border-b-2 border-[#635BFF] bg-white' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}" onclick={() => tab = 'fiscal'}>Fiscal</button>
-</nav>
-
-{#if tab === "resumen"}
-<div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-  <KpiCard label={$t("kpi.precio_total")} value={fmt($params.precio + $params.parking)} />
-
-  <KpiCard
-    label={$t("kpi.costo_adquisicion")}
-    value={fmt($purchaseCosts.efectivoTotalNecesario + $purchaseCosts.montoFinanciar)}
-    tooltipContent={`
-      <p class="font-bold border-b border-gray-700 pb-1 mb-1 text-[#635BFF]">${$t("tooltip.desglose_costo")}</p>
-      <div class="flex justify-between"><span>${$t("tooltip.costo_precio")}</span><span class="font-mono">${fmt($params.precio + $params.parking)}</span></div>
-      <div class="flex justify-between"><span>${$t("tooltip.costo_itp")}</span><span class="font-mono">${fmt($purchaseCosts.costeITP)}</span></div>
-      <div class="flex justify-between"><span>${$t("tooltip.costo_notario")}</span><span class="font-mono">${fmt($purchaseCosts.costeNotario)}</span></div>
-      <div class="flex justify-between"><span>${$t("tooltip.costo_agencia")}</span><span class="font-mono">${fmt($purchaseCosts.costeAgencia)}</span></div>
-      <div class="border-t border-gray-700 pt-1 mt-1 flex justify-between font-bold text-emerald-400"><span>${$t("tooltip.costo_total")}</span><span class="font-mono">${fmt($purchaseCosts.efectivoTotalNecesario + $purchaseCosts.montoFinanciar)}</span></div>
-    `}
-  />
-
-  <KpiCard
-    label={$t("kpi.efectivo_inicial")}
-    value={fmt($purchaseCosts.efectivoTotalNecesario)}
-    tooltipContent={`
-      <p class="font-bold border-b border-gray-700 pb-1 mb-1 text-[#635BFF]">${$t("tooltip.desglose_fondos")}</p>
-      <div class="flex justify-between"><span>${$t("tooltip.entrada_pura")}</span><span class="font-mono">${fmt($purchaseCosts.capitalPropioEntrada)}</span></div>
-      <div class="flex justify-between"><span>${$t("tooltip.impuestos")}</span><span class="font-mono">${fmt($purchaseCosts.costeITP)}</span></div>
-      <div class="flex justify-between"><span>${$t("tooltip.notaria")}</span><span class="font-mono">${fmt($purchaseCosts.costeNotario)}</span></div>
-      <div class="flex justify-between"><span>${$t("tooltip.agencia")}</span><span class="font-mono">${fmt($purchaseCosts.costeAgencia)}</span></div>
-    `}
-  />
-
-  <KpiCard
-    label={$t("kpi.ganancia_neto")}
-    value={fmt($summary.gananciaNeta)}
-    valueClass="text-emerald-600"
-    tooltipContent={`
-      <p class="font-bold border-b border-gray-700 pb-1 mb-1 text-emerald-400">${$t("tooltip.desglose_ganancia")}</p>
-      <div class="flex justify-between"><span>${$t("tooltip.valor_venta")}:</span><span class="font-mono">${fmt($summary.valorPropiedadFutura)}</span></div>
-      <div class="flex justify-between"><span>− ${$t("math.deuda_hipoteca")}:</span><span class="font-mono text-red-300">−${fmt($summary.deudaRestanteFinal)}</span></div>
-      <div class="flex justify-between font-medium border-b border-gray-800 pb-1"><span>= ${$t("tooltip.neto_venta")}:</span><span class="font-mono">${fmt($summary.netoDeLaVenta)}</span></div>
-      <div class="flex justify-between"><span>− ${$t("tooltip.menos_efectivo")}:</span><span class="font-mono text-red-300">−${fmt($purchaseCosts.efectivoTotalNecesario)}</span></div>
-      <div class="flex justify-between"><span>= ${$t("tooltip.ganancia_venta")}:</span><span class="font-mono">${fmt($summary.gananciaVenta)}</span></div>
-      <div class="flex justify-between"><span>${$t("tooltip.mas_cashflow")}:</span><span class="font-mono ${$summary.totalCashflowAcumulado >= 0 ? 'text-green-300' : 'text-red-300'}">${$summary.totalCashflowAcumulado >= 0 ? '+' : ''}${fmt($summary.totalCashflowAcumulado)}</span></div>
-      <div class="border-t border-gray-700 pt-1 mt-1 flex justify-between font-bold text-emerald-400"><span>${$t("tooltip.resultado_final")}:</span><span class="font-mono">${fmt($summary.gananciaNeta)}</span></div>
-      <p class="font-bold border-b border-gray-700 pb-1 mb-1 mt-2 text-amber-400">${$t("tooltip.referencia_fiscal")}</p>
-      <div class="flex justify-between"><span>${$t("kpi.costo_adquisicion")}:</span><span class="font-mono">${fmt($summary.costoAdquisicionTotal)}</span></div>
-      <div class="flex justify-between"><span>− ${$t("math.afa_acumulada")}:</span><span class="font-mono text-red-300">−${fmt($summary.afaAcumulada)}</span></div>
-      <div class="flex justify-between"><span>= ${$t("tooltip.base_costo")}:</span><span class="font-mono">${fmt($summary.costoAdquisicionTotal - $summary.afaAcumulada)}</span></div>
-      <div class="flex justify-between font-bold text-amber-300"><span>${$t("tooltip.ganancia_fiscal")}:</span><span class="font-mono">${fmt($summary.gananciaFiscal)}</span></div>
-    `}
-  />
-
-  <div class="{$roiColor} p-5 rounded-2xl text-white shadow-xs relative group cursor-help">
-    <p class="text-xs font-bold text-blue-100 uppercase tracking-wider">{$t("kpi.roi")}</p>
-    <p class="text-xl font-black mt-1">
-      <span>{Number.isFinite($summary.roiAnualizado) ? ($summary.roiAnualizado * 100).toFixed(2) + " %" : "0.00 %"}</span>
-      <span class="font-normal text-blue-200/70"> | {($summary.roiCapitalPropioTotal * 100).toFixed(2)} % total</span>
-    </p>
-    <div class="absolute right-0 top-full mt-2 hidden group-hover:block bg-gray-900 text-white text-xs rounded-xl p-4 w-72 shadow-xl z-50 pointer-events-none leading-relaxed">
-      <p class="font-bold text-[#635BFF] mb-1">{$t("tooltip.roe_titulo")}</p>
-      <div class="flex justify-between"><span>{$t("kpi.ganancia_neto")}:</span><span class="font-mono">{fmt($summary.gananciaNeta)}</span></div>
-      <div class="flex justify-between"><span>÷ {$t("kpi.efectivo_inicial")}:</span><span class="font-mono">{fmt($purchaseCosts.efectivoTotalNecesario)}</span></div>
-      <div class="flex justify-between font-bold text-sky-300"><span>{$t("tooltip.roe_total")}</span><span class="font-mono">{($summary.roiCapitalPropioTotal * 100).toFixed(2)} %</span></div>
-      <div class="flex justify-between font-bold text-sky-300"><span>{$t("tooltip.roe_cagr")}</span><span class="font-mono">{($summary.roiAnualizado * 100).toFixed(2)} %</span></div>
-      <div class="border-t border-gray-700 pt-2 mt-2 space-y-1">
-        <p class="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">Leyenda ROI</p>
-        <div class="flex items-center gap-1.5"><span class="inline-block w-2 h-2 rounded-full bg-red-600 shrink-0"></span>{$t("tooltip.roi_bajo")} <span class="text-gray-400">&lt; 5%</span></div>
-        <div class="flex items-center gap-1.5"><span class="inline-block w-2 h-2 rounded-full bg-sky-600 shrink-0"></span>{$t("tooltip.roi_aceptable")} <span class="text-gray-400">5% – 10%</span></div>
-        <div class="flex items-center gap-1.5"><span class="inline-block w-2 h-2 rounded-full bg-emerald-600 shrink-0"></span>{$t("tooltip.roi_excelente")} <span class="text-gray-400">≥ 10%</span></div>
+<div class="space-y-6">
+  <!-- HERO KPIs -->
+  <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+    <KpiCard label={$t("kpi.precio_total")} value={fmt($params.precio + $params.parking)} />
+    <KpiCard label={$t("kpi.costo_adquisicion")} value={fmt($purchaseCosts.efectivoTotalNecesario + $purchaseCosts.montoFinanciar)} tooltipContent={costoAdqTooltip} />
+    <KpiCard label={$t("kpi.efectivo_inicial")} value={fmt($purchaseCosts.efectivoTotalNecesario)} tooltipContent={inversionInicialTooltip} />
+    <KpiCard label={$t("kpi.ganancia_neto")} value={fmt($summary.gananciaNeta)} tooltipContent={gananciaNetaTooltip} />
+    <div class="{$roiColor} p-4 rounded-2xl text-white shadow-xs relative group cursor-help">
+      <p class="text-[10px] font-bold text-blue-100 uppercase tracking-wider">ROE</p>
+      <p class="text-lg font-black mt-0.5">{Number.isFinite($summary.roiAnualizado) ? pctDisplay($summary.roiAnualizado, $summary.roiCapitalPropioTotal) : "—"}</p>
+      <div class="absolute right-0 top-full mt-2 hidden group-hover:block bg-gray-900 text-white text-xs rounded-xl p-4 w-72 shadow-xl z-50 pointer-events-none leading-relaxed">
+        <p class="font-bold text-sky-300 mb-1">Cálculo del ROE</p>
+        <div class="flex justify-between"><span>Capital final:</span><span class="font-mono">{fmt($summary.capitalTotalFinal)}</span></div>
+        <div class="flex justify-between"><span>÷ Inversión inicial:</span><span class="font-mono">{fmt($purchaseCosts.efectivoTotalNecesario)}</span></div>
+        <div class="flex justify-between"><span>^(1/{$params.years}) − 1</span></div>
+        <div class="border-t border-gray-700 pt-1 mt-1 flex justify-between font-bold text-sky-300"><span>ROE anualizado:</span><span class="font-mono">{pct($summary.roiAnualizado)}</span></div>
+        <div class="flex justify-between"><span>ROE total:</span><span class="font-mono">{pct($summary.roiCapitalPropioTotal)}</span></div>
+        <div class="flex justify-between"><span>ROA anualizado:</span><span class="font-mono">{pct($summary.roiProyectoAnualizado)}</span></div>
+        <div class="flex justify-between"><span>Apalancamiento:</span><span class="font-mono text-emerald-300">{$summary.apalancamiento.toFixed(2)}x</span></div>
       </div>
-      <div class="border-t border-gray-700 pt-2 mt-2">
-        <div class="flex justify-between"><span>{$t("tooltip.apalancamiento")}:</span><span class="font-mono text-emerald-300">{$summary.apalancamiento.toFixed(2)}x</span></div>
-        <div class="text-[10px] text-gray-400 italic mt-1">{$t("tooltip.apalancamiento_desc")}</div>
+    </div>
+    <div class="{$roaColor} p-4 rounded-2xl text-white shadow-xs relative group cursor-help">
+      <p class="text-[10px] font-bold text-blue-100 uppercase tracking-wider">ROA</p>
+      <p class="text-lg font-black mt-0.5">{Number.isFinite($summary.roiProyectoAnualizado) ? pctDisplay($summary.roiProyectoAnualizado, $summary.roiProyectoTotal) : "—"}</p>
+      <div class="absolute right-0 top-full mt-2 hidden group-hover:block bg-gray-900 text-white text-xs rounded-xl p-4 w-72 shadow-xl z-50 pointer-events-none leading-relaxed">
+        <p class="font-bold text-sky-300 mb-1">Cálculo del ROA</p>
+        <div class="flex justify-between"><span>Ganancia fiscal:</span><span class="font-mono">{fmt($summary.gananciaFiscal)}</span></div>
+        <div class="flex justify-between"><span>÷ Costo adquisición:</span><span class="font-mono">{fmt($summary.costoAdquisicionTotal)}</span></div>
+        <div class="border-t border-gray-700 pt-1 mt-1 flex justify-between font-bold text-sky-300"><span>ROA total:</span><span class="font-mono">{pct($summary.roiProyectoTotal)}</span></div>
+        <div class="flex justify-between"><span>ROA anualizado:</span><span class="font-mono">{pct($summary.roiProyectoAnualizado)}</span></div>
+        <div class="text-[10px] text-gray-400 italic mt-2 pt-1 border-t border-gray-700">ROA mide la rentabilidad del proyecto sin apalancamiento</div>
       </div>
     </div>
   </div>
 
-  <div class="{$roaColor} p-5 rounded-2xl text-white shadow-xs relative group cursor-help">
-    <p class="text-xs font-bold text-blue-100 uppercase tracking-wider">{$t("kpi.roi_proyecto")}</p>
-    <p class="text-xl font-black mt-1">
-      <span>{Number.isFinite($summary.roiProyectoAnualizado) ? ($summary.roiProyectoAnualizado * 100).toFixed(2) + " %" : "0.00 %"}</span>
-      <span class="font-normal text-blue-200/70"> | {($summary.roiProyectoTotal * 100).toFixed(2)} % total</span>
-    </p>
-    <div class="absolute right-0 top-full mt-2 hidden group-hover:block bg-gray-900 text-white text-xs rounded-xl p-4 w-72 shadow-xl z-50 pointer-events-none leading-relaxed">
-      <p class="font-bold text-sky-300 mb-1">{$t("tooltip.roa_titulo")}</p>
-      <div class="flex justify-between"><span>{$t("tooltip.valor_venta")}:</span><span class="font-mono">{fmt($summary.valorPropiedadFutura)}</span></div>
-      <div class="flex justify-between"><span>− ({$t("kpi.costo_adquisicion")} − {$t("math.afa_acumulada")}):</span><span class="font-mono text-red-300">−{fmt($summary.costoAdquisicionTotal - $summary.afaAcumulada)}</span></div>
-      <div class="flex justify-between font-medium border-b border-gray-800 pb-1"><span>= {$t("tooltip.ganancia_fiscal")}:</span><span class="font-mono">{fmt($summary.gananciaFiscal)}</span></div>
-      <div class="flex justify-between"><span>÷ {$t("kpi.costo_adquisicion")}:</span><span class="font-mono">{fmt($summary.costoAdquisicionTotal)}</span></div>
-      <div class="flex justify-between font-bold text-sky-300"><span>{$t("tooltip.roa_total")}</span><span class="font-mono">{($summary.roiProyectoTotal * 100).toFixed(2)} %</span></div>
-      <div class="flex justify-between font-bold text-sky-300"><span>{$t("tooltip.roa_cagr")}</span><span class="font-mono">{($summary.roiProyectoAnualizado * 100).toFixed(2)} %</span></div>
-      <div class="border-t border-gray-700 pt-2 mt-2 space-y-1">
-        <p class="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">Leyenda ROA</p>
-        <div class="flex items-center gap-1.5"><span class="inline-block w-2 h-2 rounded-full bg-red-600 shrink-0"></span>{$t("tooltip.roi_bajo")} <span class="text-gray-400">&lt; 2,5%</span></div>
-        <div class="flex items-center gap-1.5"><span class="inline-block w-2 h-2 rounded-full bg-sky-600 shrink-0"></span>{$t("tooltip.roi_aceptable")} <span class="text-gray-400">2,5% – 5%</span></div>
-        <div class="flex items-center gap-1.5"><span class="inline-block w-2 h-2 rounded-full bg-emerald-600 shrink-0"></span>{$t("tooltip.roi_excelente")} <span class="text-gray-400">≥ 5%</span></div>
-      </div>
-      <div class="text-[10px] text-gray-400 italic mt-2 pt-1 border-t border-gray-700">{$t("tooltip.roa_desc")}</div>
-    </div>
-  </div>
-</div>
-{/if}
-
-{#if tab === "graficos"}
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-  <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs h-80">
-    <Chart
-      type="line"
-      labels={$years.map(y => $t("chart.axis_prefix") + y.year)}
-      datasets={[{
-        label: $t("chart.rental_label"),
-        data: $years.map(y => Math.round(y.ingresoWarmMensual)),
-        borderColor: "#0A2540",
-        tension: 0,
-        borderWidth: 2.5,
-        pointBackgroundColor: "#0A2540",
-      }]}
-      title={$t("chart.rental_title")}
-    />
-  </div>
-  <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs h-80">
+  <!-- CASHFLOW BAR CHART -->
+  <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs h-72">
     <Chart
       type="bar"
       labels={$years.map(y => $t("chart.axis_prefix") + y.year)}
@@ -196,240 +122,156 @@
       title={$t("chart.cashflow_title")}
     />
   </div>
-</div>
 
-<div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs h-80">
-  <Chart
-    type="line"
-    labels={$years.map(y => $t("chart.axis_prefix") + y.year)}
-    datasets={[
-      {
-        label: "Patrimonio Total (si vendieras)",
-        data: $yearlyWealth.map(w => w.totalWealth),
-        borderColor: "rgb(99, 91, 255)",
-        borderWidth: 2.5,
-        fill: false,
-        pointRadius: 3,
-      },
-      {
-        label: $t("chart.equity_label_equity"),
-        data: $years.map((y, i) => {
-          const pv = ($params.precio + $params.parking) * (1 + $params.inflacionPct) ** y.year;
-          return Math.round(pv - y.deudaRestante);
-        }),
-        backgroundColor: "rgba(99, 91, 255, 0.15)",
-        borderColor: "rgb(99, 91, 255)",
-        borderWidth: 1.5,
-        fill: false,
-        pointRadius: 2,
-        borderDash: [5, 5],
-      },
-      {
-        label: $t("chart.equity_label_deuda"),
-        data: $years.map(y => Math.round(y.deudaRestante)),
-        backgroundColor: "rgba(239, 68, 68, 0.15)",
-        borderColor: "rgb(239, 68, 68)",
-        borderWidth: 1.5,
-        fill: false,
-        pointRadius: 2,
-        borderDash: [3, 3],
-      },
-    ]}
-    title="Evolución Patrimonial Anual"
-  />
-</div>
-{/if}
+  <!-- WEALTH EVOLUTION -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="lg:col-span-2 bg-white p-4 rounded-2xl border border-gray-200 shadow-xs h-80">
+      <Chart
+        type="line"
+        labels={$years.map(y => $t("chart.axis_prefix") + y.year)}
+        datasets={[
+          {
+            label: "Valor Propiedad",
+            data: $years.map((y, i) => {
+              const pv = ($params.precio + $params.parking) * (1 + $params.inflacionPct) ** y.year;
+              return Math.round(pv);
+            }),
+            borderColor: "#0A2540",
+            borderWidth: 2.5,
+            tension: 0,
+            pointRadius: 2,
+            fill: false,
+          },
+          {
+            label: "Equity Neto",
+            data: $yearlyWealth.map(w => w.equity),
+            backgroundColor: "rgba(16, 185, 129, 0.2)",
+            borderColor: "rgb(16, 185, 129)",
+            borderWidth: 2,
+            tension: 0,
+            pointRadius: 2,
+            fill: true,
+          },
+          {
+            label: "Deuda Restante",
+            data: $years.map(y => Math.round(y.deudaRestante)),
+            borderColor: "rgb(239, 68, 68)",
+            borderWidth: 1.5,
+            tension: 0,
+            pointRadius: 2,
+            borderDash: [4, 3],
+            fill: false,
+          },
+        ]}
+        title="Evolución Patrimonial"
+      />
+    </div>
 
-{#if tab === "resumen"}
-<div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-xs">
-  <h3 class="text-base font-bold text-[#0A2540] mb-2">{$t("section.desglose_titulo")}</h3>
-  <p class="text-xs text-gray-400 mb-4">{$t("section.desglose_subtitulo")}</p>
-  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-    <div class="p-3 bg-gray-50 border border-gray-100 rounded-xl">
-      <span class="text-[10px] font-bold text-gray-400 uppercase block tracking-wide">{$t("math.valor_venta")}</span>
-      <span class="text-base font-extrabold text-gray-800 block mt-0.5">{fmt($summary.valorPropiedadFutura)}</span>
-    </div>
-    <div class="p-3 bg-gray-50 border border-gray-100 rounded-xl">
-      <span class="text-[10px] font-bold text-gray-400 uppercase block tracking-wide">{$t("math.deuda_hipoteca")}</span>
-      <span class="text-base font-extrabold text-gray-800 block mt-0.5">{fmt($summary.deudaRestanteFinal)}</span>
-    </div>
-    <div class="p-3 bg-gray-50 border border-gray-100 rounded-xl">
-      <span class="text-[10px] font-bold text-gray-400 uppercase block tracking-wide">{$t("math.costo_adquisicion")}</span>
-      <span class="text-base font-extrabold text-gray-800 block mt-0.5">{fmt($summary.costoAdquisicionTotal)}</span>
-    </div>
-    <div class="p-3 bg-gray-50 border border-gray-100 rounded-xl">
-      <span class="text-[10px] font-bold text-gray-400 uppercase block tracking-wide">{$t("math.afa_acumulada")}</span>
-      <span class="text-base font-extrabold text-gray-800 block mt-0.5">{fmt($summary.afaAcumulada)}</span>
-    </div>
-    <div class="p-3 bg-gray-50 border border-gray-100 rounded-xl">
-      <span class="text-[10px] font-bold text-gray-400 uppercase block tracking-wide">{$t("math.recuperacion_inversion")}</span>
-      <span class="text-base font-extrabold text-gray-800 block mt-0.5">{fmt($summary.totalCashflowAcumulado)}</span>
-    </div>
-    <div class="p-3 bg-gray-50 border border-gray-100 rounded-xl">
-      <span class="text-[10px] font-bold text-gray-400 uppercase block tracking-wide">{$t("math.cashflow_venta")}</span>
-      <span class="text-base font-extrabold {($summary.gananciaNeta) >= 0 ? 'text-emerald-700' : 'text-red-700'} block mt-0.5">{fmt($summary.gananciaNeta)}</span>
+    <!-- COMPACT WEALTH TABLE -->
+    <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs">
+      <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Evolución años clave</p>
+      <div class="overflow-x-auto">
+        <table class="w-full fin-table text-xs">
+          <thead>
+            <tr>
+              <th class="text-center">Año</th>
+              <th class="text-center">Valor</th>
+              <th class="text-center">Deuda</th>
+              <th class="text-center">Equity</th>
+              <th class="text-center">ROI</th>
+            </tr>
+          </thead>
+          <tbody>
+            {#each keyYears as w}
+              {@const roi = (w.totalWealth / $purchaseCosts.efectivoTotalNecesario) ** (1 / w.year) - 1}
+              <tr class="hover:bg-gray-50 transition-colors">
+                <td class="text-center font-bold text-gray-500">{w.year}</td>
+                <td class="text-center font-mono">{fmt(w.propertyValue)}</td>
+                <td class="text-center font-mono text-rose-500">{fmt(w.debt)}</td>
+                <td class="text-center font-mono text-emerald-600">{fmt(w.equity)}</td>
+                <td class="text-center font-extrabold {(roi * 100) >= 5 ? 'text-emerald-600' : (roi * 100) >= 0 ? 'text-amber-600' : 'text-red-600'}">{pct(roi)}</td>
+              </tr>
+            {/each}
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
-</div>
-{/if}
 
-{#if tab === "proyeccion"}
-<div class="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden">
-  <div class="p-6 border-b border-gray-100 bg-white">
-    <h3 class="text-lg font-bold text-[#0A2540] flex items-center justify-between">
-      <span>{$t("section.tabla_titulo")}</span>
-      <label class="flex items-center gap-2 text-xs font-normal cursor-pointer select-none">
-        <span class="{$params.useFlatRate ? 'text-gray-500' : 'text-gray-700 font-medium'}">{$t("toggle.compuesto")}</span>
-        <div class="relative">
-          <input type="checkbox" class="sr-only peer" checked={$params.useFlatRate}
-            onchange={() => $params = { ...$params, useFlatRate: !$params.useFlatRate }} />
-          <div class="w-10 h-5 bg-gray-300 rounded-full peer-checked:bg-[#635BFF] transition-colors"></div>
-          <div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-5 pointer-events-none"></div>
+  <!-- DETAILS TOGGLE -->
+  <button
+    onclick={() => showDetails = !showDetails}
+    class="w-full text-xs font-bold text-gray-400 uppercase tracking-wider py-3 px-4 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 cursor-pointer"
+  >
+    {showDetails ? 'Ocultar detalles' : 'Ver más detalles'}
+    <svg class="w-4 h-4 transition-transform {showDetails ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+    </svg>
+  </button>
+
+  {#if showDetails}
+<div class="space-y-6 pb-12">
+    <!-- FISCAL BREAKDOWN -->
+    <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-xs">
+      <h3 class="text-sm font-bold text-[#0A2540] mb-3">Detalle Fiscal</h3>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="p-3 bg-gray-50 rounded-xl">
+          <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">AfA Anual</p>
+          <p class="text-lg font-black text-[#0A2540] mt-0.5">{fmt(($params.precio * 0.75 * (1 / $params.afaYears)))}</p>
         </div>
-        <span class="{$params.useFlatRate ? 'text-gray-700 font-medium' : 'text-gray-500'}">{$t("toggle.lineal")}</span>
-      </label>
-    </h3>
-    <p class="text-xs text-gray-400 mt-0.5">{$t("section.tabla_subtitulo")}</p>
-  </div>
-  <div class="overflow-x-auto">
-    <table class="w-full text-left border-collapse fin-table">
-      <thead>
-        <tr>
-          <th class="text-center text-xs font-bold text-gray-800 bg-gray-200 w-12">{$t("table.anno")}</th>
-          <th class="text-center text-xs font-bold text-gray-800 bg-gray-200">{$t("table.alquiler_warm")}</th>
-          <th class="text-center text-xs font-bold text-gray-800 bg-gray-200">{$t("table.hipoteca")}</th>
-          <th class="text-center text-xs font-bold text-gray-800 bg-gray-200">{$t("table.cashflow_bruto")}</th>
-          <th class="text-center text-xs font-bold text-gray-800 bg-gray-200">{$t("table.base_fiscal")}</th>
-          <th class="text-center text-xs font-bold text-gray-800 bg-gray-200">
-            <Tooltip content={ahorroHeaderContent}>
-              <span>{$t("table.ahorro_fiscal")}</span>
-              <svg class="w-3 h-3 shrink-0 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            </Tooltip>
-          </th>
-          <th class="text-center text-xs font-bold text-gray-800 bg-gray-200">{$t("table.neto_posttax")}</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-gray-100 bg-white">
-        {#each $years as y, i}
-          <tr class="{i % 2 === 0 ? 'bg-white' : 'bg-[#F9FAFB]'} hover:bg-gray-100 transition-colors">
-            <td class="text-center font-bold text-gray-500 text-sm py-3 px-2.5">{y.year}</td>
-            <td class="text-center font-semibold text-sm py-3 px-2.5">
-              <Tooltip content={warmTooltip(y)}>
-                {fmt(y.ingresoWarmMensual)}
-                <svg class="w-3 h-3 shrink-0 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-              </Tooltip>
-            </td>
-            <td class="text-center text-amber-700 bg-amber-50/40 font-medium text-sm py-3 px-2.5">
-              <Tooltip content={hipotecaTooltip(y)}>
-                {fmt(-y.hipotecaMensual)}
-                <svg class="w-3 h-3 shrink-0 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-              </Tooltip>
-            </td>
-            <td class="text-center text-gray-600 text-sm py-3 px-2.5">
-              <Tooltip content={cashflowTooltip(y)}>
-                {fmt(y.cashflowPreTaxMensual)}
-                <svg class="w-3 h-3 shrink-0 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-              </Tooltip>
-            </td>
-            <td class="text-center text-[#635BFF] font-mono text-sm py-3 px-2.5">
-              <Tooltip content={fiscalTooltip(y)}>
-                {fmt(y.resultadoFiscalMensual)}
-                <svg class="w-3 h-3 shrink-0 text-[#635BFF]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-              </Tooltip>
-            </td>
-            <td class="text-center text-emerald-700 bg-emerald-50/40 font-medium text-sm py-3 px-2.5">+{fmt(y.devolucionFiscalMensual)}</td>
-            <td class="text-center bg-blue-50/60 font-extrabold text-sm py-3 px-2.5 {y.cashflowNetoPostTaxMensual >= 0 ? 'text-green-600' : 'text-orange-600'}">{fmt(y.cashflowNetoPostTaxMensual)}</td>
-          </tr>
-        {/each}
-      </tbody>
-    </table>
-  </div>
-</div>
-{/if}
+        <div class="p-3 bg-gray-50 rounded-xl">
+          <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">AfA Acumulada</p>
+          <p class="text-lg font-black text-amber-600 mt-0.5">{fmt($summary.afaAcumulada)}</p>
+        </div>
+        <div class="p-3 bg-gray-50 rounded-xl">
+          <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Ahorro Fiscal Total</p>
+          <p class="text-lg font-black text-emerald-600 mt-0.5">{fmt($summary.totalCashflowAcumulado > 0 ? ($years.reduce((s, y) => s + y.devolucionFiscalMensual * 12, 0)) : 0)}</p>
+        </div>
+        <div class="p-3 bg-gray-50 rounded-xl">
+          <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Préstamo Total</p>
+          <p class="text-lg font-black text-[#0A2540] mt-0.5">{fmt($purchaseCosts.montoFinanciar)}</p>
+        </div>
+      </div>
+    </div>
 
-{#if tab === "fiscal"}
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-  <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs">
-    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Préstamo Total</p>
-    <p class="text-xl font-black text-[#0A2540] mt-1">{fmt($purchaseCosts.montoFinanciar)}</p>
+    <!-- FULL PROJECTION TABLE -->
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden">
+      <div class="p-4 border-b border-gray-100">
+        <h3 class="text-sm font-bold text-[#0A2540]">Proyección Anual Completa</h3>
+      </div>
+      <div class="overflow-x-auto max-h-96 overflow-y-auto">
+        <table class="w-full text-left border-collapse fin-table">
+          <thead class="sticky top-0 z-10">
+            <tr>
+              <th class="text-center bg-gray-200">Año</th>
+              <th class="text-center bg-gray-200">Renta Warm</th>
+              <th class="text-center bg-gray-200">Hipoteca</th>
+              <th class="text-center bg-gray-200">Intereses</th>
+              <th class="text-center bg-gray-200">Amort.</th>
+              <th class="text-center bg-gray-200">Deuda Rest.</th>
+              <th class="text-center bg-gray-200">Cashflow Bruto</th>
+              <th class="text-center bg-gray-200">Ahorro Fiscal</th>
+              <th class="text-center bg-gray-200">Cashflow Neto</th>
+            </tr>
+          </thead>
+          <tbody>
+            {#each $years as y, i}
+              <tr class="{i % 2 === 0 ? 'bg-white' : 'bg-[#F9FAFB]'} hover:bg-gray-50 transition-colors">
+                <td class="text-center font-bold text-gray-500 text-sm">{y.year}</td>
+                <td class="text-center text-sm">{fmt(y.ingresoWarmMensual)}</td>
+                <td class="text-center text-amber-700 bg-amber-50/40 text-sm">{fmt(-y.hipotecaMensual)}</td>
+                <td class="text-center text-red-500 text-sm">{fmt(y.interesesMensuales)}</td>
+                <td class="text-center text-emerald-600 text-sm">{fmt(y.amortizacionMensual)}</td>
+                <td class="text-center text-rose-600 text-sm">{fmt(y.deudaRestante)}</td>
+                <td class="text-center text-sm">{fmt(y.cashflowPreTaxMensual)}</td>
+                <td class="text-center text-emerald-700 bg-emerald-50/40 text-sm">{y.devolucionFiscalMensual > 0 ? '+' : ''}{fmt(y.devolucionFiscalMensual)}</td>
+                <td class="text-center font-bold text-sm {y.cashflowNetoPostTaxMensual >= 0 ? 'text-green-600' : 'text-orange-600'}">{fmt(y.cashflowNetoPostTaxMensual)}</td>
+              </tr>
+            {/each}
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
-  <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs">
-    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Cuota Mensual Fija</p>
-    <p class="text-xl font-black text-[#0A2540] mt-1">{fmt($purchaseCosts.cuotaMensualHipoteca)}</p>
-  </div>
-  <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs">
-    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Deuda Restante Final</p>
-    <p class="text-xl font-black text-orange-600 mt-1">{fmt($years[$years.length - 1].deudaRestante)}</p>
-  </div>
+  {/if}
 </div>
-{/if}
-
-{#if tab === "proyeccion"}
-<div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs">
-  <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Intereses vs Amortización (Total Período)</p>
-  <div class="flex items-center gap-4 h-8 mb-2">
-    <div class="h-full rounded-lg bg-red-400" style="width: {$pctInteres}%"></div>
-    <div class="h-full rounded-lg bg-emerald-400" style="width: {$pctAmortizacion}%"></div>
-  </div>
-  <div class="flex justify-between text-xs text-gray-500">
-    <span>Intereses: {fmt($totalIntereses)} ({$pctInteres.toFixed(1)}%)</span>
-    <span>Amortización: {fmt($totalAmortizacion)} ({$pctAmortizacion.toFixed(1)}%)</span>
-  </div>
-</div>
-{/if}
-
-{#if tab === "fiscal"}
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-  <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs">
-    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">AfA Anual</p>
-    <p class="text-xl font-black text-[#0A2540] mt-1">{fmt($afaAnual)}</p>
-  </div>
-  <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs">
-    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">AfA Acumulada</p>
-    <p class="text-xl font-black text-[#0A2540] mt-1">{fmt($summary.afaAcumulada)}</p>
-  </div>
-  <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs">
-    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Ahorro Fiscal Total</p>
-    <p class="text-xl font-black text-emerald-600 mt-1">{fmt($totalAhorroFiscal)}</p>
-  </div>
-  <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs">
-    <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Base Costo Fiscal</p>
-    <p class="text-xl font-black text-amber-600 mt-1">{fmt($summary.costoAdquisicionTotal - $summary.afaAcumulada)}</p>
-  </div>
-</div>
-{/if}
-
-{#if tab === "proyeccion"}
-<div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-xs">
-  <h3 class="text-base font-bold text-[#0A2540] mb-4">Evolución Año a Año</h3>
-  <div class="overflow-x-auto">
-    <table class="w-full text-left border-collapse fin-table">
-      <thead>
-        <tr>
-          <th class="text-center text-xs font-bold text-gray-800 bg-gray-200">{$t("table.anno")}</th>
-          <th class="text-center text-xs font-bold text-gray-800 bg-gray-200">Valor Propiedad</th>
-          <th class="text-center text-xs font-bold text-gray-800 bg-gray-200">Deuda</th>
-          <th class="text-center text-xs font-bold text-gray-800 bg-gray-200">Equity Neto</th>
-          <th class="text-center text-xs font-bold text-gray-800 bg-gray-200">Cashflow Acum.</th>
-          <th class="text-center text-xs font-bold text-gray-800 bg-gray-200">Patrimonio Total</th>
-          <th class="text-center text-xs font-bold text-gray-800 bg-gray-200">ROI Anual</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-gray-100 bg-white">
-        {#each $yearlyWealth as w, i}
-          {@const roi = (w.totalWealth / $purchaseCosts.efectivoTotalNecesario) ** (1 / w.year) - 1}
-          <tr class="{i % 2 === 0 ? 'bg-white' : 'bg-[#F9FAFB]'}">
-            <td class="text-center font-bold text-gray-500 text-sm py-3 px-2.5">{w.year}</td>
-            <td class="text-center text-sm py-3 px-2.5">{fmt(w.propertyValue)}</td>
-            <td class="text-center text-rose-600 text-sm py-3 px-2.5">{fmt(w.debt)}</td>
-            <td class="text-center font-medium text-sm py-3 px-2.5 text-[#635BFF]">{fmt(w.equity)}</td>
-            <td class="text-center text-sm py-3 px-2.5 {w.accumulatedCash >= 0 ? 'text-emerald-600' : 'text-orange-600'}">{fmt(w.accumulatedCash)}</td>
-            <td class="text-center font-extrabold text-sm py-3 px-2.5">{fmt(w.totalWealth)}</td>
-            <td class="text-center font-mono text-sm py-3 px-2.5">{(roi * 100).toFixed(2)}%</td>
-          </tr>
-        {/each}
-      </tbody>
-    </table>
-  </div>
-</div>
-{/if}
