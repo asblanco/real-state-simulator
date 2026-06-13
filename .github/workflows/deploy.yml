@@ -29,6 +29,7 @@ jobs:
       - run: |
           bunx playwright install chromium
           bunx playwright test
+      - run: BASE_PATH=/real-state-simulator bun run build
       - uses: actions/upload-pages-artifact@v5
         with:
           path: ./dist

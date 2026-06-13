@@ -6,6 +6,9 @@ export default {
     handler(warning);
   },
   kit: {
+    paths: {
+      base: process.env.BASE_PATH || "",
+    },
     adapter: adapter({
       pages: "dist",
       assets: "dist",
