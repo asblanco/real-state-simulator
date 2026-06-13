@@ -28,10 +28,7 @@ jobs:
       - run: bun run build
       - run: |
           bunx playwright install chromium
-          python3 -m http.server 8080 & sleep 1
-          bun run e2e/e2e.test.ts
-        env:
-          BASE_URL: "http://localhost:8080"
+          bunx playwright test
       - uses: actions/upload-pages-artifact@v5
         with:
           path: .
