@@ -94,6 +94,68 @@
     `;
   }
 
+  function htmlWarmTooltip(y: { ingresoWarmMensual: number }, p: { alquilerInicialPiso: number; alquilerInicialParking: number; hausgeldTotal: number; reservaImprevistos: number; subidaPct: number }, i: number): string {
+    const factor = (1 + p.subidaPct) ** i;
+    const piso = Math.round(p.alquilerInicialPiso * factor);
+    const parking = Math.round(p.alquilerInicialParking * factor);
+    const umlage = Math.round(p.hausgeldTotal + p.reservaImprevistos);
+    return `
+      <p class="font-bold text-sky-300 mb-1">Composición Alquiler Total</p>
+      <div class="flex justify-between"><span>Alquiler Piso:</span><span class="font-mono">${fmt(piso)}</span></div>
+      <div class="flex justify-between"><span>Alquiler Parking:</span><span class="font-mono">${fmt(parking)}</span></div>
+      <div class="flex justify-between"><span>Umlage (Hausgeld+Rückl.):</span><span class="font-mono">${fmt(umlage)}</span></div>
+      <div class="border-t border-gray-700 pt-1 mt-1 flex justify-between font-bold text-sky-300"><span>Total:</span><span class="font-mono">${fmt(y.ingresoWarmMensual)}</span></div>
+    `;
+  }
+
+  function htmlHipotecaTooltip(y: { interesesMensuales: number; amortizacionMensual: number; hipotecaMensual: number }): string {
+    return `
+      <p class="font-bold text-sky-300 mb-1">Desglose Hipoteca</p>
+      <div class="flex justify-between"><span>Intereses (Zins):</span><span class="font-mono">${fmt(y.interesesMensuales)}</span></div>
+      <div class="flex justify-between"><span>Amortización (Tilgung):</span><span class="font-mono">${fmt(y.amortizacionMensual)}</span></div>
+      <div class="border-t border-gray-700 pt-1 mt-1 flex justify-between font-bold text-sky-300"><span>Total:</span><span class="font-mono">${fmt(y.hipotecaMensual)}</span></div>
+    `;
+  }
+
+  function htmlCashflowTooltip(y: { ingresoWarmMensual: number; hipotecaMensual: number; cashflowPreTaxMensual: number }, p: { hausgeldTotal: number; reservaImprevistos: number }): string {
+    return `
+      <p class="font-bold text-sky-300 mb-1">Cálculo Cashflow Bruto</p>
+      <div class="flex justify-between"><span>Renta Warm:</span><span class="font-mono">${fmt(y.ingresoWarmMensual)}</span></div>
+      <div class="flex justify-between"><span>− Hipoteca:</span><span class="font-mono text-red-300">−${fmt(y.hipotecaMensual)}</span></div>
+      <div class="flex justify-between"><span>− Hausgeld:</span><span class="font-mono text-red-300">−${fmt(p.hausgeldTotal)}</span></div>
+      <div class="flex justify-between"><span>− Imprevistos:</span><span class="font-mono text-red-300">−${fmt(p.reservaImprevistos)}</span></div>
+      <div class="border-t border-gray-700 pt-1 mt-1 flex justify-between font-bold text-sky-300"><span>= Cashflow Bruto:</span><span class="font-mono">${fmt(y.cashflowPreTaxMensual)}</span></div>
+    `;
+  }
+
+  function htmlFiscalTooltip(y: { ingresoWarmMensual: number; interesesMensuales: number; devolucionFiscalMensual: number }, p: { precio: number; afaYears: number; hausgeldTotal: number }): string {
+    const monthlyAfa = Math.round(p.precio * 0.75 * (1 / p.afaYears) / 12);
+    const baseFiscal = y.ingresoWarmMensual - y.interesesMensuales - monthlyAfa - p.hausgeldTotal;
+    const ahorroAnual = -baseFiscal * 0.42;
+    const ahorroMensual = Math.round(ahorroAnual / 12);
+    return `
+      <p class="font-bold text-sky-300 mb-1">Base Fiscal Mensual</p>
+      <div class="text-[10px] text-gray-400 italic mb-1">= Ingresos Warm − Intereses − AfA − Hausgeld</div>
+      <div class="flex justify-between"><span>Ingreso Warm:</span><span class="font-mono">${fmt(y.ingresoWarmMensual)}</span></div>
+      <div class="flex justify-between"><span>− Intereses:</span><span class="font-mono text-red-300">−${fmt(y.interesesMensuales)}</span></div>
+      <div class="flex justify-between"><span>− AfA (${p.afaYears}a):</span><span class="font-mono text-red-300">−${fmt(monthlyAfa)}</span></div>
+      <div class="flex justify-between"><span>− Hausgeld:</span><span class="font-mono text-red-300">−${fmt(p.hausgeldTotal)}</span></div>
+      <div class="flex justify-between border-b border-gray-700 pb-1 ${baseFiscal < 0 ? 'font-bold text-orange-300' : ''}"><span>= Base:</span><span class="font-mono">${fmt(baseFiscal)}</span></div>
+      ${baseFiscal < 0 ? `
+        <div class="pt-1">
+          <p class="font-bold text-emerald-300 mb-1">Ahorro Fiscal</p>
+          <div class="text-[10px] text-gray-400 italic mb-1">= (−Base × 42%) / 12</div>
+          <div class="flex justify-between"><span>−Base:</span><span class="font-mono">${fmt(-baseFiscal)}</span></div>
+          <div class="flex justify-between"><span>×42% anual:</span><span class="font-mono">${fmt(ahorroAnual)}</span></div>
+          <div class="flex justify-between font-bold text-emerald-300"><span>/12 mensual:</span><span class="font-mono">${fmt(ahorroMensual)}</span></div>
+          <div class="flex justify-between"><span>(coincide con celda):</span><span class="font-mono">${fmt(y.devolucionFiscalMensual)}</span></div>
+        </div>
+      ` : `
+        <div class="pt-1 text-[10px] text-gray-400 italic">Base fiscal positiva — no hay ahorro</div>
+      `}
+    `;
+  }
+
   let keyYears = $derived.by(() => {
     const all = $yearlyWealth;
     const indices = new Set<number>();
@@ -239,18 +301,17 @@
     <!-- FULL PROJECTION TABLE -->
     <div class="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden">
       <div class="p-4 border-b border-gray-100">
-        <h3 class="text-sm font-bold text-[#0A2540]">Proyección Anual Completa</h3>
+        <h3 class="text-sm font-bold text-[#0A2540]">Proyección Anual</h3>
       </div>
       <div class="overflow-x-auto max-h-96 overflow-y-auto">
         <table class="w-full text-left border-collapse fin-table">
           <thead class="sticky top-0 z-10">
             <tr>
               <th class="text-center bg-gray-200">Año</th>
-              <th class="text-center bg-gray-200">Renta Warm</th>
+              <th class="text-center bg-gray-200">Alquiler Total</th>
               <th class="text-center bg-gray-200">Hipoteca</th>
               <th class="text-center bg-gray-200">Intereses</th>
               <th class="text-center bg-gray-200">Amort.</th>
-              <th class="text-center bg-gray-200">Deuda Rest.</th>
               <th class="text-center bg-gray-200">Cashflow Bruto</th>
               <th class="text-center bg-gray-200">Ahorro Fiscal</th>
               <th class="text-center bg-gray-200">Cashflow Neto</th>
@@ -260,13 +321,32 @@
             {#each $years as y, i}
               <tr class="{i % 2 === 0 ? 'bg-white' : 'bg-[#F9FAFB]'} hover:bg-gray-50 transition-colors">
                 <td class="text-center font-bold text-gray-500 text-sm">{y.year}</td>
-                <td class="text-center text-sm">{fmt(y.ingresoWarmMensual)}</td>
-                <td class="text-center text-amber-700 bg-amber-50/40 text-sm">{fmt(-y.hipotecaMensual)}</td>
+                <td class="text-center text-sm relative group cursor-help">
+                  {fmt(y.ingresoWarmMensual)}
+                  <div class="absolute left-1/2 -translate-x-1/2 top-full mt-1 hidden group-hover:block bg-[#0A2540] text-white text-xs rounded-xl p-4 w-64 shadow-xl z-50 pointer-events-none leading-relaxed">
+                    {@html htmlWarmTooltip(y, $params, i)}
+                  </div>
+                </td>
+                <td class="text-center text-amber-700 bg-amber-50/40 text-sm relative group cursor-help">
+                  {fmt(-y.hipotecaMensual)}
+                  <div class="absolute left-1/2 -translate-x-1/2 top-full mt-1 hidden group-hover:block bg-[#0A2540] text-white text-xs rounded-xl p-4 w-64 shadow-xl z-50 pointer-events-none leading-relaxed">
+                    {@html htmlHipotecaTooltip(y)}
+                  </div>
+                </td>
                 <td class="text-center text-red-500 text-sm">{fmt(y.interesesMensuales)}</td>
                 <td class="text-center text-emerald-600 text-sm">{fmt(y.amortizacionMensual)}</td>
-                <td class="text-center text-rose-600 text-sm">{fmt(y.deudaRestante)}</td>
-                <td class="text-center text-sm">{fmt(y.cashflowPreTaxMensual)}</td>
-                <td class="text-center text-emerald-700 bg-emerald-50/40 text-sm">{y.devolucionFiscalMensual > 0 ? '+' : ''}{fmt(y.devolucionFiscalMensual)}</td>
+                <td class="text-center text-sm relative group cursor-help">
+                  {fmt(y.cashflowPreTaxMensual)}
+                  <div class="absolute left-1/2 -translate-x-1/2 top-full mt-1 hidden group-hover:block bg-[#0A2540] text-white text-xs rounded-xl p-4 w-64 shadow-xl z-50 pointer-events-none leading-relaxed">
+                    {@html htmlCashflowTooltip(y, $params)}
+                  </div>
+                </td>
+                <td class="text-center text-emerald-700 bg-emerald-50/40 text-sm relative group cursor-help">
+                  {y.devolucionFiscalMensual > 0 ? '+' : ''}{fmt(y.devolucionFiscalMensual)}
+                  <div class="absolute left-1/2 -translate-x-1/2 top-full mt-1 hidden group-hover:block bg-[#0A2540] text-white text-xs rounded-xl p-4 w-72 shadow-xl z-50 pointer-events-none leading-relaxed">
+                    {@html htmlFiscalTooltip(y, $params)}
+                  </div>
+                </td>
                 <td class="text-center font-bold text-sm {y.cashflowNetoPostTaxMensual >= 0 ? 'text-green-600' : 'text-orange-600'}">{fmt(y.cashflowNetoPostTaxMensual)}</td>
               </tr>
             {/each}
