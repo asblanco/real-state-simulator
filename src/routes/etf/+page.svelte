@@ -188,10 +188,14 @@
       <span class="text-sm font-bold text-[#0A2540]">
         {showCumulative ? "Aporte Acumulado vs Crecimiento ETF" : "Aporte Anual al ETF"}
       </span>
-      <label class="flex items-center gap-2 cursor-pointer">
-        <span class="text-xs text-gray-500 font-medium">{showCumulative ? "Acum." : "Anual"}</span>
-        <input type="checkbox" class="toggle toggle-sm" bind:checked={showCumulative} />
-      </label>
+      <div class="flex gap-1 bg-gray-100 p-1 rounded-xl">
+        <button
+          class="px-3 py-1.5 text-xs font-bold rounded-lg transition-colors {!showCumulative ? 'bg-white shadow-sm text-[#635BFF]' : 'text-gray-500 hover:text-gray-700'}"
+          onclick={() => showCumulative = false}>Anual</button>
+        <button
+          class="px-3 py-1.5 text-xs font-bold rounded-lg transition-colors {showCumulative ? 'bg-white shadow-sm text-[#635BFF]' : 'text-gray-500 hover:text-gray-700'}"
+          onclick={() => showCumulative = true}>Acum.</button>
+      </div>
     </div>
     <div class="h-[calc(100%-2rem)]">
       {#if showCumulative}
