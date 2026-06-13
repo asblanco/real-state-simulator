@@ -163,14 +163,14 @@
   "etf.re_wealth": "Patrimonio Inmueble",
   "etf.etf_value": "Valor ETF",
   "etf.table_gap": "Diferencia",
-  "etf.avg_monthly_saving": "Ahorro Mensual Medio vs Comprar",
+  "etf.avg_monthly_saving": "Aporte Mensual Medio al ETF",
   "etf.crossover": "Año de Cruce",
   "etf.extra_contribution": "Aporte Extra Mensual",
   "etf.total_invested": "Capital Aportado",
   "etf.net_gain_loss": "Ganancia/Pérdida",
 
-  "etf.model_desc": "Modelo Renta vs Comprar",
-  "etf.model_detail": "En lugar de comprar, alquilas el mismo inmueble e inviertes la diferencia (ahorro por no pagar hipoteca + gastos de propietario) en un ETF.",
+"etf.model_desc": "Comparativa: Inmueble vs ETF",
+"etf.model_detail": "En lugar de comprar, inviertes el mismo capital inicial en un ETF y aportas una cantidad extra cada mes.",
 
   "etf.fi_title": "Independencia Financiera",
   "etf.fi_year": "Año {year}",

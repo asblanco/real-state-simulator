@@ -163,14 +163,14 @@
   "etf.re_wealth": "Immobilienvermögen",
   "etf.etf_value": "ETF-Wert",
   "etf.table_gap": "Differenz",
-  "etf.avg_monthly_saving": "Durchschnittliche monatliche Ersparnis vs Kauf",
+  "etf.avg_monthly_saving": "Durchschnittlicher monatlicher ETF-Beitrag",
   "etf.crossover": "Schnittpunkt-Jahr",
   "etf.extra_contribution": "Zusätzlicher Monatsbeitrag",
   "etf.total_invested": "Investiertes Kapital",
   "etf.net_gain_loss": "Gewinn/Verlust",
 
-  "etf.model_desc": "Miete vs Kauf Modell",
-  "etf.model_detail": "Statt zu kaufen, mieten Sie dieselbe Immobilie und investieren die Differenz (Einsparungen durch keine Hypothek + Eigentümerkosten) in einen ETF.",
+"etf.model_desc": "Immobilie vs ETF Vergleich",
+"etf.model_detail": "Statt zu kaufen, investieren Sie das gleiche Anfangskapital in einen ETF und zahlen jeden Monat einen zusätzlichen Beitrag ein.",
 
   "etf.fi_title": "Finanzielle Freiheit",
   "etf.fi_year": "Jahr {year}",

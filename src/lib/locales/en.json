@@ -163,14 +163,14 @@
   "etf.re_wealth": "Property Wealth",
   "etf.etf_value": "ETF Value",
   "etf.table_gap": "Gap",
-  "etf.avg_monthly_saving": "Avg Monthly Savings vs Buying",
+  "etf.avg_monthly_saving": "Avg Monthly ETF Contribution",
   "etf.crossover": "Crossover Year",
   "etf.extra_contribution": "Extra Monthly Contribution",
   "etf.total_invested": "Capital Invested",
   "etf.net_gain_loss": "Gain/Loss",
 
-  "etf.model_desc": "Rent vs Buy Model",
-  "etf.model_detail": "Instead of buying, you rent the same property and invest the difference (savings from not paying mortgage + ownership costs) in an ETF.",
+"etf.model_desc": "Real Estate vs ETF Comparison",
+"etf.model_detail": "Instead of buying, you invest the same initial capital in an ETF and add an extra monthly contribution.",
 
   "etf.fi_title": "Financial Independence",
   "etf.fi_year": "Year {year}",

@@ -15,19 +15,11 @@ function etfFutureValue(
 
 function computeMonthlyCashflows(
   params: InputParams,
-  years: YearData[],
-  purchaseCosts: PurchaseCosts,
 ): number[] {
-  const cashflows: number[] = [];
-  for (const y of years) {
-    for (let m = 0; m < MONTHS_PER_YEAR; m++) {
-      const ingresoAlquiler = y.mensualPiso + y.mensualParking + y.umlageMensual;
-      const costePropietario = y.hipotecaMensual + params.hausgeldTotal + params.reservaImprevistos;
-      const diff = costePropietario - ingresoAlquiler;
-      cashflows.push(diff + params.extraMonthlyContribution);
-    }
-  }
-  return cashflows;
+  return Array.from(
+    { length: params.years * MONTHS_PER_YEAR },
+    () => params.extraMonthlyContribution,
+  );
 }
 
 function computeReWealthAtYear(
@@ -54,7 +46,7 @@ export function computeEtfComparison(
 ): EtfComparison {
   const initialCapital = purchaseCosts.efectivoTotalNecesario;
   const monthlyRate = (1 + etfCagr) ** (1 / MONTHS_PER_YEAR) - 1;
-  const monthlyCashflows = computeMonthlyCashflows(params, years, purchaseCosts);
+  const monthlyCashflows = computeMonthlyCashflows(params);
 
   let etfValue = initialCapital;
   let cumulativeContribution = initialCapital;
@@ -65,7 +57,6 @@ export function computeEtfComparison(
     cumulativeContribution += monthlyCashflows[m];
     if ((m + 1) % MONTHS_PER_YEAR === 0) {
       const yearIdx = (m + 1) / MONTHS_PER_YEAR - 1;
-      const monthlyRentAtYear = years[yearIdx].ingresoWarmMensual;
       const sustainableWithdrawal = etfValue * params.swrPct / MONTHS_PER_YEAR;
       const cfg = TAX_COUNTRIES[params.taxCountry];
       const annualSW = sustainableWithdrawal * MONTHS_PER_YEAR;
@@ -80,7 +71,6 @@ export function computeEtfComparison(
         reTotalWealth: computeReWealthAtYear(params, years, yearIdx),
         monthlyContribution: Math.round(monthlyCashflows[m]),
         cumulativeContribution: Math.round(cumulativeContribution),
-        monthlyRentAtYear: Math.round(monthlyRentAtYear),
         sustainableWithdrawal: Math.round(sustainableWithdrawal),
         sustainableWithdrawalNet: Math.round(sustainableWithdrawalNet),
       });
