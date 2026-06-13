@@ -26,13 +26,6 @@ export const etfComparison = derived(
 export const roiColor = derived(summary, $s => $s.roiAnualizado < 0.05 ? "bg-red-600" : $s.roiAnualizado < 0.1 ? "bg-sky-600" : "bg-emerald-600");
 export const roaColor = derived(summary, $s => $s.roiProyectoAnualizado < 0.025 ? "bg-red-600" : $s.roiProyectoAnualizado < 0.05 ? "bg-sky-600" : "bg-emerald-600");
 
-export const afaAnual = derived(params, $p => ($p.afaYears > 0) ? ($p.precio * 0.75 * (1 / $p.afaYears)) : 0);
-export const totalIntereses = derived(years, $y => $y.reduce((s, y) => s + y.interesesMensuales * MONTHS_PER_YEAR, 0));
-export const totalAmortizacion = derived(years, $y => $y.reduce((s, y) => s + y.amortizacionMensual * MONTHS_PER_YEAR, 0));
-export const totalAhorroFiscal = derived(years, $y => $y.reduce((s, y) => s + y.devolucionFiscalMensual * MONTHS_PER_YEAR, 0));
-export const pctInteres = derived([totalIntereses, totalAmortizacion], ([$ti, $ta]) => $ti / ($ti + $ta) * 100);
-export const pctAmortizacion = derived(pctInteres, $p => 100 - $p);
-
 export const yearlyWealth = derived([years, params], ([$years, $params]) =>
   $years.map(y => {
     const pv = ($params.precio + $params.parking) * (1 + $params.inflacionPct) ** y.year;

@@ -74,13 +74,12 @@ export interface EtfComparison {
   reFinalWealth: number;
   gap: number;
   breakevenCagr: number;
+  crossoverYear: number | null;
   yearByYear: EtfYearData[];
   scenario5: number;
   scenario7: number;
   scenario10: number;
   avgMonthlyContribution: number;
 }
-
-export type View = "dashboard" | "rental" | "mortgage" | "fiscal" | "wealth" | "etf";
 
 export type Locale = "es" | "en" | "de";

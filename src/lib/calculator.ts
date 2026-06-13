@@ -128,3 +128,5 @@ export function computeSummary(params: InputParams, years: YearData[], purchaseC
     roiProyectoAnualizado, roiCapitalPropioTotal, roiProyectoTotal, apalancamiento,
   };
 }
+
+
