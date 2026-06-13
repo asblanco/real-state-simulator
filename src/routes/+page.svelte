@@ -68,6 +68,12 @@
       <div class="flex justify-between"><span>ROE total:</span><span class="font-mono">${pct(s.roiCapitalPropioTotal)}</span></div>
       <div class="flex justify-between"><span>ROA anualizado:</span><span class="font-mono">${pct(s.roiProyectoAnualizado)}</span></div>
       <div class="flex justify-between"><span>Apalancamiento:</span><span class="font-mono text-emerald-300">${s.apalancamiento.toFixed(2)}x</span></div>
+      <div class="border-t border-gray-700 pt-2 mt-2 text-[10px] space-y-0.5">
+        <p class="text-gray-400 font-bold mb-0.5">Referencia ROE:</p>
+        <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-red-600 inline-block"></span><span class="text-gray-400">&lt; 5% — Rendimiento bajo</span></div>
+        <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-sky-600 inline-block"></span><span class="text-gray-400">5–10% — Rendimiento aceptable</span></div>
+        <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-600 inline-block"></span><span class="text-gray-400">≥ 10% — Rendimiento excelente</span></div>
+      </div>
     `;
   }
 
@@ -79,6 +85,12 @@
       <div class="border-t border-gray-700 pt-1 mt-1 flex justify-between font-bold text-sky-300"><span>ROA total:</span><span class="font-mono">${pct(s.roiProyectoTotal)}</span></div>
       <div class="flex justify-between"><span>ROA anualizado:</span><span class="font-mono">${pct(s.roiProyectoAnualizado)}</span></div>
       <div class="text-[10px] text-gray-400 italic mt-2 pt-1 border-t border-gray-700">ROA mide la rentabilidad del proyecto sin apalancamiento</div>
+      <div class="border-t border-gray-700 pt-2 mt-2 text-[10px] space-y-0.5">
+        <p class="text-gray-400 font-bold mb-0.5">Referencia ROA:</p>
+        <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-red-600 inline-block"></span><span class="text-gray-400">&lt; 2.5% — Rendimiento bajo</span></div>
+        <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-sky-600 inline-block"></span><span class="text-gray-400">2.5–5% — Rendimiento aceptable</span></div>
+        <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-600 inline-block"></span><span class="text-gray-400">≥ 5% — Rendimiento excelente</span></div>
+      </div>
     `;
   }
 
