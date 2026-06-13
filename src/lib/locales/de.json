@@ -170,6 +170,7 @@
   "etf.total_invested": "Investiertes Kapital",
   "etf.net_gain_loss": "Gewinn/Verlust",
 
+"etf.annual_contribution": "Jährlicher Beitrag",
 "etf.model_desc": "Immobilie vs ETF Vergleich",
 "etf.model_detail": "Statt zu kaufen, investieren Sie das gleiche Anfangskapital in einen ETF und zahlen jeden Monat einen zusätzlichen Beitrag ein.",
 

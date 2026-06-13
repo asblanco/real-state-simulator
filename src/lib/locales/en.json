@@ -170,6 +170,7 @@
   "etf.total_invested": "Capital Invested",
   "etf.net_gain_loss": "Gain/Loss",
 
+"etf.annual_contribution": "Annual Contribution",
 "etf.model_desc": "Real Estate vs ETF Comparison",
 "etf.model_detail": "Instead of buying, you invest the same initial capital in an ETF and add an extra monthly contribution.",
 
