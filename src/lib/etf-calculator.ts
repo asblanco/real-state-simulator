@@ -90,6 +90,13 @@ export function computeEtfComparison(
   const reFinalWealth = yearByYear[yearByYear.length - 1]?.reTotalWealth ?? 0;
   const etfFinalValue = Math.round(etfValue);
 
+  const cfg2 = TAX_COUNTRIES[params.taxCountry];
+  const totalGain = Math.max(0, etfFinalValue - cumulativeContribution);
+  const taxableGain = totalGain * cfg2.taxableRatio;
+  const taxableAfterAllowance = Math.max(0, taxableGain - cfg2.allowance);
+  const tax = taxableAfterAllowance * cfg2.taxRate;
+  const etfFinalValueNet = Math.round(etfFinalValue - tax);
+
   let crossoverYear: number | null = null;
   for (const yy of yearByYear) {
     if (yy.etfValue >= yy.reTotalWealth) {
@@ -134,6 +141,7 @@ export function computeEtfComparison(
   return {
     etfCagr,
     etfFinalValue,
+    etfFinalValueNet,
     reFinalWealth,
     gap: etfFinalValue - reFinalWealth,
     breakevenCagr,

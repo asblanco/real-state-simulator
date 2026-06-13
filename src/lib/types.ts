@@ -80,6 +80,7 @@ export interface EtfYearData {
 export interface EtfComparison {
   etfCagr: number;
   etfFinalValue: number;
+  etfFinalValueNet: number;
   reFinalWealth: number;
   gap: number;
   breakevenCagr: number;

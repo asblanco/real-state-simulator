@@ -182,5 +182,9 @@
   "etf.monthly_rent": "Monthly Rent",
   "etf.sustainable_withdrawal": "Sustainable W/drawal",
   "etf.sustainable_withdrawal_net": "Net W/drawal",
-  "etf.tax_country": "Tax Country"
+  "etf.tax_country": "Tax Country",
+  "etf.etf_net": "net (liquidation)",
+  "etf.re_tax_free": "Tax-free (>10 years)",
+  "etf.final_comparison": "Final Capital — Comparison",
+  "etf.label_re": "Real Estate"
 }

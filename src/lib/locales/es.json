@@ -182,5 +182,9 @@
   "etf.monthly_rent": "Alquiler Mensual",
   "etf.sustainable_withdrawal": "Retiro Sostenible",
   "etf.sustainable_withdrawal_net": "Retiro Neto",
-  "etf.tax_country": "País Fiscal"
+  "etf.tax_country": "País Fiscal",
+  "etf.etf_net": "neto (liquid.)",
+  "etf.re_tax_free": "Exento impuestos (>10 a)",
+  "etf.final_comparison": "Capital Final — Comparativa",
+  "etf.label_re": "Inmueble"
 }

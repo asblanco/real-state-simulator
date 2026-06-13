@@ -58,7 +58,7 @@
 
   <!-- KEY METRICS — compact -->
   <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs space-y-4">
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+    <div class="grid grid-cols-2 gap-3">
       <div class="bg-gray-50 p-3 rounded-xl border border-gray-100">
         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{$t("etf.initial_capital")}</p>
         <p class="text-base font-black text-gray-800 mt-0.5">{fmt($purchaseCosts.efectivoTotalNecesario)}</p>
@@ -67,13 +67,23 @@
         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{$t("etf.avg_monthly_saving")}</p>
         <p class="text-base font-black text-gray-800 mt-0.5">{fmt($etfComparison.avgMonthlyContribution)} <span class="text-[10px] text-gray-400 font-normal">/mes</span></p>
       </div>
-      <div class="bg-gray-50 p-3 rounded-xl border border-gray-100">
-        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{$t("etf.etf_final")}</p>
-        <p class="text-base font-black text-[#635BFF] mt-0.5">{fmt($etfComparison.etfFinalValue)}</p>
-      </div>
-      <div class="bg-gray-50 p-3 rounded-xl border border-gray-100">
-        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{$t("etf.re_final")}</p>
-        <p class="text-base font-black text-emerald-700 mt-0.5">{fmt($etfComparison.reFinalWealth)}</p>
+    </div>
+
+    <div class="bg-gray-50 p-3 rounded-xl border border-gray-100">
+      <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">{$t("etf.final_comparison")}</p>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <p class="text-xs font-semibold text-[#635BFF]">{$t("nav.etf")}</p>
+          <p class="text-base font-black text-[#635BFF] mt-0.5">{fmt($etfComparison.etfFinalValue)}</p>
+          <p class="text-xs text-gray-400 mt-0.5">→ {fmt($etfComparison.etfFinalValueNet)} {$t("etf.etf_net")}</p>
+        </div>
+        <div>
+          <p class="text-xs font-semibold text-emerald-700">{$t("etf.label_re")}</p>
+          <p class="text-base font-black text-emerald-700 mt-0.5">{fmt($etfComparison.reFinalWealth)}</p>
+          {#if $params.taxCountry === "de"}
+            <p class="text-xs text-gray-400 mt-0.5">{$t("etf.re_tax_free")}</p>
+          {/if}
+        </div>
       </div>
     </div>
 

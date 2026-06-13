@@ -182,5 +182,9 @@
   "etf.monthly_rent": "Monatsmiete",
   "etf.sustainable_withdrawal": "Nachhaltige Entnahme",
   "etf.sustainable_withdrawal_net": "Netto-Entnahme",
-  "etf.tax_country": "Steuerland"
+  "etf.tax_country": "Steuerland",
+  "etf.etf_net": "netto (Liquidation)",
+  "etf.re_tax_free": "Steuerfrei (>10 J.)",
+  "etf.final_comparison": "Endkapital — Vergleich",
+  "etf.label_re": "Immobilie"
 }
