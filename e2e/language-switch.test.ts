@@ -1,21 +1,18 @@
-import { chromium } from "playwright";
-import { beforeAll, afterAll, test, expect } from "bun:test";
-
-const BASE = process.env.BASE_URL || "http://localhost:8080";
+import { test, expect, chromium } from "@playwright/test";
 
 let browser: any;
 let page: any;
 const errors: string[] = [];
 
-beforeAll(async () => {
+test.beforeAll(async () => {
   browser = await chromium.launch({ headless: true });
   page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
   page.on("pageerror", (err: any) => errors.push(err.message));
-  await page.goto(BASE, { waitUntil: "networkidle" });
+  await page.goto("/", { waitUntil: "networkidle" });
   await page.waitForTimeout(2000);
 });
 
-afterAll(async () => {
+test.afterAll(async () => {
   await browser.close();
 });
 

@@ -8,10 +8,11 @@
     "dev": "vite dev",
     "preview": "vite preview",
     "test": "bun test",
-    "test:e2e": "bun run preview -- --port 8080 & SERVER_PID=$!; sleep 2 && bun test e2e/; kill $SERVER_PID 2>/dev/null",
+    "test:e2e": "playwright test",
     "sync": "bun run build && bunx browser-sync start --server dist --files 'dist/**/*' --no-notify --no-open"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "@sveltejs/adapter-static": "^3.0.10",
     "@sveltejs/kit": "^2.65.0",
     "@tailwindcss/vite": "^4.3.1",
@@ -28,7 +29,6 @@
     "@tailwindcss/postcss": "^4.3.0",
     "chart.js": "^4.5.1",
     "daisyui": "5",
-    "playwright": "^1.60.0",
     "tailwindcss": "^4.3.0"
   }
 }

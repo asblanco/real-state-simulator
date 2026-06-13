@@ -7,3 +7,4 @@ node_modules/
 *.log
 .svelte-kit/
 dist/
+test-results/
