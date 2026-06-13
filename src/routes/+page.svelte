@@ -306,8 +306,6 @@
               <th class="text-center bg-gray-200">Año</th>
               <th class="text-center bg-gray-200">Alquiler Total</th>
               <th class="text-center bg-gray-200">Hipoteca</th>
-              <th class="text-center bg-gray-200">Intereses</th>
-              <th class="text-center bg-gray-200">Amort.</th>
               <th class="text-center bg-gray-200">Cashflow Bruto</th>
               <th class="text-center bg-gray-200">Ahorro Fiscal</th>
               <th class="text-center bg-gray-200">Cashflow Neto</th>
@@ -329,8 +327,6 @@
                     {@html htmlHipotecaTooltip(y)}
                   </div>
                 </td>
-                <td class="text-center text-red-500 text-sm">{fmt(y.interesesMensuales)}</td>
-                <td class="text-center text-emerald-600 text-sm">{fmt(y.amortizacionMensual)}</td>
                 <td class="text-center text-sm relative group cursor-help">
                   {fmt(y.cashflowPreTaxMensual)}
                   <div class="absolute left-1/2 -translate-x-1/2 top-full mt-1 hidden group-hover:block bg-[#0A2540] text-white text-xs rounded-xl p-4 w-64 shadow-xl z-50 pointer-events-none leading-relaxed">
