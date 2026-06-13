@@ -94,7 +94,7 @@
   "chart.rental_label": "Renta Warm Mensual (€)",
   "chart.rental_title": "Renta Warm Mensual Escalada (Piso + Parking + Umlage)",
   "chart.cashflow_label": "Cashflow Mensual Post-Tax (€)",
-  "chart.cashflow_title": "Flujo Líquido Neto Mensual (Post-Impuestos)",
+  "chart.cashflow_title": "Cashflow Neto Mensual",
   "chart.equity_label_deuda": "Deuda Restante",
   "chart.equity_label_equity": "Patrimonio Neto (Equity)",
   "chart.equity_title": "Evolución Patrimonial (Deuda + Equity = Valor Propiedad)",

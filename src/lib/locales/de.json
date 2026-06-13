@@ -94,7 +94,7 @@
   "chart.rental_label": "Monatliche Warmmiete (€)",
   "chart.rental_title": "Gestaffelte monatliche Warmmiete (Wohnung + Stellplatz + Umlage)",
   "chart.cashflow_label": "Monatlicher Cashflow nach Steuern (€)",
-  "chart.cashflow_title": "Monatlicher Nettocashflow (nach Steuern)",
+  "chart.cashflow_title": "Monatlicher Nettocashflow",
   "chart.equity_label_deuda": "Restschuld",
   "chart.equity_label_equity": "Nettoeigenkapital",
   "chart.equity_title": "Vermögensentwicklung (Schulden + Eigenkapital = Immobilienwert)",

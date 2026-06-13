@@ -94,7 +94,7 @@
   "chart.rental_label": "Monthly Warm Rent (€)",
   "chart.rental_title": "Scaled Monthly Warm Rent (Apartment + Parking + Umlage)",
   "chart.cashflow_label": "Monthly Post-Tax Cashflow (€)",
-  "chart.cashflow_title": "Net Monthly Cash Flow (After-Tax)",
+  "chart.cashflow_title": "Net Monthly Cashflow",
   "chart.equity_label_deuda": "Remaining Debt",
   "chart.equity_label_equity": "Net Equity",
   "chart.equity_title": "Wealth Evolution (Debt + Equity = Property Value)",

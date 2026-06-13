@@ -154,6 +154,8 @@
     `;
   }
 
+  let chartMode = $state<"cashflow" | "capital">("cashflow");
+
   let keyYears = $derived.by(() => {
     const all = $yearlyWealth;
     const indices = new Set<number>();
@@ -180,20 +182,53 @@
     <KpiCard id="kpi-roa" label="ROA" value={Number.isFinite($summary.roiProyectoAnualizado) ? pctDisplay($summary.roiProyectoAnualizado, $summary.roiProyectoTotal) : "—"} bgClass={$roaColor} valueClass="text-white" labelClass="text-blue-100" tooltipContent={roaTooltip} />
   </div>
 
-  <!-- CASHFLOW BAR CHART -->
-  <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs h-72">
-    <Chart
-      id="chart-cashflow"
-      type="bar"
-      labels={$years.map(y => $t("chart.axis_prefix") + y.year)}
-      datasets={[{
-        label: $t("chart.cashflow_label"),
-        data: $years.map(y => Math.round(y.cashflowNetoPostTaxMensual)),
-        backgroundColor: (ctx: any) => (ctx.parsed?.y ?? 0) >= 0 ? "#22c55e" : "#f97316",
-        borderRadius: 4,
-      }]}
-      title={$t("chart.cashflow_title")}
-    />
+  <!-- CASHFLOW / CAPITAL APORTADO TOGGLE + CHART -->
+  <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs">
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="text-sm font-bold text-[#0A2540]">
+        {chartMode === "cashflow" ? $t("chart.cashflow_title") : "Cashflow Neto Anual Acumulado"}
+      </h3>
+      <div class="flex gap-1 bg-gray-100 p-1 rounded-xl">
+        <button
+          class="px-3 py-1.5 text-xs font-bold rounded-lg transition-colors {chartMode === 'cashflow' ? 'bg-white shadow-sm text-[#635BFF]' : 'text-gray-500 hover:text-gray-700'}"
+          onclick={() => chartMode = "cashflow"}>Mensual</button>
+        <button
+          class="px-3 py-1.5 text-xs font-bold rounded-lg transition-colors {chartMode === 'capital' ? 'bg-white shadow-sm text-[#635BFF]' : 'text-gray-500 hover:text-gray-700'}"
+          onclick={() => chartMode = "capital"}>Anual</button>
+      </div>
+    </div>
+    <div class="h-64">
+      {#if chartMode === "cashflow"}
+        <Chart
+          id="chart-cashflow"
+          type="bar"
+          labels={$years.map(y => $t("chart.axis_prefix") + y.year)}
+          datasets={[{
+            label: $t("chart.cashflow_label"),
+            data: $years.map(y => Math.round(y.cashflowNetoPostTaxMensual)),
+            backgroundColor: (ctx: any) => (ctx.parsed?.y ?? 0) >= 0 ? "#22c55e" : "#f97316",
+            borderRadius: 4,
+          }]}
+        />
+      {:else}
+        <Chart
+          id="chart-cashflow-anual"
+          type="line"
+          labels={$years.map(y => $t("chart.axis_prefix") + y.year)}
+          datasets={[{
+            label: "Cashflow acumulado",
+            data: $yearlyWealth.map(w => w.accumulatedCash),
+            borderColor: "#635BFF",
+            backgroundColor: "rgba(99, 91, 255, 0.1)",
+            borderWidth: 2.5,
+            tension: 0.3,
+            pointRadius: 4,
+            fill: true,
+          }]}
+          showValues
+        />
+      {/if}
+    </div>
   </div>
 
   <!-- WEALTH EVOLUTION -->

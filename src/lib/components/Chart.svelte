@@ -16,9 +16,11 @@
       pointBackgroundColor?: string;
       borderDash?: number[];
       borderRadius?: number;
+      yAxisID?: string;
     }[],
     options = {} as Record<string, any>,
     title = "",
+    showValues = false,
     id = "",
   } = $props();
 
@@ -52,9 +54,31 @@
                   color: "#0A2540",
                 }
               : undefined,
+            ...options.plugins,
           },
           ...options,
         },
+        plugins: showValues
+          ? [{
+              id: "valueLabels",
+              afterDraw(c: any) {
+                const ctx = c.ctx;
+                c.data.datasets.forEach((ds: any, i: number) => {
+                  const meta = c.getDatasetMeta(i);
+                  meta.data.forEach((el: any, j: number) => {
+                    const val = ds.data[j];
+                    if (val === 0) return;
+                    ctx.save();
+                    ctx.fillStyle = "#374151";
+                    ctx.font = "bold 12px sans-serif";
+                    ctx.textAlign = "center";
+                    ctx.fillText(val.toLocaleString("de-DE") + " €", el.x, el.y - 16);
+                    ctx.restore();
+                  });
+                });
+              },
+            }]
+          : [],
       });
     }
   });
