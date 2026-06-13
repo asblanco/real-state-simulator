@@ -162,7 +162,6 @@
             <th class="text-center bg-gray-200">{$t("etf.re_wealth")}</th>
             <th class="text-center bg-gray-200">{$t("etf.etf_value")}</th>
             <th class="text-center bg-gray-200">{$t("etf.table_gap")}</th>
-            <th class="text-center bg-gray-200">{$t("etf.monthly_rent")}</th>
             <th class="text-center bg-gray-200">{$t("etf.sustainable_withdrawal")}</th>
             <th class="text-center bg-gray-200">{$t("etf.sustainable_withdrawal_net")}</th>
             <th class="text-center bg-gray-200">{$t("etf.total_invested")}</th>
@@ -178,7 +177,6 @@
               <td class="text-center font-mono text-sm {y.etfValue - y.reTotalWealth >= 0 ? 'text-emerald-600' : 'text-orange-600'}">
                 {y.etfValue - y.reTotalWealth >= 0 ? '+' : ''}{fmt(y.etfValue - y.reTotalWealth)}
               </td>
-              <td class="text-center font-mono text-sm text-red-600">{fmt(y.monthlyRentAtYear)}</td>
               <td class="text-center font-mono text-sm {y.sustainableWithdrawal >= $params.targetWithdrawal ? 'text-emerald-600 font-bold' : 'text-gray-500'}">
                 {fmt(y.sustainableWithdrawal)}
               </td>
