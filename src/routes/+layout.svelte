@@ -1,6 +1,7 @@
 <script lang="ts">
   import "../app.css";
   import { page } from "$app/stores";
+  import { base } from "$app/paths";
   import { params } from "$lib/stores/params";
   import { locale, t } from "$lib/i18n";
   import NavBar from "$lib/components/NavBar.svelte";
@@ -37,7 +38,7 @@
   <NavBar />
 
   <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start mb-8">
-    {#if $page.url.pathname.startsWith("/etf")}
+    {#if $page.url.pathname.startsWith(`${base}/etf`)}
     <aside class="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs lg:col-span-1 lg:sticky lg:top-6 z-40">
       <h2 class="text-base font-bold text-[#0A2540] border-b border-gray-100 pb-2 mb-3">{$t("etf.etf_return")}</h2>
       <input type="range" min="1" max="15" step="0.25" value={$etfCagr * 100}
