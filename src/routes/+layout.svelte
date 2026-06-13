@@ -57,7 +57,7 @@
         <button onclick={() => $etfCagr = 0.10}
           class="flex-1 text-xs font-bold py-1.5 rounded-lg transition-colors {$etfCagr === 0.10 ? 'bg-[#635BFF] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'} cursor-pointer">10%</button>
       </div>
-      <p class="text-[10px] text-gray-400 text-center mt-2">Presets rápidos</p>
+      <p class="text-[10px] text-gray-400 text-center mt-2">{$t("etf.presets_label")}</p>
 
       <div class="pt-3 mt-3 border-t border-gray-200">
         <label class="block text-xs font-semibold text-gray-500 mb-1">{$t("slider.anos_proyeccion")} <span class="text-[#635BFF] font-bold">{$params.years}</span> {$t("slider.anos")}</label>

@@ -70,7 +70,7 @@
           <div class="flex items-baseline gap-3 mt-1 flex-wrap">
             <span class="text-3xl font-black text-emerald-800">{ti("etf.fi_year", { year: $etfComparison.fiYear })}</span>
             <span class="text-xl font-bold text-emerald-600">— {ti("etf.fi_income", { income: $etfComparison.fiMonthlyIncome.toLocaleString("de-DE") })}</span>
-            <span class="text-base text-emerald-500 font-semibold">→ {fmt($etfComparison.fiMonthlyIncomeNet)} neto</span>
+            <span class="text-base text-emerald-500 font-semibold">→ {fmt($etfComparison.fiMonthlyIncomeNet)} {$t("etf.net_short")}</span>
           </div>
           <p class="text-sm text-emerald-700 mt-1">{ti("etf.fi_desc", { year: $etfComparison.fiYear, income: $etfComparison.fiMonthlyIncome.toLocaleString("de-DE") })}</p>
         </div>
@@ -130,7 +130,7 @@
           {$etfComparison.crossoverYear ? $etfComparison.crossoverYear : "—"}
         </p>
         <p class="text-[10px] text-gray-400 mt-0.5">
-          {$etfComparison.crossoverYear ? "ETF > Inmueble" : "ETF < Inmueble"}
+          {$etfComparison.crossoverYear ? $t("etf.crossover_etf_wins") : $t("etf.crossover_re_wins")}
         </p>
       </div>
     </div>
@@ -170,7 +170,7 @@
           pointRadius: 0,
         },
         {
-          label: "Diferencia (ETF − RE)",
+          label: $t("etf.difference_label"),
           data: diffData,
           backgroundColor: gapColors,
           borderColor: "transparent",
@@ -186,15 +186,15 @@
   <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs h-72">
     <div class="flex items-center justify-between mb-2">
       <span class="text-sm font-bold text-[#0A2540]">
-        {showCumulative ? "Aporte Acumulado vs Crecimiento ETF" : "Aporte Anual al ETF"}
+        {showCumulative ? $t("etf.chart_cumulative_title") : $t("etf.chart_contribution_title")}
       </span>
       <div class="flex gap-1 bg-gray-100 p-1 rounded-xl">
         <button
           class="px-3 py-1.5 text-xs font-bold rounded-lg transition-colors {!showCumulative ? 'bg-white shadow-sm text-[#635BFF]' : 'text-gray-500 hover:text-gray-700'}"
-          onclick={() => showCumulative = false}>Anual</button>
+          onclick={() => showCumulative = false}>{$t("etf.toggle_annual")}</button>
         <button
           class="px-3 py-1.5 text-xs font-bold rounded-lg transition-colors {showCumulative ? 'bg-white shadow-sm text-[#635BFF]' : 'text-gray-500 hover:text-gray-700'}"
-          onclick={() => showCumulative = true}>Acum.</button>
+          onclick={() => showCumulative = true}>{$t("etf.toggle_cumulative")}</button>
       </div>
     </div>
     <div class="h-[calc(100%-2rem)]">
