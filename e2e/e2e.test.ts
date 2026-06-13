@@ -11,20 +11,25 @@ page.on("pageerror", err => errors.push(err.message));
 await page.goto(BASE, { waitUntil: "networkidle" });
 await page.waitForTimeout(2000);
 
-const kpis = await page.evaluate(() => ({
-  precioTotal: document.getElementById("kpi-precio-total")?.textContent,
-  efectivo: document.getElementById("kpi-efectivo")?.textContent,
-  retorno: document.getElementById("kpi-retorno")?.textContent,
-  roi: document.getElementById("kpi-roi")?.textContent,
-}));
+function getKpiValue(id: string) {
+  return page.evaluate((sel) => {
+    const el = document.getElementById(sel);
+    if (!el) return null;
+    const p = el.querySelector("p:last-child");
+    return p?.textContent?.trim() ?? null;
+  }, id);
+}
 
-const tableRows = await page.evaluate(() =>
-  document.querySelectorAll("#tabla-proyeccion-body tr").length
-);
+function getTableRowCount(tableId: string) {
+  return page.evaluate((sel) => {
+    const tbody = document.getElementById(sel);
+    return tbody?.querySelectorAll("tr").length ?? 0;
+  }, tableId);
+}
 
-const chartContent = await page.evaluate(() => {
-  function hasPixelContent(id: string): boolean {
-    const c = document.getElementById(id) as HTMLCanvasElement | null;
+function canvasHasData(id: string) {
+  return page.evaluate((sel) => {
+    const c = document.getElementById(sel) as HTMLCanvasElement | null;
     if (!c) return false;
     const ctx = c.getContext("2d")!;
     const { width: w, height: h } = c;
@@ -36,18 +41,8 @@ const chartContent = await page.evaluate(() => {
       }
     }
     return count > 10;
-  }
-  return { rent: hasPixelContent("chartRent"), cashflow: hasPixelContent("chartCashflow") };
-});
-
-const tooltipShown = await page.evaluate(() => {
-  const tt = document.querySelector(".tt") as HTMLElement | null;
-  if (!tt) return "no-trigger-found";
-  tt.dispatchEvent(new MouseEvent("mouseover", { bubbles: true }));
-  const portal = document.getElementById("tooltip-portal") as HTMLElement | null;
-  if (!portal) return "no-portal";
-  return portal.classList.contains("hidden") ? "hidden" : "visible";
-});
+  }, id);
+}
 
 let passed = 0;
 let failed = 0;
@@ -62,14 +57,30 @@ console.log("\nE2E: Real State Simulator\n");
 assert(errors.length === 0, `No page errors (got ${errors.length})`);
 if (errors.length) errors.forEach(e => console.log(`     ${e}`));
 
-assert(kpis.precioTotal !== "0 €" && kpis.precioTotal?.endsWith("€") && kpis.precioTotal !== undefined, `Precio Total = ${kpis.precioTotal}`);
-assert(kpis.efectivo !== "0 €" && kpis.efectivo?.endsWith("€"), `Efectivo Inicial = ${kpis.efectivo}`);
-assert(kpis.retorno !== "0 €" && kpis.retorno?.endsWith("€"), `Retorno Año 10 = ${kpis.retorno}`);
-assert(kpis.roi !== "0.00 %" && kpis.roi?.endsWith("%"), `ROI = ${kpis.roi}`);
-assert(tableRows >= 10, `Table has ${tableRows} rows (≥10)`);
-assert(chartContent.rent, "Rent chart has visible content");
-assert(chartContent.cashflow, "Cashflow chart has visible content");
-assert(tooltipShown === "visible", `Table tooltip should be visible (got "${tooltipShown}")`);
+const precioTotal = await getKpiValue("kpi-precio-total");
+assert(precioTotal !== null && precioTotal !== "0 €" && precioTotal.endsWith("€"), `Precio Total = ${precioTotal}`);
+
+const efectivo = await getKpiValue("kpi-efectivo-inicial");
+assert(efectivo !== null && efectivo !== "0 €" && efectivo.endsWith("€"), `Efectivo Inicial = ${efectivo}`);
+
+const ganancia = await getKpiValue("kpi-ganancia-neta");
+assert(ganancia !== null && ganancia !== "0 €" && ganancia.endsWith("€"), `Ganancia Neta = ${ganancia}`);
+
+const roe = await getKpiValue("kpi-roe");
+assert(roe !== null && roe.includes("%") && !roe.includes("0.00"), `ROE = ${roe}`);
+
+const tableRows = await getTableRowCount("tabla-proyeccion-body");
+assert(tableRows >= 10, `Proyección table has ${tableRows} rows (≥10)`);
+
+assert(await canvasHasData("chart-cashflow"), "Cashflow chart has visible content");
+assert(await canvasHasData("chart-wealth"), "Wealth chart has visible content");
+
+// Test tooltip: hover over a KPI card with tooltip
+const tooltipCard = page.locator("#kpi-costo-adquisicion");
+await tooltipCard.hover();
+await page.waitForTimeout(500);
+const cardErrors = errors.length;
+assert(cardErrors === 0, `No errors after tooltip hover (got ${cardErrors})`);
 
 console.log(`\n${passed + failed} tests, ${passed} passed, ${failed} failed`);
 

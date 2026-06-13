@@ -3,22 +3,26 @@
     label = "",
     value = "",
     valueClass = "text-[#0A2540]",
+    labelClass = "text-gray-400",
     bgClass = "bg-white",
     tooltipContent = "",
+    id = "",
   }: {
     label: string;
     value: string;
     valueClass?: string;
+    labelClass?: string;
     bgClass?: string;
     tooltipContent?: string;
+    id?: string;
   } = $props();
 </script>
 
-<div class="{bgClass} p-5 rounded-2xl border border-gray-200 shadow-xs {tooltipContent ? 'relative group cursor-help' : ''}">
-  <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">
+<div {id} class="{bgClass} p-5 rounded-2xl border border-gray-200 shadow-xs {tooltipContent ? 'relative group cursor-help' : ''}">
+  <p class="text-xs font-bold {labelClass} uppercase tracking-wider">
     {label}
     {#if tooltipContent}
-      <svg class="w-3.5 h-3.5 ml-1 inline text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg class="w-3.5 h-3.5 ml-1 inline {labelClass}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
       </svg>
     {/if}

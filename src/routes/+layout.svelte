@@ -23,6 +23,7 @@
       <p class="text-sm text-gray-500 italic mt-0.5">{$t("app.subtitle")} — {month} {year}</p>
     </div>
     <select
+      id="lang-select"
       class="text-xs border border-gray-300 rounded-lg px-2 py-1.5 bg-white text-gray-700 cursor-pointer self-start mt-1"
       value={$locale}
       onchange={(e) => locale.set(e.target.value as "es" | "en" | "de")}

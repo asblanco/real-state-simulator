@@ -19,6 +19,7 @@
     }[],
     options = {} as Record<string, any>,
     title = "",
+    id = "",
   } = $props();
 
   let canvas: HTMLCanvasElement;
@@ -61,4 +62,4 @@
   onDestroy(() => chart?.destroy());
 </script>
 
-<canvas bind:this={canvas} class="w-full h-full"></canvas>
+<canvas {id} bind:this={canvas} class="w-full h-full"></canvas>

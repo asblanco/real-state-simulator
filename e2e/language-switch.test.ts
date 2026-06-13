@@ -11,15 +11,12 @@ page.on("pageerror", err => errors.push(err.message));
 await page.goto(BASE, { waitUntil: "networkidle" });
 await page.waitForTimeout(2000);
 
-// Check if a chart canvas has rendered data points in the central plot area
-// (ignoring axis labels, titles, and legend rendered near the edges)
-async function chartHasData(canvasId: string): Promise<boolean> {
+async function canvasHasData(canvasId: string): Promise<boolean> {
   const result = await page.evaluate((id) => {
     const c = document.getElementById(id) as HTMLCanvasElement | null;
     if (!c) return "no-canvas";
     const ctx = c.getContext("2d")!;
     const { width: w, height: h } = c;
-    // Sample the central 60% of the canvas (avoiding axes around edges)
     const xStart = Math.floor(w * 0.2);
     const xEnd = Math.floor(w * 0.8);
     const yStart = Math.floor(h * 0.2);
@@ -36,30 +33,6 @@ async function chartHasData(canvasId: string): Promise<boolean> {
     return coloredPixels > 5 ? "has-data" : "empty";
   }, canvasId);
   return result === "has-data";
-}
-
-async function chartIsEmpty(canvasId: string): Promise<boolean> {
-  const result = await page.evaluate((id) => {
-    const c = document.getElementById(id) as HTMLCanvasElement | null;
-    if (!c) return "no-canvas";
-    const ctx = c.getContext("2d")!;
-    const { width: w, height: h } = c;
-    const xStart = Math.floor(w * 0.2);
-    const xEnd = Math.floor(w * 0.8);
-    const yStart = Math.floor(h * 0.2);
-    const yEnd = Math.floor(h * 0.8);
-    const stepX = Math.max(1, Math.floor((xEnd - xStart) / 15));
-    const stepY = Math.max(1, Math.floor((yEnd - yStart) / 15));
-    let coloredPixels = 0;
-    for (let x = xStart; x < xEnd; x += stepX) {
-      for (let y = yStart; y < yEnd; y += stepY) {
-        const a = ctx.getImageData(x, y, 1, 1).data[3];
-        if (a > 0) coloredPixels++;
-      }
-    }
-    return coloredPixels <= 5;
-  }, canvasId);
-  return result;
 }
 
 async function switchLanguage(value: string): Promise<void> {
@@ -82,23 +55,23 @@ function assert(condition: boolean, msg: string) {
 console.log("\nE2E: Language Switch – Chart Rendering\n");
 
 // Baseline: charts rendered with data on initial load (Spanish)
-assert(await chartHasData("chartRent"), "Rent chart has content before language switch");
-assert(await chartHasData("chartCashflow"), "Cashflow chart has content before language switch");
+assert(await canvasHasData("chart-cashflow"), "Cashflow chart has content before language switch");
+assert(await canvasHasData("chart-wealth"), "Wealth chart has content before language switch");
 
-// Switch to English — currently buggy: charts lose their data after language switch
+// Switch to English
 await switchLanguage("en");
-assert(await chartHasData("chartRent"), "Rent chart has content after switch to EN");
-assert(await chartHasData("chartCashflow"), "Cashflow chart has content after switch to EN");
+assert(await canvasHasData("chart-cashflow"), "Cashflow chart has content after switch to EN");
+assert(await canvasHasData("chart-wealth"), "Wealth chart has content after switch to EN");
 
 // Switch to German
 await switchLanguage("de");
-assert(await chartHasData("chartRent"), "Rent chart has content after switch to DE");
-assert(await chartHasData("chartCashflow"), "Cashflow chart has content after switch to DE");
+assert(await canvasHasData("chart-cashflow"), "Cashflow chart has content after switch to DE");
+assert(await canvasHasData("chart-wealth"), "Wealth chart has content after switch to DE");
 
 // Switch back to Spanish
 await switchLanguage("es");
-assert(await chartHasData("chartRent"), "Rent chart has content after switch back to ES");
-assert(await chartHasData("chartCashflow"), "Cashflow chart has content after switch back to ES");
+assert(await canvasHasData("chart-cashflow"), "Cashflow chart has content after switch back to ES");
+assert(await canvasHasData("chart-wealth"), "Wealth chart has content after switch back to ES");
 
 assert(errors.length === 0, `No page errors (got ${errors.length})`);
 if (errors.length) errors.forEach(e => console.log(`     ${e}`));

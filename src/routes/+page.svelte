@@ -23,6 +23,8 @@
   let costoAdqTooltip = $derived(htmlCostoAdq($params, $purchaseCosts));
   let inversionInicialTooltip = $derived(htmlInversionInicial($params, $purchaseCosts));
   let gananciaNetaTooltip = $derived(htmlGananciaNeta($summary, $purchaseCosts));
+  let roeTooltip = $derived(htmlRoeTooltip($summary, $purchaseCosts, $params));
+  let roaTooltip = $derived(htmlRoaTooltip($summary, $purchaseCosts));
 
   function htmlCostoAdq(p: { precio: number; parking: number }, pc: { costeITP: number; costeNotario: number; costeAgencia: number; efectivoTotalNecesario: number; montoFinanciar: number }): string {
     return `
@@ -58,6 +60,30 @@
     `;
   }
 
+  function htmlRoeTooltip(s: { capitalTotalFinal: number; roiAnualizado: number; roiCapitalPropioTotal: number; roiProyectoAnualizado: number; apalancamiento: number }, pc: { efectivoTotalNecesario: number }, p: { years: number }): string {
+    return `
+      <p class="font-bold text-sky-300 mb-1">Cálculo del ROE</p>
+      <div class="flex justify-between"><span>Capital final:</span><span class="font-mono">${fmt(s.capitalTotalFinal)}</span></div>
+      <div class="flex justify-between"><span>÷ Inversión inicial:</span><span class="font-mono">${fmt(pc.efectivoTotalNecesario)}</span></div>
+      <div class="flex justify-between"><span>^(1/${p.years}) − 1</span></div>
+      <div class="border-t border-gray-700 pt-1 mt-1 flex justify-between font-bold text-sky-300"><span>ROE anualizado:</span><span class="font-mono">${pct(s.roiAnualizado)}</span></div>
+      <div class="flex justify-between"><span>ROE total:</span><span class="font-mono">${pct(s.roiCapitalPropioTotal)}</span></div>
+      <div class="flex justify-between"><span>ROA anualizado:</span><span class="font-mono">${pct(s.roiProyectoAnualizado)}</span></div>
+      <div class="flex justify-between"><span>Apalancamiento:</span><span class="font-mono text-emerald-300">${s.apalancamiento.toFixed(2)}x</span></div>
+    `;
+  }
+
+  function htmlRoaTooltip(s: { gananciaFiscal: number; costoAdquisicionTotal: number; roiProyectoTotal: number; roiProyectoAnualizado: number }, pc: { efectivoTotalNecesario: number }): string {
+    return `
+      <p class="font-bold text-sky-300 mb-1">Cálculo del ROA</p>
+      <div class="flex justify-between"><span>Ganancia fiscal:</span><span class="font-mono">${fmt(s.gananciaFiscal)}</span></div>
+      <div class="flex justify-between"><span>÷ Costo adquisición:</span><span class="font-mono">${fmt(s.costoAdquisicionTotal)}</span></div>
+      <div class="border-t border-gray-700 pt-1 mt-1 flex justify-between font-bold text-sky-300"><span>ROA total:</span><span class="font-mono">${pct(s.roiProyectoTotal)}</span></div>
+      <div class="flex justify-between"><span>ROA anualizado:</span><span class="font-mono">${pct(s.roiProyectoAnualizado)}</span></div>
+      <div class="text-[10px] text-gray-400 italic mt-2 pt-1 border-t border-gray-700">ROA mide la rentabilidad del proyecto sin apalancamiento</div>
+    `;
+  }
+
   let keyYears = $derived.by(() => {
     const all = $yearlyWealth;
     const indices = new Set<number>();
@@ -76,41 +102,18 @@
 <div class="space-y-6">
   <!-- HERO KPIs -->
   <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-    <KpiCard label={$t("kpi.precio_total")} value={fmt($params.precio + $params.parking)} />
-    <KpiCard label={$t("kpi.costo_adquisicion")} value={fmt($purchaseCosts.efectivoTotalNecesario + $purchaseCosts.montoFinanciar)} tooltipContent={costoAdqTooltip} />
-    <KpiCard label={$t("kpi.efectivo_inicial")} value={fmt($purchaseCosts.efectivoTotalNecesario)} tooltipContent={inversionInicialTooltip} />
-    <KpiCard label={$t("kpi.ganancia_neto")} value={fmt($summary.gananciaNeta)} tooltipContent={gananciaNetaTooltip} />
-    <div class="{$roiColor} p-4 rounded-2xl text-white shadow-xs relative group cursor-help">
-      <p class="text-[10px] font-bold text-blue-100 uppercase tracking-wider">ROE</p>
-      <p class="text-lg font-black mt-0.5">{Number.isFinite($summary.roiAnualizado) ? pctDisplay($summary.roiAnualizado, $summary.roiCapitalPropioTotal) : "—"}</p>
-      <div class="absolute right-0 top-full mt-2 hidden group-hover:block bg-gray-900 text-white text-xs rounded-xl p-4 w-72 shadow-xl z-50 pointer-events-none leading-relaxed">
-        <p class="font-bold text-sky-300 mb-1">Cálculo del ROE</p>
-        <div class="flex justify-between"><span>Capital final:</span><span class="font-mono">{fmt($summary.capitalTotalFinal)}</span></div>
-        <div class="flex justify-between"><span>÷ Inversión inicial:</span><span class="font-mono">{fmt($purchaseCosts.efectivoTotalNecesario)}</span></div>
-        <div class="flex justify-between"><span>^(1/{$params.years}) − 1</span></div>
-        <div class="border-t border-gray-700 pt-1 mt-1 flex justify-between font-bold text-sky-300"><span>ROE anualizado:</span><span class="font-mono">{pct($summary.roiAnualizado)}</span></div>
-        <div class="flex justify-between"><span>ROE total:</span><span class="font-mono">{pct($summary.roiCapitalPropioTotal)}</span></div>
-        <div class="flex justify-between"><span>ROA anualizado:</span><span class="font-mono">{pct($summary.roiProyectoAnualizado)}</span></div>
-        <div class="flex justify-between"><span>Apalancamiento:</span><span class="font-mono text-emerald-300">{$summary.apalancamiento.toFixed(2)}x</span></div>
-      </div>
-    </div>
-    <div class="{$roaColor} p-4 rounded-2xl text-white shadow-xs relative group cursor-help">
-      <p class="text-[10px] font-bold text-blue-100 uppercase tracking-wider">ROA</p>
-      <p class="text-lg font-black mt-0.5">{Number.isFinite($summary.roiProyectoAnualizado) ? pctDisplay($summary.roiProyectoAnualizado, $summary.roiProyectoTotal) : "—"}</p>
-      <div class="absolute right-0 top-full mt-2 hidden group-hover:block bg-gray-900 text-white text-xs rounded-xl p-4 w-72 shadow-xl z-50 pointer-events-none leading-relaxed">
-        <p class="font-bold text-sky-300 mb-1">Cálculo del ROA</p>
-        <div class="flex justify-between"><span>Ganancia fiscal:</span><span class="font-mono">{fmt($summary.gananciaFiscal)}</span></div>
-        <div class="flex justify-between"><span>÷ Costo adquisición:</span><span class="font-mono">{fmt($summary.costoAdquisicionTotal)}</span></div>
-        <div class="border-t border-gray-700 pt-1 mt-1 flex justify-between font-bold text-sky-300"><span>ROA total:</span><span class="font-mono">{pct($summary.roiProyectoTotal)}</span></div>
-        <div class="flex justify-between"><span>ROA anualizado:</span><span class="font-mono">{pct($summary.roiProyectoAnualizado)}</span></div>
-        <div class="text-[10px] text-gray-400 italic mt-2 pt-1 border-t border-gray-700">ROA mide la rentabilidad del proyecto sin apalancamiento</div>
-      </div>
-    </div>
+    <KpiCard id="kpi-precio-total" label={$t("kpi.precio_total")} value={fmt($params.precio + $params.parking)} />
+    <KpiCard id="kpi-costo-adquisicion" label={$t("kpi.costo_adquisicion")} value={fmt($purchaseCosts.efectivoTotalNecesario + $purchaseCosts.montoFinanciar)} tooltipContent={costoAdqTooltip} />
+    <KpiCard id="kpi-efectivo-inicial" label={$t("kpi.efectivo_inicial")} value={fmt($purchaseCosts.efectivoTotalNecesario)} tooltipContent={inversionInicialTooltip} />
+    <KpiCard id="kpi-ganancia-neta" label={$t("kpi.ganancia_neto")} value={fmt($summary.gananciaNeta)} tooltipContent={gananciaNetaTooltip} />
+    <KpiCard id="kpi-roe" label="ROE" value={Number.isFinite($summary.roiAnualizado) ? pctDisplay($summary.roiAnualizado, $summary.roiCapitalPropioTotal) : "—"} bgClass={$roiColor} valueClass="text-white" labelClass="text-blue-100" tooltipContent={roeTooltip} />
+    <KpiCard id="kpi-roa" label="ROA" value={Number.isFinite($summary.roiProyectoAnualizado) ? pctDisplay($summary.roiProyectoAnualizado, $summary.roiProyectoTotal) : "—"} bgClass={$roaColor} valueClass="text-white" labelClass="text-blue-100" tooltipContent={roaTooltip} />
   </div>
 
   <!-- CASHFLOW BAR CHART -->
   <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs h-72">
     <Chart
+      id="chart-cashflow"
       type="bar"
       labels={$years.map(y => $t("chart.axis_prefix") + y.year)}
       datasets={[{
@@ -127,6 +130,7 @@
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     <div class="lg:col-span-2 bg-white p-4 rounded-2xl border border-gray-200 shadow-xs h-80">
       <Chart
+        id="chart-wealth"
         type="line"
         labels={$years.map(y => $t("chart.axis_prefix") + y.year)}
         datasets={[
@@ -181,7 +185,7 @@
               <th class="text-center">ROI</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="tabla-evolucion-body">
             {#each keyYears as w}
               {@const roi = (w.totalWealth / $purchaseCosts.efectivoTotalNecesario) ** (1 / w.year) - 1}
               <tr class="hover:bg-gray-50 transition-colors">
@@ -254,7 +258,7 @@
               <th class="text-center bg-gray-200">Cashflow Neto</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="tabla-proyeccion-body">
             {#each $years as y, i}
               <tr class="{i % 2 === 0 ? 'bg-white' : 'bg-[#F9FAFB]'} hover:bg-gray-50 transition-colors">
                 <td class="text-center font-bold text-gray-500 text-sm">{y.year}</td>

@@ -1,6 +1,6 @@
 {
   "app.title": "Real Estate Investment Simulator",
-  "app.subtitle": "Asset calculation with annual scaling and tax projection.",
+  "app.subtitle": "Simulate and compare your investments",
 
   "panel.variables": "Variables",
   "section.inmueble": "Property & Financing",
