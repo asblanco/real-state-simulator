@@ -155,6 +155,7 @@
   "etf.wins": "ETF gana por",
   "etf.re_wins": "Inmueble gana por",
   "etf.chart_title": "Evolución Patrimonial: Inmueble vs ETF",
+  "etf.chart_contribution_title": "Aporte Anual al ETF",
   "etf.chart_gain_title": "Ganancia Neta: ETF vs Capital Aportado",
   "etf.legend_re": "Inmueble",
   "etf.legend_etf": "ETF",
