@@ -31,7 +31,7 @@ jobs:
           bunx playwright test
       - uses: actions/upload-pages-artifact@v5
         with:
-          path: .
+          path: ./dist
 
   deploy:
     needs: build
