@@ -58,6 +58,13 @@
           class="flex-1 text-xs font-bold py-1.5 rounded-lg transition-colors {$etfCagr === 0.10 ? 'bg-[#635BFF] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'} cursor-pointer">10%</button>
       </div>
       <p class="text-[10px] text-gray-400 text-center mt-2">Presets rápidos</p>
+
+      <div class="pt-3 mt-3 border-t border-gray-200">
+        <label class="block text-xs font-semibold text-gray-500 mb-1">{$t("slider.anos_proyeccion")} <span class="text-[#635BFF] font-bold">{$params.years}</span> {$t("slider.anos")}</label>
+        <input type="range" min="10" max="30" step="1" value={$params.years}
+          oninput={(e) => updateParam("years", parseInt(e.target.value))}
+          class="w-full accent-[#635BFF]">
+      </div>
     </aside>
     {:else}
     <aside class="bg-white p-3 rounded-2xl border border-gray-200 shadow-xs lg:col-span-1 space-y-2 lg:sticky lg:top-6 z-40 max-h-[calc(100vh-3rem)] overflow-y-auto">
