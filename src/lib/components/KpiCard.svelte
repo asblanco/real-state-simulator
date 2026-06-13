@@ -1,4 +1,17 @@
 <script lang="ts">
+  import {
+    useFloating,
+    useInteractions,
+    useHover,
+    useFocus,
+    useRole,
+    useDismiss,
+    autoUpdate,
+    offset,
+    flip,
+    shift,
+  } from "@skeletonlabs/floating-ui-svelte";
+
   let {
     label = "",
     value = "",
@@ -16,9 +29,32 @@
     tooltipContent?: string;
     id?: string;
   } = $props();
+
+  let open = $state(false);
+
+  const floating = useFloating({
+    get open() { return open },
+    onOpenChange: (v) => (open = v),
+    placement: "bottom-start",
+    middleware: [offset(8), flip(), shift({ padding: 8 })],
+    whileElementsMounted: autoUpdate,
+  });
+
+  const hover = useHover(floating.context, { move: false });
+  const focus = useFocus(floating.context);
+  const dismiss = useDismiss(floating.context);
+  const role = useRole(floating.context, { role: "tooltip" });
+  const interactions = useInteractions([hover, focus, dismiss, role]);
 </script>
 
-<div {id} class="{bgClass} p-5 rounded-2xl border border-gray-200 shadow-xs {tooltipContent ? 'relative group cursor-help' : ''}">
+<div
+  {id}
+  bind:this={floating.elements.reference}
+  {...(tooltipContent ? interactions.getReferenceProps() : {})}
+  class="{bgClass} p-5 rounded-2xl border border-gray-200 shadow-xs {tooltipContent ? 'relative cursor-help' : ''}"
+  role="button"
+  tabindex="0"
+>
   <p class="text-xs font-bold {labelClass} uppercase tracking-wider">
     {label}
     {#if tooltipContent}
@@ -28,8 +64,12 @@
     {/if}
   </p>
   <p class="text-xl font-black mt-1 {valueClass}">{value}</p>
-  {#if tooltipContent}
-    <div class="absolute left-0 top-full mt-2 hidden group-hover:block bg-[#0A2540] text-white text-xs rounded-xl p-4 w-72 shadow-xl z-50 pointer-events-none">
+  {#if tooltipContent && open}
+    <div
+      bind:this={floating.elements.floating}
+      style={floating.floatingStyles}
+      class="bg-[#0A2540] text-white text-xs rounded-xl p-4 w-72 shadow-xl z-50"
+    >
       {@html tooltipContent}
     </div>
   {/if}

@@ -3,6 +3,7 @@
   import { t } from "$lib/i18n";
   import { purchaseCosts, years, summary, roiColor, roaColor, yearlyWealth } from "$lib/stores/computed";
   import KpiCard from "$lib/components/KpiCard.svelte";
+  import TooltipTd from "$lib/components/TooltipTd.svelte";
   import Chart from "$lib/components/Chart.svelte";
 
   function fmt(n: number): string {
@@ -352,30 +353,18 @@
             {#each $years as y, i}
               <tr class="{i % 2 === 0 ? 'bg-white' : 'bg-[#F9FAFB]'} hover:bg-gray-50 transition-colors">
                 <td class="text-center font-bold text-gray-500 text-sm">{y.year}</td>
-                <td class="text-center text-sm relative group cursor-help">
+                <TooltipTd content={htmlWarmTooltip(y)} tdClass="text-center text-sm">
                   {fmt(y.ingresoWarmMensual)}
-                  <div class="absolute left-1/2 -translate-x-1/2 top-full mt-1 hidden group-hover:block bg-[#0A2540] text-white text-xs rounded-xl p-4 w-64 shadow-xl z-50 pointer-events-none leading-relaxed">
-                    {@html htmlWarmTooltip(y)}
-                  </div>
-                </td>
-                <td class="text-center text-amber-700 bg-amber-50/40 text-sm relative group cursor-help">
+                </TooltipTd>
+                <TooltipTd content={htmlHipotecaTooltip(y)} tdClass="text-center text-amber-700 bg-amber-50/40 text-sm">
                   {fmt(-y.hipotecaMensual)}
-                  <div class="absolute left-1/2 -translate-x-1/2 top-full mt-1 hidden group-hover:block bg-[#0A2540] text-white text-xs rounded-xl p-4 w-64 shadow-xl z-50 pointer-events-none leading-relaxed">
-                    {@html htmlHipotecaTooltip(y)}
-                  </div>
-                </td>
-                <td class="text-center text-sm relative group cursor-help">
+                </TooltipTd>
+                <TooltipTd content={htmlCashflowTooltip(y, $params)} tdClass="text-center text-sm">
                   {fmt(y.cashflowPreTaxMensual)}
-                  <div class="absolute left-1/2 -translate-x-1/2 top-full mt-1 hidden group-hover:block bg-[#0A2540] text-white text-xs rounded-xl p-4 w-64 shadow-xl z-50 pointer-events-none leading-relaxed">
-                    {@html htmlCashflowTooltip(y, $params)}
-                  </div>
-                </td>
-                <td class="text-center text-emerald-700 bg-emerald-50/40 text-sm relative group cursor-help">
+                </TooltipTd>
+                <TooltipTd content={htmlFiscalTooltip(y, $params)} tdClass="text-center text-emerald-700 bg-emerald-50/40 text-sm" width="w-72">
                   {y.devolucionFiscalMensual > 0 ? '+' : ''}{fmt(y.devolucionFiscalMensual)}
-                  <div class="absolute left-1/2 -translate-x-1/2 top-full mt-1 hidden group-hover:block bg-[#0A2540] text-white text-xs rounded-xl p-4 w-72 shadow-xl z-50 pointer-events-none leading-relaxed">
-                    {@html htmlFiscalTooltip(y, $params)}
-                  </div>
-                </td>
+                </TooltipTd>
                 <td class="text-center font-bold text-sm {y.cashflowNetoPostTaxMensual >= 0 ? 'text-green-600' : 'text-orange-600'}">{fmt(y.cashflowNetoPostTaxMensual)}</td>
               </tr>
             {/each}
