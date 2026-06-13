@@ -25,6 +25,12 @@ export const etfComparison = derived(
 
 export const roiColor = derived(summary, $s => $s.roiAnualizado < 0.05 ? "bg-red-600" : $s.roiAnualizado < 0.1 ? "bg-sky-600" : "bg-emerald-600");
 export const roaColor = derived(summary, $s => $s.roiProyectoAnualizado < 0.025 ? "bg-red-600" : $s.roiProyectoAnualizado < 0.05 ? "bg-sky-600" : "bg-emerald-600");
+export const etfRoiColor = derived(etfComparison, $ec =>
+  !Number.isFinite($ec.etfRoiAnnualized) || $ec.etfRoiAnnualized === 0 ? "bg-gray-600"
+    : $ec.etfRoiAnnualized < 0.035 ? "bg-red-600"
+    : $ec.etfRoiAnnualized < 0.075 ? "bg-sky-600"
+    : "bg-emerald-600",
+);
 
 export const yearlyWealth = derived([years, params], ([$years, $params]) =>
   $years.map(y => {

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { params } from "$lib/stores/params";
-  import { purchaseCosts, etfCagr, etfComparison } from "$lib/stores/computed";
+  import { purchaseCosts, etfCagr, etfComparison, etfRoiColor } from "$lib/stores/computed";
   import { t } from "$lib/i18n";
   import Chart from "$lib/components/Chart.svelte";
 
@@ -10,6 +10,28 @@
 
   function pct(n: number): string {
     return (n * 100).toFixed(2) + " %";
+  }
+
+  let roiTooltipOpen = $state(false);
+
+  function htmlRoiTooltip(): string {
+    const ec = $etfComparison;
+    const totalInvested = ec.yearByYear.at(-1)?.cumulativeContribution ?? 0;
+    const etfRoiPct = (ec.etfRoiTotal * 100).toFixed(2);
+    const etfRoiAnnPct = (ec.etfRoiAnnualized * 100).toFixed(2);
+    return `
+      <p class="font-bold text-sky-300 mb-1">Cálculo del ROI</p>
+      <div class="flex justify-between"><span>Valor final ETF:</span><span class="font-mono">${fmt(ec.etfFinalValue)}</span></div>
+      <div class="flex justify-between"><span>÷ Capital total aportado:</span><span class="font-mono">${fmt(totalInvested)}</span></div>
+      <div class="border-t border-gray-700 pt-1 mt-1 flex justify-between font-bold text-sky-300"><span>ROI anualizado:</span><span class="font-mono">${etfRoiAnnPct}%</span></div>
+      <div class="flex justify-between"><span>ROI total:</span><span class="font-mono">${etfRoiPct}%</span></div>
+      <div class="border-t border-gray-700 pt-2 mt-2 text-[10px] space-y-0.5">
+        <p class="text-gray-400 font-bold mb-0.5">Referencia ROI:</p>
+        <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-red-600 inline-block"></span><span class="text-gray-400">&lt; 3.5% — Rendimiento bajo</span></div>
+        <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-sky-600 inline-block"></span><span class="text-gray-400">3.5–7.5% — Rendimiento aceptable</span></div>
+        <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-600 inline-block"></span><span class="text-gray-400">≥ 7.5% — Rendimiento excelente</span></div>
+      </div>
+    `;
   }
 
   function ti(key: string, vars: Record<string, string | number>): string {
@@ -52,11 +74,39 @@
 </script>
 
 <div class="space-y-5 pb-12">
-  <!-- HEADER -->
-  <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs">
-    <div>
-      <h3 class="text-lg font-bold text-[#0A2540]">{$t("etf.title")}</h3>
-      <p class="text-sm text-gray-500">{$t("etf.subtitle")}</p>
+  <!-- TOP ROW: Capital Inicial | ROI | Descripción -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs">
+      <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">{$t("etf.initial_capital")}</p>
+      <p class="text-xl font-black text-[#0A2540] mt-1">{fmt($purchaseCosts.efectivoTotalNecesario)}</p>
+    </div>
+
+    <div
+      class="{$etfRoiColor} p-5 rounded-2xl border border-gray-200 shadow-xs relative cursor-help"
+      role="button"
+      tabindex="0"
+      onmouseenter={() => roiTooltipOpen = true}
+      onmouseleave={() => roiTooltipOpen = false}
+      onfocusin={() => roiTooltipOpen = true}
+      onfocusout={() => roiTooltipOpen = false}
+    >
+      <p class="text-xs font-bold text-white/80 uppercase tracking-wider">
+        {$t("etf.roi")}
+        <svg class="w-3.5 h-3.5 ml-1 inline text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+      </p>
+      <p class="text-xl font-black text-white mt-1">
+        {Number.isFinite($etfComparison.etfRoiAnnualized) ? pct($etfComparison.etfRoiAnnualized) : "—"}
+        {#if Number.isFinite($etfComparison.etfRoiTotal)}
+          · {pct($etfComparison.etfRoiTotal)} {$t("etf.roi_total")}
+        {/if}
+      </p>
+      {#if roiTooltipOpen}
+        <div class="absolute top-full left-0 mt-2 bg-[#0A2540] text-white text-xs rounded-xl p-4 w-72 shadow-xl z-50">
+          {@html htmlRoiTooltip()}
+        </div>
+      {/if}
     </div>
   </div>
 
@@ -84,12 +134,7 @@
 
   <!-- KEY METRICS — compact -->
   <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs space-y-4">
-    <div class="grid grid-cols-[1fr_4fr] gap-3">
-      <div class="bg-gray-50 p-3 rounded-xl border border-gray-100">
-        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{$t("etf.initial_capital")}</p>
-        <p class="text-base font-black text-gray-800 mt-0.5">{fmt($purchaseCosts.efectivoTotalNecesario)}</p>
-      </div>
-      <div class="bg-gray-50 p-3 rounded-xl border border-gray-100">
+    <div class="bg-gray-50 p-3 rounded-xl border border-gray-100">
         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">{$t("etf.final_comparison")}</p>
         <div class="grid grid-cols-2 gap-4">
           <div>
@@ -106,7 +151,6 @@
           </div>
         </div>
       </div>
-    </div>
 
     <!-- GAP + BREAKEVEN + CROSSOVER — compact row -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-3">

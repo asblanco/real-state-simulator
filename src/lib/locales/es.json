@@ -196,5 +196,8 @@
   "etf.etf_net": "neto (liquid.)",
   "etf.re_tax_free": "Exento impuestos (>10 a)",
   "etf.final_comparison": "Capital Final — Comparativa",
-  "etf.label_re": "Inmueble"
+  "etf.label_re": "Inmueble",
+  "etf.roi": "ROI ETF",
+  "etf.roi_annualized": "anualizado",
+  "etf.roi_total": "total"
 }

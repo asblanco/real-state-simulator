@@ -196,5 +196,8 @@
   "etf.etf_net": "net (liquidation)",
   "etf.re_tax_free": "Tax-free (>10 years)",
   "etf.final_comparison": "Final Capital — Comparison",
-  "etf.label_re": "Real Estate"
+  "etf.label_re": "Real Estate",
+  "etf.roi": "ETF ROI",
+  "etf.roi_annualized": "annualized",
+  "etf.roi_total": "total"
 }

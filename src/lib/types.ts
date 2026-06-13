@@ -87,6 +87,8 @@ export interface EtfComparison {
   fiYear: number | null;
   fiMonthlyIncome: number;
   fiMonthlyIncomeNet: number;
+  etfRoiTotal: number;
+  etfRoiAnnualized: number;
   yearByYear: EtfYearData[];
   scenario5: number;
   scenario7: number;

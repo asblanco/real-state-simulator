@@ -107,6 +107,10 @@ export function computeEtfComparison(
     }
   }
 
+  const etfTotalInvested = cumulativeContribution;
+  const etfRoiTotal = etfTotalInvested > 0 ? (etfFinalValue - etfTotalInvested) / etfTotalInvested : 0;
+  const etfRoiAnnualized = etfTotalInvested > 0 ? (etfFinalValue / etfTotalInvested) ** (1 / params.years) - 1 : 0;
+
   const avgMonthlyContribution = Math.round(
     monthlyCashflows.reduce((a, b) => a + b, 0) / monthlyCashflows.length,
   );
@@ -135,6 +139,8 @@ export function computeEtfComparison(
     reFinalWealth,
     gap: etfFinalValue - reFinalWealth,
     breakevenCagr,
+    etfRoiTotal,
+    etfRoiAnnualized,
     crossoverYear,
     fiYear,
     fiMonthlyIncome,

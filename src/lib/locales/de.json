@@ -196,5 +196,8 @@
   "etf.etf_net": "netto (Liquidation)",
   "etf.re_tax_free": "Steuerfrei (>10 J.)",
   "etf.final_comparison": "Endkapital — Vergleich",
-  "etf.label_re": "Immobilie"
+  "etf.label_re": "Immobilie",
+  "etf.roi": "ETF-ROI",
+  "etf.roi_annualized": "annualisiert",
+  "etf.roi_total": "gesamt"
 }
