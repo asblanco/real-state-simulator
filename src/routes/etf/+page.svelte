@@ -24,15 +24,28 @@
   let gapColors = $derived(diffData.map(v => v >= 0 ? "rgba(16, 185, 129, 0.3)" : "rgba(239, 68, 68, 0.3)"));
   let investedData = $derived($etfComparison.yearByYear.map(y => y.cumulativeContribution));
 
-  let etfGrowthLabels = $derived([
+  let showCumulative = $state(false);
+
+  let shareLabels = $derived([
     $t("chart.axis_prefix") + "0",
     ...$etfComparison.yearByYear.map(y => $t("chart.axis_prefix") + y.year),
   ]);
-  let etfGrowthCapital = $derived([
+
+  let contributionData = $derived([
+    $purchaseCosts.efectivoTotalNecesario,
+    ...$etfComparison.yearByYear.map((y, i) =>
+      i === 0
+        ? y.cumulativeContribution - $purchaseCosts.efectivoTotalNecesario
+        : y.cumulativeContribution - $etfComparison.yearByYear[i - 1].cumulativeContribution,
+    ),
+  ]);
+
+  let cumulativeData = $derived([
     $purchaseCosts.efectivoTotalNecesario,
     ...$etfComparison.yearByYear.map(y => y.cumulativeContribution),
   ]);
-  let etfGrowthValue = $derived([
+
+  let etfValueData = $derived([
     $purchaseCosts.efectivoTotalNecesario,
     ...$etfComparison.yearByYear.map(y => y.etfValue),
   ]);
@@ -169,33 +182,59 @@
     />
   </div>
 
-  <!-- CHART 2: ETF Growth vs Capital Invested -->
+  <!-- CHART 2: Annual / Cumulative + Growth -->
   <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs h-72">
-    <Chart
-      type="line"
-      labels={etfGrowthLabels}
-      datasets={[
-        {
-          label: $t("etf.total_invested"),
-          data: etfGrowthCapital,
-          borderColor: "rgb(156, 163, 175)",
-          borderWidth: 1.5,
-          borderDash: [3, 3],
-          fill: false,
-          pointRadius: 2,
-        },
-        {
-          label: $t("etf.legend_etf") + " (" + ($etfCagr * 100).toFixed(1) + "%)",
-          data: etfGrowthValue,
-          borderColor: "rgb(99, 91, 255)",
-          borderWidth: 2.5,
-          fill: false,
-          pointRadius: 3,
-          pointBackgroundColor: "rgb(99, 91, 255)",
-        },
-      ]}
-      title={$t("etf.chart_contribution_title")}
-    />
+    <div class="flex items-center justify-between mb-2">
+      <span class="text-sm font-bold text-[#0A2540]">
+        {showCumulative ? "Aporte Acumulado vs Crecimiento ETF" : "Aporte Anual al ETF"}
+      </span>
+      <label class="flex items-center gap-2 cursor-pointer">
+        <span class="text-xs text-gray-500 font-medium">{showCumulative ? "Acum." : "Anual"}</span>
+        <input type="checkbox" class="toggle toggle-sm" bind:checked={showCumulative} />
+      </label>
+    </div>
+    <div class="h-[calc(100%-2rem)]">
+      {#if showCumulative}
+        <Chart
+          type="line"
+          labels={shareLabels}
+          datasets={[
+            {
+              label: $t("etf.total_invested"),
+              data: cumulativeData,
+              borderColor: "rgb(156, 163, 175)",
+              borderWidth: 1.5,
+              borderDash: [3, 3],
+              fill: false,
+              pointRadius: 2,
+            },
+            {
+              label: $t("etf.legend_etf") + " (" + ($etfCagr * 100).toFixed(1) + "%)",
+              data: etfValueData,
+              borderColor: "rgb(99, 91, 255)",
+              borderWidth: 2.5,
+              fill: false,
+              pointRadius: 3,
+              pointBackgroundColor: "rgb(99, 91, 255)",
+            },
+          ]}
+          title=""
+        />
+      {:else}
+        <Chart
+          type="bar"
+          labels={shareLabels}
+          datasets={[{
+            label: $t("etf.extra_contribution"),
+            data: contributionData,
+            backgroundColor: "rgba(99, 91, 255, 0.7)",
+            borderRadius: 4,
+          }]}
+          showValues={true}
+          title=""
+        />
+      {/if}
+    </div>
   </div>
 
   <!-- YEAR TABLE -->
