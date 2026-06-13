@@ -94,16 +94,12 @@
     `;
   }
 
-  function htmlWarmTooltip(y: { ingresoWarmMensual: number }, p: { alquilerInicialPiso: number; alquilerInicialParking: number; hausgeldTotal: number; reservaImprevistos: number; subidaPct: number }, i: number): string {
-    const factor = (1 + p.subidaPct) ** i;
-    const piso = Math.round(p.alquilerInicialPiso * factor);
-    const parking = Math.round(p.alquilerInicialParking * factor);
-    const umlage = Math.round(p.hausgeldTotal + p.reservaImprevistos);
+  function htmlWarmTooltip(y: { mensualPiso: number; mensualParking: number; umlageMensual: number; ingresoWarmMensual: number }): string {
     return `
       <p class="font-bold text-sky-300 mb-1">Composición Alquiler Total</p>
-      <div class="flex justify-between"><span>Alquiler Piso:</span><span class="font-mono">${fmt(piso)}</span></div>
-      <div class="flex justify-between"><span>Alquiler Parking:</span><span class="font-mono">${fmt(parking)}</span></div>
-      <div class="flex justify-between"><span>Umlage (Hausgeld+Rückl.):</span><span class="font-mono">${fmt(umlage)}</span></div>
+      <div class="flex justify-between"><span>Alquiler Piso:</span><span class="font-mono">${fmt(y.mensualPiso)}</span></div>
+      <div class="flex justify-between"><span>Alquiler Parking:</span><span class="font-mono">${fmt(y.mensualParking)}</span></div>
+      <div class="flex justify-between"><span>Umlage (60% Hausgeld):</span><span class="font-mono">${fmt(y.umlageMensual)}</span></div>
       <div class="border-t border-gray-700 pt-1 mt-1 flex justify-between font-bold text-sky-300"><span>Total:</span><span class="font-mono">${fmt(y.ingresoWarmMensual)}</span></div>
     `;
   }
@@ -324,7 +320,7 @@
                 <td class="text-center text-sm relative group cursor-help">
                   {fmt(y.ingresoWarmMensual)}
                   <div class="absolute left-1/2 -translate-x-1/2 top-full mt-1 hidden group-hover:block bg-[#0A2540] text-white text-xs rounded-xl p-4 w-64 shadow-xl z-50 pointer-events-none leading-relaxed">
-                    {@html htmlWarmTooltip(y, $params, i)}
+                    {@html htmlWarmTooltip(y)}
                   </div>
                 </td>
                 <td class="text-center text-amber-700 bg-amber-50/40 text-sm relative group cursor-help">
