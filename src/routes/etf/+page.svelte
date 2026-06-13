@@ -229,7 +229,7 @@
           type="bar"
           labels={shareLabels}
           datasets={[{
-            label: $t("etf.extra_contribution"),
+            label: "Aporte Anual",
             data: contributionData,
             backgroundColor: "rgba(99, 91, 255, 0.7)",
             borderRadius: 4,
