@@ -19,9 +19,9 @@ const defaultParams: InputParams = {
   years: 10,
 };
 
-const KALT_INITIAL = 1125 + 80; // 1205
+const KALT_INITIAL = 1125 + 80;
 const UMLAGE = defaultParams.hausgeldTotal * 0.6;
-const WARM_INITIAL = KALT_INITIAL + UMLAGE; // 1555
+const WARM_INITIAL = KALT_INITIAL + UMLAGE;
 
 describe("getRentFactor", () => {
   test("year 1 = 1 (no increase)", () => {
@@ -55,7 +55,7 @@ describe("computeFlatRatePct", () => {
   test("flat rate total over 10 years equals compound total", () => {
     const pct = computeFlatRatePct(defaultParams);
     let flatTotal = 0, compTotal = 0;
-    const base = 1205, uml = 350;
+    const base = 1205, uml = 300;
     for (let y = 1; y <= 10; y++) {
       flatTotal += base * (1 + (y - 1) * pct) + uml;
       compTotal += base * (1.02 ** (y - 1)) + uml;
@@ -199,4 +199,48 @@ describe("edge cases", () => {
     expect(years[0].resultadoFiscalMensual).toBeLessThan(0);
     expect(years[0].devolucionFiscalMensual).toBeGreaterThan(0);
   });
+});
+
+describe("data consistency", () => {
+  const scenarios = [
+    { label: "default 15% entrada", params: defaultParams },
+    { label: "10% entrada", params: { ...defaultParams, entradaPct: 0.10 } },
+    { label: "0% entrada (100% financed)", params: { ...defaultParams, entradaPct: 0.0 } },
+    { label: "40% entrada", params: { ...defaultParams, entradaPct: 0.40 } },
+    { label: "different price & parking", params: { ...defaultParams, precio: 250000, parking: 20000 } },
+    { label: "30 year horizon", params: { ...defaultParams, years: 30 } },
+  ];
+
+  for (const { label, params } of scenarios) {
+    test(`[${label}] purchaseCosts components sum to efectivoTotalNecesario`, () => {
+      const c = computePurchaseCosts(params);
+      const sum = c.capitalPropioEntrada + c.costeITP + c.costeNotario + c.costeAgencia;
+      expect(c.efectivoTotalNecesario).toBe(sum);
+    });
+
+    test(`[${label}] costoAdquisicionTotal matches card value`, () => {
+      const c = computePurchaseCosts(params);
+      const precioTotal = params.precio + params.parking;
+      const costComponentsSum = precioTotal + c.costeITP + c.costeNotario + c.costeAgencia;
+      const cardValue = c.efectivoTotalNecesario + c.montoFinanciar;
+      expect(cardValue).toBe(costComponentsSum);
+    });
+
+    test(`[${label}] gananciaNeta matches breakdown`, () => {
+      const c = computePurchaseCosts(params);
+      const y = calculateAllYears(params, c);
+      const s = computeSummary(params, y, c);
+      const netoDeVenta = s.valorPropiedadFutura - s.deudaRestanteFinal;
+      expect(netoDeVenta).toBeCloseTo(s.netoDeLaVenta, 2);
+      const gananciaNeta = s.netoDeLaVenta - c.efectivoTotalNecesario + s.totalCashflowAcumulado;
+      expect(gananciaNeta).toBeCloseTo(s.gananciaNeta, 2);
+    });
+
+    test(`[${label}] capitalTotalFinal = gananciaNeta + inversionInicial`, () => {
+      const c = computePurchaseCosts(params);
+      const y = calculateAllYears(params, c);
+      const s = computeSummary(params, y, c);
+      expect(s.capitalTotalFinal).toBeCloseTo(s.gananciaNeta + c.efectivoTotalNecesario, 2);
+    });
+  }
 });
