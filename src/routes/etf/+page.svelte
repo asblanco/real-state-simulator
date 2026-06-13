@@ -22,9 +22,9 @@
 
   let diffData = $derived($etfComparison.yearByYear.map(y => y.etfValue - y.reTotalWealth));
   let gapColors = $derived(diffData.map(v => v >= 0 ? "rgba(16, 185, 129, 0.3)" : "rgba(239, 68, 68, 0.3)"));
-  let annualRentData = $derived($etfComparison.yearByYear.map(y => y.monthlyRentAtYear * 12));
-  let annualSwData = $derived($etfComparison.yearByYear.map(y => y.sustainableWithdrawal * 12));
   let investedData = $derived($etfComparison.yearByYear.map(y => y.cumulativeContribution));
+  let netGainData = $derived($etfComparison.yearByYear.map(y => y.etfValue - y.cumulativeContribution));
+  let netGainColors = $derived(netGainData.map(v => v >= 0 ? "rgba(16, 185, 129, 0.25)" : "rgba(239, 68, 68, 0.25)"));
 </script>
 
 <div class="space-y-5 pb-12">
@@ -107,7 +107,7 @@
   </div>
 
   <!-- CHART 1: Wealth Evolution -->
-  <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs h-64">
+  <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs h-96">
     <Chart
       type="line"
       labels={$etfComparison.yearByYear.map(y => $t("chart.axis_prefix") + y.year)}
@@ -152,34 +152,24 @@
     />
   </div>
 
-  <!-- CHART 2: Annual Income -->
-  <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs h-48">
+  <!-- CHART 2: Net Gain (ETF − Capital Invested) -->
+  <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs h-80">
     <Chart
       type="line"
       labels={$etfComparison.yearByYear.map(y => $t("chart.axis_prefix") + y.year)}
       datasets={[
         {
-          label: $t("etf.monthly_rent") + " (anual)",
-          data: annualRentData,
-          borderColor: "rgb(239, 68, 68)",
+          label: $t("etf.net_gain_loss"),
+          data: netGainData,
+          borderColor: "rgb(99, 91, 255)",
           borderWidth: 2,
-          borderDash: [6, 3],
-          fill: false,
+          backgroundColor: netGainColors,
+          fill: true,
           pointRadius: 3,
-          pointBackgroundColor: "rgb(239, 68, 68)",
-        },
-        {
-          label: $t("etf.sustainable_withdrawal") + " (anual)",
-          data: annualSwData,
-          borderColor: "rgb(16, 185, 129)",
-          borderWidth: 2,
-          borderDash: [4, 4],
-          fill: false,
-          pointRadius: 3,
-          pointBackgroundColor: "rgb(16, 185, 129)",
+          pointBackgroundColor: "rgb(99, 91, 255)",
         },
       ]}
-      title={$t("etf.chart_income_title")}
+      title={$t("etf.chart_gain_title")}
     />
   </div>
 

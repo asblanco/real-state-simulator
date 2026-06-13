@@ -155,7 +155,7 @@
   "etf.wins": "ETF wins by",
   "etf.re_wins": "Property wins by",
   "etf.chart_title": "Wealth Evolution: Real Estate vs ETF",
-  "etf.chart_income_title": "Annual Rent vs Sustainable Withdrawal",
+  "etf.chart_gain_title": "Net Gain: ETF vs Capital Invested",
   "etf.legend_re": "Real Estate",
   "etf.legend_etf": "ETF",
   "etf.year_table": "Year-by-Year Comparison",

@@ -155,7 +155,7 @@
   "etf.wins": "ETF gewinnt um",
   "etf.re_wins": "Immobilie gewinnt um",
   "etf.chart_title": "Vermögensentwicklung: Immobilie vs ETF",
-  "etf.chart_income_title": "Jahresmiete vs Nachhaltige Entnahme",
+  "etf.chart_gain_title": "Nettogewinn: ETF vs Investiertes Kapital",
   "etf.legend_re": "Immobilie",
   "etf.legend_etf": "ETF",
   "etf.year_table": "Jährlicher Vergleich",
