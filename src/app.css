@@ -25,3 +25,20 @@ body {
   background-color: #f3f4f6 !important;
   transition: background 0.15s ease;
 }
+
+.waterfall-bar {
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.kpi-grid > * {
+  min-width: 0;
+}
+
+.sensitivity-card {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.sensitivity-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}

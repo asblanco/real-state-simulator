@@ -74,6 +74,15 @@ export function computeEtfComparison(
 
   const reFinalWealth = yearByYear[yearByYear.length - 1]?.reTotalWealth ?? 0;
   const etfFinalValue = Math.round(etfValue);
+
+  let crossoverYear: number | null = null;
+  for (const yy of yearByYear) {
+    if (yy.etfValue >= yy.reTotalWealth) {
+      crossoverYear = yy.year;
+      break;
+    }
+  }
+
   const avgMonthlyContribution = Math.round(
     monthlyCashflows.reduce((a, b) => a + b, 0) / monthlyCashflows.length,
   );
@@ -101,6 +110,7 @@ export function computeEtfComparison(
     reFinalWealth,
     gap: etfFinalValue - reFinalWealth,
     breakevenCagr,
+    crossoverYear,
     yearByYear,
     scenario5: scenarioRate(0.05),
     scenario7: scenarioRate(0.07),
