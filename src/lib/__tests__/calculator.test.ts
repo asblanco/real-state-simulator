@@ -159,6 +159,15 @@ describe("computeSummary", () => {
     expect(summary.roiAnualizado).toBeGreaterThan(-1);
     expect(summary.roiAnualizado).toBeLessThan(1);
   });
+
+  test("totalCapitalAportado includes initial plus negative cashflows", () => {
+    const totalNegativo = years.reduce((sum, y) => {
+      const annual = y.cashflowNetoPostTaxMensual * 12;
+      return sum + (annual < 0 ? -annual : 0);
+    }, 0);
+    expect(summary.totalCapitalAportado).toBeCloseTo(costs.efectivoTotalNecesario + totalNegativo, 1);
+  });
+
 });
 
 describe("edge cases", () => {
@@ -181,6 +190,8 @@ describe("edge cases", () => {
       expect(y.amortizacionMensual).toBe(0);
       expect(y.hipotecaMensual).toBe(0);
     }
+    const summary = computeSummary(params, years, costs);
+    expect(summary.totalCapitalAportado).toBeCloseTo(costs.efectivoTotalNecesario, 1);
   });
 
   test("no rent increase (subida = 0)", () => {
@@ -241,6 +252,13 @@ describe("data consistency", () => {
       const y = calculateAllYears(params, c);
       const s = computeSummary(params, y, c);
       expect(s.capitalTotalFinal).toBeCloseTo(s.gananciaNeta + c.efectivoTotalNecesario, 2);
+    });
+
+    test(`[${label}] totalCapitalAportado >= efectivoTotalNecesario`, () => {
+      const c = computePurchaseCosts(params);
+      const y = calculateAllYears(params, c);
+      const s = computeSummary(params, y, c);
+      expect(s.totalCapitalAportado).toBeGreaterThanOrEqual(c.efectivoTotalNecesario);
     });
   }
 });

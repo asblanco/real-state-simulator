@@ -58,11 +58,13 @@
     `;
   }
 
-  function htmlRoeTooltip(s: { capitalTotalFinal: number; roiAnualizado: number; roiCapitalPropioTotal: number; roiProyectoAnualizado: number; apalancamiento: number }, pc: { efectivoTotalNecesario: number }, p: { years: number }): string {
+  function htmlRoeTooltip(s: { capitalTotalFinal: number; totalCapitalAportado: number; roiAnualizado: number; roiCapitalPropioTotal: number; roiProyectoAnualizado: number; apalancamiento: number }, pc: { efectivoTotalNecesario: number }, p: { years: number }): string {
+    const extraAportes = s.totalCapitalAportado - pc.efectivoTotalNecesario;
     return `
       <p class="font-bold text-sky-300 mb-1">Cálculo del ROE</p>
       <div class="flex justify-between"><span>Capital final:</span><span class="font-mono">${fmt(s.capitalTotalFinal)}</span></div>
-      <div class="flex justify-between"><span>÷ Inversión inicial:</span><span class="font-mono">${fmt(pc.efectivoTotalNecesario)}</span></div>
+      <div class="flex justify-between"><span>÷ Capital total aportado:</span><span class="font-mono">${fmt(s.totalCapitalAportado)}</span></div>
+      <div class="text-[10px] text-gray-400 ml-3 mb-1">Inversión inicial: ${fmt(pc.efectivoTotalNecesario)}${extraAportes > 0 ? ` + ${fmt(extraAportes)} en aportes extra por cashflow negativo` : ''}</div>
       <div class="flex justify-between"><span>^(1/${p.years}) − 1</span></div>
       <div class="border-t border-gray-700 pt-1 mt-1 flex justify-between font-bold text-sky-300"><span>ROE anualizado:</span><span class="font-mono">${pct(s.roiAnualizado)}</span></div>
       <div class="flex justify-between"><span>ROE total:</span><span class="font-mono">${pct(s.roiCapitalPropioTotal)}</span></div>
