@@ -48,12 +48,14 @@
   }
 
   function htmlGananciaNeta(s: { valorPropiedadFutura: number; deudaRestanteFinal: number; netoDeLaVenta: number; totalCashflowAcumulado: number; gananciaNeta: number }, pc: { efectivoTotalNecesario: number }): string {
+    const cfColor = s.totalCashflowAcumulado >= 0 ? "text-green-300" : "text-red-300";
+    const cfSign = s.totalCashflowAcumulado >= 0 ? "+" : "";
     return `
       <p class="font-bold text-emerald-400 border-b border-gray-700 pb-1 mb-1">Desglose Ganancia Neta</p>
       <div class="flex justify-between"><span>Valor venta futuro:</span><span class="font-mono">${fmt(s.valorPropiedadFutura)}</span></div>
       <div class="flex justify-between"><span>− Deuda restante:</span><span class="font-mono text-red-300">−${fmt(s.deudaRestanteFinal)}</span></div>
       <div class="flex justify-between border-b border-gray-800 pb-1"><span>= Neto de venta:</span><span class="font-mono">${fmt(s.netoDeLaVenta)}</span></div>
-      <div class="flex justify-between"><span>+ Cashflow acumulado:</span><span class="font-mono text-green-300">+${fmt(s.totalCashflowAcumulado)}</span></div>
+      <div class="flex justify-between"><span>+ Cashflow acumulado:</span><span class="font-mono ${cfColor}">${cfSign}${fmt(s.totalCashflowAcumulado)}</span></div>
       <div class="flex justify-between"><span>− Inversión inicial:</span><span class="font-mono text-red-300">−${fmt(pc.efectivoTotalNecesario)}</span></div>
       <div class="border-t border-gray-700 pt-1 mt-1 flex justify-between font-bold text-emerald-400"><span>= Ganancia neta:</span><span class="font-mono">${fmt(s.gananciaNeta)}</span></div>
     `;
