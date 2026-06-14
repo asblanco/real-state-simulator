@@ -45,7 +45,8 @@ export function calculateYear(
     : getRentFactor(year, params.subidaPct);
   const mensualPiso = params.alquilerInicialPiso * factorSubida;
   const mensualParking = params.alquilerInicialParking * factorSubida;
-  const umlageMensual = params.hausgeldTotal * UMLAGE_PCT;
+  const hausgeldActual = params.hausgeldMensualInicial * factorSubida;
+  const umlageMensual = hausgeldActual * UMLAGE_PCT;
   const ingresoWarmMensual = mensualPiso + mensualParking + umlageMensual;
 
   const interesesAnuales = deudaRestante * params.interesPct;
@@ -55,12 +56,12 @@ export function calculateYear(
   const amortizacionMensual = amortizacionAnual / MONTHS_PER_YEAR;
   const nuevaDeuda = deudaRestante - amortizacionAnual;
 
-  const gastosOperativosMensuales = params.hausgeldTotal + params.reservaImprevistos;
+  const gastosOperativosMensuales = hausgeldActual + params.reservaImprevistos;
   const cashflowPreTaxMensual = ingresoWarmMensual - cuotaMensualHipoteca - gastosOperativosMensuales;
 
   const ingresosBrutosAnuales = ingresoWarmMensual * MONTHS_PER_YEAR;
   const afaEdificioAnual = (params.precio * AFA_BUILDING_PCT * (1 / params.afaYears));
-  const gastosDeduciblesAnuales = interesesAnuales + afaEdificioAnual + (params.hausgeldTotal * MONTHS_PER_YEAR);
+  const gastosDeduciblesAnuales = interesesAnuales + afaEdificioAnual + (hausgeldActual * MONTHS_PER_YEAR);
   const resultadoFiscalAnual = ingresosBrutosAnuales - gastosDeduciblesAnuales;
   const resultadoFiscalMensual = resultadoFiscalAnual / MONTHS_PER_YEAR;
 
@@ -74,6 +75,7 @@ export function calculateYear(
     mensualPiso,
     mensualParking,
     umlageMensual,
+    hausgeldMensual: hausgeldActual,
     ingresoWarmMensual,
     hipotecaMensual: cuotaMensualHipoteca,
     interesesMensuales,

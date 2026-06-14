@@ -199,9 +199,9 @@
             </div>
 
             <div>
-              <label class="block text-xs font-semibold text-gray-500 mb-1">{$t("slider.hausgeld_total")} <span class="text-[#635BFF] font-bold">{$params.hausgeldTotal}</span> €</label>
-              <input type="range" id="input-hausgeld" min="0" max="1000" step="25" value={$params.hausgeldTotal}
-                oninput={(e) => updateParam("hausgeldTotal", parseFloat(e.target.value))}
+              <label class="block text-xs font-semibold text-gray-500 mb-1">{$t("slider.hausgeld_total")} <span class="text-[#635BFF] font-bold">{$params.hausgeldMensualInicial}</span> €</label>
+              <input type="range" id="input-hausgeld" min="0" max="1000" step="25" value={$params.hausgeldMensualInicial}
+                oninput={(e) => updateParam("hausgeldMensualInicial", parseFloat(e.target.value))}
                 class="w-full accent-[#635BFF]">
             </div>
 

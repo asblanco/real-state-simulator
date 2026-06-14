@@ -1,4 +1,4 @@
-export const HAUSGELD_TOTAL = 500;
+export const HAUSGELD_MENSUAL_INICIAL = 500;
 export const UMLAGE_PCT = 0.6;
 
 export const TAX_RATE = 0.42;
@@ -42,7 +42,7 @@ export const DEFAULT_PARAMS: InputParams = {
   subidaPct: 0.02,
   inflacionPct: 0.03,
   afaYears: AFA_RND_YEARS,
-  hausgeldTotal: HAUSGELD_TOTAL,
+  hausgeldMensualInicial: HAUSGELD_MENSUAL_INICIAL,
   useFlatRate: false,
   reservaImprevistos: 100,
   extraMonthlyContribution: 0,

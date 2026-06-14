@@ -97,12 +97,12 @@
     `;
   }
 
-  function htmlWarmTooltip(y: { mensualPiso: number; mensualParking: number; umlageMensual: number; ingresoWarmMensual: number }): string {
+  function htmlWarmTooltip(y: { mensualPiso: number; mensualParking: number; umlageMensual: number; hausgeldMensual: number; ingresoWarmMensual: number }): string {
     return `
       <p class="font-bold text-sky-300 mb-1">Composición Alquiler Total</p>
       <div class="flex justify-between"><span>Alquiler Piso:</span><span class="font-mono">${fmt(y.mensualPiso)}</span></div>
       <div class="flex justify-between"><span>Alquiler Parking:</span><span class="font-mono">${fmt(y.mensualParking)}</span></div>
-      <div class="flex justify-between"><span>Umlage (60% Hausgeld):</span><span class="font-mono">${fmt(y.umlageMensual)}</span></div>
+      <div class="flex justify-between"><span>Umlage (60% × ${fmt(y.hausgeldMensual)}):</span><span class="font-mono">${fmt(y.umlageMensual)}</span></div>
       <div class="border-t border-gray-700 pt-1 mt-1 flex justify-between font-bold text-sky-300"><span>Total:</span><span class="font-mono">${fmt(y.ingresoWarmMensual)}</span></div>
     `;
   }
@@ -116,20 +116,20 @@
     `;
   }
 
-  function htmlCashflowTooltip(y: { ingresoWarmMensual: number; hipotecaMensual: number; cashflowPreTaxMensual: number }, p: { hausgeldTotal: number; reservaImprevistos: number }): string {
+  function htmlCashflowTooltip(y: { ingresoWarmMensual: number; hipotecaMensual: number; cashflowPreTaxMensual: number; hausgeldMensual: number }, p: { reservaImprevistos: number }): string {
     return `
       <p class="font-bold text-sky-300 mb-1">Cálculo Cashflow Bruto</p>
       <div class="flex justify-between"><span>Renta Warm:</span><span class="font-mono">${fmt(y.ingresoWarmMensual)}</span></div>
       <div class="flex justify-between"><span>− Hipoteca:</span><span class="font-mono text-red-300">−${fmt(y.hipotecaMensual)}</span></div>
-      <div class="flex justify-between"><span>− Hausgeld:</span><span class="font-mono text-red-300">−${fmt(p.hausgeldTotal)}</span></div>
+      <div class="flex justify-between"><span>− Hausgeld:</span><span class="font-mono text-red-300">−${fmt(y.hausgeldMensual)}</span></div>
       <div class="flex justify-between"><span>− Imprevistos:</span><span class="font-mono text-red-300">−${fmt(p.reservaImprevistos)}</span></div>
       <div class="border-t border-gray-700 pt-1 mt-1 flex justify-between font-bold text-sky-300"><span>= Cashflow Bruto:</span><span class="font-mono">${fmt(y.cashflowPreTaxMensual)}</span></div>
     `;
   }
 
-  function htmlFiscalTooltip(y: { ingresoWarmMensual: number; interesesMensuales: number; devolucionFiscalMensual: number }, p: { precio: number; afaYears: number; hausgeldTotal: number }): string {
+  function htmlFiscalTooltip(y: { ingresoWarmMensual: number; interesesMensuales: number; devolucionFiscalMensual: number; hausgeldMensual: number }, p: { precio: number; afaYears: number }): string {
     const monthlyAfa = Math.round(p.precio * 0.75 * (1 / p.afaYears) / 12);
-    const baseFiscal = y.ingresoWarmMensual - y.interesesMensuales - monthlyAfa - p.hausgeldTotal;
+    const baseFiscal = y.ingresoWarmMensual - y.interesesMensuales - monthlyAfa - y.hausgeldMensual;
     const ahorroAnual = -baseFiscal * 0.42;
     const ahorroMensual = Math.round(ahorroAnual / 12);
     return `
@@ -138,7 +138,7 @@
       <div class="flex justify-between"><span>Ingreso Warm:</span><span class="font-mono">${fmt(y.ingresoWarmMensual)}</span></div>
       <div class="flex justify-between"><span>− Intereses:</span><span class="font-mono text-red-300">−${fmt(y.interesesMensuales)}</span></div>
       <div class="flex justify-between"><span>− AfA (${p.afaYears}a):</span><span class="font-mono text-red-300">−${fmt(monthlyAfa)}</span></div>
-      <div class="flex justify-between"><span>− Hausgeld:</span><span class="font-mono text-red-300">−${fmt(p.hausgeldTotal)}</span></div>
+      <div class="flex justify-between"><span>− Hausgeld:</span><span class="font-mono text-red-300">−${fmt(y.hausgeldMensual)}</span></div>
       <div class="flex justify-between border-b border-gray-700 pb-1 ${baseFiscal < 0 ? 'font-bold text-orange-300' : ''}"><span>= Base:</span><span class="font-mono">${fmt(baseFiscal)}</span></div>
       ${baseFiscal < 0 ? `
         <div class="pt-1">

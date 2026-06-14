@@ -14,13 +14,13 @@ const defaultParams: InputParams = {
   inflacionPct: 0.025,
   afaYears: 28,
   useFlatRate: false,
-  hausgeldTotal: 500,
+  hausgeldMensualInicial: 500,
   reservaImprevistos: 100,
   years: 10,
 };
 
 const KALT_INITIAL = 1125 + 80;
-const UMLAGE = defaultParams.hausgeldTotal * 0.6;
+const UMLAGE = defaultParams.hausgeldMensualInicial * 0.6;
 const WARM_INITIAL = KALT_INITIAL + UMLAGE;
 
 describe("getRentFactor", () => {
@@ -57,8 +57,8 @@ describe("computeFlatRatePct", () => {
     let flatTotal = 0, compTotal = 0;
     const base = 1205, uml = 300;
     for (let y = 1; y <= 10; y++) {
-      flatTotal += base * (1 + (y - 1) * pct) + uml;
-      compTotal += base * (1.02 ** (y - 1)) + uml;
+      flatTotal += (base + uml) * (1 + (y - 1) * pct);
+      compTotal += (base + uml) * (1.02 ** (y - 1));
     }
     expect(flatTotal).toBeCloseTo(compTotal, 0);
   });
@@ -127,11 +127,11 @@ describe("calculateAllYears", () => {
     }
   });
 
-  test("warm rent increases with annual compound (umlage is fixed)", () => {
-    expect(years[0].ingresoWarmMensual).toBe(KALT_INITIAL * 1 + UMLAGE);
-    expect(years[3].ingresoWarmMensual).toBeCloseTo(KALT_INITIAL * 1.02 ** 3 + UMLAGE, 1);
-    expect(years[6].ingresoWarmMensual).toBeCloseTo(KALT_INITIAL * 1.02 ** 6 + UMLAGE, 1);
-    expect(years[9].ingresoWarmMensual).toBeCloseTo(KALT_INITIAL * 1.02 ** 9 + UMLAGE, 1);
+  test("warm rent increases with annual compound (umlage grows with rent)", () => {
+    expect(years[0].ingresoWarmMensual).toBe(KALT_INITIAL * 1 + UMLAGE * 1);
+    expect(years[3].ingresoWarmMensual).toBeCloseTo(KALT_INITIAL * 1.02 ** 3 + UMLAGE * 1.02 ** 3, 1);
+    expect(years[6].ingresoWarmMensual).toBeCloseTo(KALT_INITIAL * 1.02 ** 6 + UMLAGE * 1.02 ** 6, 1);
+    expect(years[9].ingresoWarmMensual).toBeCloseTo(KALT_INITIAL * 1.02 ** 9 + UMLAGE * 1.02 ** 9, 1);
   });
 });
 

@@ -9,7 +9,7 @@ export interface InputParams {
   subidaPct: number;
   inflacionPct: number;
   afaYears: number;
-  hausgeldTotal: number;
+  hausgeldMensualInicial: number;
   useFlatRate: boolean;
   reservaImprevistos: number;
   extraMonthlyContribution: number;
@@ -25,6 +25,7 @@ export interface YearData {
   mensualPiso: number;
   mensualParking: number;
   umlageMensual: number;
+  hausgeldMensual: number;
   ingresoWarmMensual: number;
   hipotecaMensual: number;
   interesesMensuales: number;
