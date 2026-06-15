@@ -126,7 +126,8 @@
   "tooltip.fiscal_formula": "= Warmeinnahmen − Zinsen − AfA − Hausgeld",
   "tooltip.fiscal_resultado": "Bemessungsgrundlage:",
 
-  "tooltip.ahorro_titulo": "Steuerersparnis-Berechnung:",
+  "tooltip.afa_desc": "Steuerliche Abschreibung des Gebäudes (Absetzung für Abnutzung)",
+  "tooltip.afa_desc_acumulada": "Kumulierte steuerliche Abschreibung des Gebäudes (Absetzung für Abnutzung)",
   "tooltip.ahorro_condicion": "Wenn Bemessungsgrundlage < 0:",
   "tooltip.ahorro_formula": "Ersparnis = (−Basis × 42% Satz) / 12",
   "tooltip.ahorro_resultado": "Steuerersparnis:",

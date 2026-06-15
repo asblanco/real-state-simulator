@@ -126,7 +126,8 @@
   "tooltip.fiscal_formula": "= Warm Income − Interest − Depr. − HOA",
   "tooltip.fiscal_resultado": "Tax Base:",
 
-  "tooltip.ahorro_titulo": "Tax Savings Calculation:",
+  "tooltip.afa_desc": "Tax depreciation of the building (Absetzung für Abnutzung)",
+  "tooltip.afa_desc_acumulada": "Accumulated tax depreciation of the building (Absetzung für Abnutzung)",
   "tooltip.ahorro_condicion": "If Tax Base < 0:",
   "tooltip.ahorro_formula": "Savings = (−Base × 42% Rate) / 12",
   "tooltip.ahorro_resultado": "Tax Savings:",

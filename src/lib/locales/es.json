@@ -27,6 +27,8 @@
   "kpi.ganancia_neto": "Ganancia Neta",
   "kpi.roi": "ROI Capital Propio",
   "kpi.payoff": "Hipoteca Liquidada",
+  "tooltip.afa_desc": "Depreciación fiscal del edificio (Absetzung für Abnutzung)",
+  "tooltip.afa_desc_acumulada": "Depreciación fiscal del edificio acumulada (Absetzung für Abnutzung)",
   "kpi.roi_proyecto": "ROI del Proyecto",
 
   "tooltip.desglose_fondos": "Desglose de Fondos:",

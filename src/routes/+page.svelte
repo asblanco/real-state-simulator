@@ -235,48 +235,86 @@
   </div>
 
   <!-- WEALTH EVOLUTION -->
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    <div class="lg:col-span-2 bg-white p-4 rounded-2xl border border-gray-200 shadow-xs h-80">
-      <Chart
-        id="chart-wealth"
-        type="line"
-        labels={$years.map(y => $t("chart.axis_prefix") + y.year)}
-        datasets={[
-          {
-            label: "Valor Propiedad",
-            data: $years.map((y, i) => {
-              const pv = ($params.precio + $params.parking) * (1 + $params.inflacionPct) ** y.year;
-              return Math.round(pv);
-            }),
-            borderColor: "#0A2540",
-            borderWidth: 2.5,
-            tension: 0,
-            pointRadius: 2,
-            fill: false,
-          },
-          {
-            label: "Equity Neto",
-            data: $yearlyWealth.map(w => w.equity),
-            backgroundColor: "rgba(16, 185, 129, 0.2)",
-            borderColor: "rgb(16, 185, 129)",
-            borderWidth: 2,
-            tension: 0,
-            pointRadius: 2,
-            fill: true,
-          },
-          {
-            label: "Deuda Restante",
-            data: $years.map(y => Math.round(y.deudaRestante)),
-            borderColor: "rgb(239, 68, 68)",
-            borderWidth: 1.5,
-            tension: 0,
-            pointRadius: 2,
-            borderDash: [4, 3],
-            fill: false,
-          },
-        ]}
-        title="Evolución Patrimonial"
-      />
+  <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-xs h-80">
+    <Chart
+      id="chart-wealth"
+      type="line"
+      labels={$years.map(y => $t("chart.axis_prefix") + y.year)}
+      datasets={[
+        {
+          label: "Valor Propiedad",
+          data: $years.map((y, i) => {
+            const pv = ($params.precio + $params.parking) * (1 + $params.inflacionPct) ** y.year;
+            return Math.round(pv);
+          }),
+          borderColor: "#0A2540",
+          borderWidth: 2.5,
+          tension: 0,
+          pointRadius: 2,
+          fill: false,
+        },
+        {
+          label: "Equity Neto",
+          data: $yearlyWealth.map(w => w.equity),
+          backgroundColor: "rgba(16, 185, 129, 0.2)",
+          borderColor: "rgb(16, 185, 129)",
+          borderWidth: 2,
+          tension: 0,
+          pointRadius: 2,
+          fill: true,
+        },
+        {
+          label: "Deuda Restante",
+          data: $years.map(y => Math.round(y.deudaRestante)),
+          borderColor: "rgb(239, 68, 68)",
+          borderWidth: 1.5,
+          tension: 0,
+          pointRadius: 2,
+          borderDash: [4, 3],
+          fill: false,
+        },
+      ]}
+      title="Evolución Patrimonial"
+    />
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- FISCAL BREAKDOWN -->
+    <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-xs">
+      <h3 class="text-sm font-bold text-[#0A2540] mb-3">Detalle Fiscal</h3>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="p-3 bg-gray-50 rounded-xl">
+          <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">AfA Anual
+            <span class="relative group">
+              <svg class="w-3 h-3 inline text-gray-400 cursor-help ml-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block bg-[#0A2540] text-white text-[10px] rounded-lg px-2 py-1 w-56 text-center z-50 shadow-lg normal-case">{$t("tooltip.afa_desc")}</span>
+            </span>
+          </p>
+          <p class="text-lg font-black text-[#0A2540] mt-0.5">{fmt(($params.precio * 0.75 * (1 / $params.afaYears)))}</p>
+        </div>
+        <div class="p-3 bg-gray-50 rounded-xl">
+          <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">AfA Acumulada
+            <span class="relative group">
+              <svg class="w-3 h-3 inline text-gray-400 cursor-help ml-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block bg-[#0A2540] text-white text-[10px] rounded-lg px-2 py-1 w-56 text-center z-50 shadow-lg normal-case">{$t("tooltip.afa_desc_acumulada")}</span>
+            </span>
+          </p>
+          <p class="text-lg font-black text-amber-600 mt-0.5">{fmt($summary.afaAcumulada)}</p>
+        </div>
+        <div class="p-3 bg-gray-50 rounded-xl">
+          <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Ahorro Fiscal Total</p>
+          <p class="text-lg font-black text-emerald-600 mt-0.5">{fmt($summary.totalCashflowAcumulado > 0 ? ($years.reduce((s, y) => s + y.devolucionFiscalMensual * 12, 0)) : 0)}</p>
+        </div>
+        <div class="p-3 bg-gray-50 rounded-xl">
+          <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Préstamo Total</p>
+          <p class="text-lg font-black text-[#0A2540] mt-0.5">{fmt($purchaseCosts.montoFinanciar)}</p>
+          {#if $summary.payoffYear !== null}
+            <p class="text-[10px] text-emerald-600 font-bold mt-1">✓ Liquidada mes {$summary.payoffMonth} año {$summary.payoffYear}</p>
+          {:else}
+            <p class="text-[10px] text-gray-400 mt-1">Deuda restante: {fmt($summary.deudaRestanteFinal)}</p>
+          {/if}
+        </div>
+      </div>
     </div>
 
     <!-- COMPACT WEALTH TABLE -->
@@ -311,34 +349,6 @@
   </div>
 
 <div class="space-y-6 pb-12">
-    <!-- FISCAL BREAKDOWN -->
-    <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-xs">
-      <h3 class="text-sm font-bold text-[#0A2540] mb-3">Detalle Fiscal</h3>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div class="p-3 bg-gray-50 rounded-xl">
-          <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">AfA Anual</p>
-          <p class="text-lg font-black text-[#0A2540] mt-0.5">{fmt(($params.precio * 0.75 * (1 / $params.afaYears)))}</p>
-        </div>
-        <div class="p-3 bg-gray-50 rounded-xl">
-          <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">AfA Acumulada</p>
-          <p class="text-lg font-black text-amber-600 mt-0.5">{fmt($summary.afaAcumulada)}</p>
-        </div>
-        <div class="p-3 bg-gray-50 rounded-xl">
-          <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Ahorro Fiscal Total</p>
-          <p class="text-lg font-black text-emerald-600 mt-0.5">{fmt($summary.totalCashflowAcumulado > 0 ? ($years.reduce((s, y) => s + y.devolucionFiscalMensual * 12, 0)) : 0)}</p>
-        </div>
-        <div class="p-3 bg-gray-50 rounded-xl">
-          <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Préstamo Total</p>
-          <p class="text-lg font-black text-[#0A2540] mt-0.5">{fmt($purchaseCosts.montoFinanciar)}</p>
-          {#if $summary.payoffYear !== null}
-            <p class="text-[10px] text-emerald-600 font-bold mt-1">✓ Liquidada mes {$summary.payoffMonth} año {$summary.payoffYear}</p>
-          {:else}
-            <p class="text-[10px] text-gray-400 mt-1">Deuda restante: {fmt($summary.deudaRestanteFinal)}</p>
-          {/if}
-        </div>
-      </div>
-    </div>
-
     <!-- FULL PROJECTION TABLE -->
     <div class="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden">
       <div class="p-4 border-b border-gray-100">
