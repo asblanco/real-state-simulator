@@ -25,6 +25,8 @@
   "kpi.efectivo_inicial": "Initial Cash Outlay",
   "kpi.costo_adquisicion": "Total Acquisition Cost",
   "kpi.ganancia_neto": "Net Gain",
+  "kpi.payoff": "Mortgage Paid Off",
+  "payoff.format": "Paid off in {month} {year} - in {years} years and {months} months",
   "kpi.roi": "Equity ROI (ROE)",
   "kpi.roi_proyecto": "Project ROI (ROA)",
 

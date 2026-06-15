@@ -1,6 +1,6 @@
 <script lang="ts">
   import { params } from "$lib/stores/params";
-  import { t } from "$lib/i18n";
+  import { t, locale, getCurrentLocale } from "$lib/i18n";
   import { purchaseCosts, years, summary, roiColor, roaColor, yearlyWealth } from "$lib/stores/computed";
   import KpiCard from "$lib/components/KpiCard.svelte";
   import TooltipTd from "$lib/components/TooltipTd.svelte";
@@ -24,6 +24,22 @@
   let gananciaNetaTooltip = $derived(htmlGananciaNeta($summary, $purchaseCosts));
   let roeTooltip = $derived(htmlRoeTooltip($summary, $purchaseCosts, $params));
   let roaTooltip = $derived(htmlRoaTooltip($summary, $purchaseCosts));
+
+  let payoffLabel = $derived.by(() => {
+    if ($summary.payoffYear === null) return null;
+    const loc = getCurrentLocale();
+    const monthName = new Date(2000, $summary.payoffMonth - 1, 1)
+      .toLocaleString(loc, { month: "long" });
+    const totalMeses = ($summary.payoffYear - 1) * 12 + ($summary.payoffMonth - 1);
+    const años = Math.floor(totalMeses / 12);
+    const meses = totalMeses % 12;
+    const añoCalendario = new Date().getFullYear() + $summary.payoffYear - 1;
+    return $t("payoff.format")
+      .replace("{month}", monthName)
+      .replace("{year}", añoCalendario.toString())
+      .replace("{years}", años.toString())
+      .replace("{months}", meses.toString());
+  });
 
   function htmlCostoAdq(p: { precio: number; parking: number }, pc: { costeITP: number; costeNotario: number; costeAgencia: number; efectivoTotalNecesario: number; montoFinanciar: number }): string {
     return `
@@ -308,13 +324,15 @@
         <div class="p-3 bg-gray-50 rounded-xl">
           <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Préstamo Total</p>
           <p class="text-lg font-black text-[#0A2540] mt-0.5">{fmt($purchaseCosts.montoFinanciar)}</p>
-          {#if $summary.payoffYear !== null}
-            <p class="text-[10px] text-emerald-600 font-bold mt-1">✓ Liquidada mes {$summary.payoffMonth} año {$summary.payoffYear}</p>
-          {:else}
-            <p class="text-[10px] text-gray-400 mt-1">Deuda restante: {fmt($summary.deudaRestanteFinal)}</p>
-          {/if}
+          <p class="text-[10px] text-gray-400 mt-1">Deuda restante: {fmt($summary.deudaRestanteFinal)}</p>
         </div>
       </div>
+      {#if $summary.payoffYear !== null}
+        <div class="mt-3 bg-emerald-50 border border-emerald-200 rounded-xl p-3">
+          <p class="text-[10px] font-bold text-emerald-700 uppercase tracking-wider">{$t("kpi.payoff")}</p>
+          <p class="text-sm text-emerald-800 font-semibold mt-1">{payoffLabel}</p>
+        </div>
+      {/if}
     </div>
 
     <!-- COMPACT WEALTH TABLE -->

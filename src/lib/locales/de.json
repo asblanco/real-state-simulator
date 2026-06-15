@@ -25,6 +25,8 @@
   "kpi.efectivo_inicial": "Anfangskapital",
   "kpi.costo_adquisicion": "Gesamte Anschaffungskosten",
   "kpi.ganancia_neto": "Nettogewinn",
+  "kpi.payoff": "Hypothek getilgt",
+  "payoff.format": "Getilgt im {month} {year} - in {years} Jahren und {months} Monaten",
   "kpi.roi": "Eigenkapitalrendite (ROE)",
   "kpi.roi_proyecto": "Projektrendite (ROA)",
 
