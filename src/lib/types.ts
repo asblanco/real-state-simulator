@@ -36,6 +36,7 @@ export interface YearData {
   devolucionFiscalMensual: number;
   cashflowNetoPostTaxMensual: number;
   afaMensual: number;
+  payoffMonth: number | null;
 }
 
 export interface PurchaseCosts {
@@ -65,6 +66,8 @@ export interface SummaryData {
   roiCapitalPropioTotal: number;
   roiProyectoTotal: number;
   apalancamiento: number;
+  payoffYear: number | null;
+  payoffMonth: number | null;
 }
 
 export interface EtfYearData {

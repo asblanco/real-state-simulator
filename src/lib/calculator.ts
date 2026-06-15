@@ -49,16 +49,43 @@ export function calculateYear(
   const umlageMensual = hausgeldActual * UMLAGE_PCT;
   const ingresoWarmMensual = mensualPiso + mensualParking + umlageMensual;
 
-  const interesesAnuales = deudaRestante * params.interesPct;
-  const interesesMensuales = interesesAnuales / MONTHS_PER_YEAR;
-  const cuotaAnualTotal = cuotaMensualHipoteca * MONTHS_PER_YEAR;
-  const amortizacionAnual = cuotaAnualTotal - interesesAnuales;
-  const amortizacionMensual = amortizacionAnual / MONTHS_PER_YEAR;
-  const nuevaDeuda = deudaRestante - amortizacionAnual;
-
+  const monthlyInteresPct = params.interesPct / MONTHS_PER_YEAR;
   const gastosOperativosMensuales = hausgeldActual + params.reservaImprevistos;
-  const cashflowPreTaxMensual = ingresoWarmMensual - cuotaMensualHipoteca - gastosOperativosMensuales;
 
+  let remainder = deudaRestante;
+  let totalHipoteca = 0;
+  let totalIntereses = 0;
+  let totalAmort = 0;
+  let totalCashflowPreTax = 0;
+  let payoffMonth: number | null = null;
+
+  for (let m = 0; m < MONTHS_PER_YEAR; m++) {
+    let pagoReal = 0;
+    let interesesMes = 0;
+
+    if (remainder > 0.005) {
+      interesesMes = remainder * monthlyInteresPct;
+      pagoReal = Math.min(cuotaMensualHipoteca, remainder + interesesMes);
+      const amortMes = pagoReal - interesesMes;
+      remainder -= amortMes;
+      if (remainder <= 0.005) {
+        remainder = 0;
+        payoffMonth = m + 1;
+      }
+    }
+
+    totalHipoteca += pagoReal;
+    totalIntereses += interesesMes;
+    totalAmort += pagoReal - interesesMes;
+    totalCashflowPreTax += ingresoWarmMensual - pagoReal - gastosOperativosMensuales;
+  }
+
+  const hipotecaMensual = totalHipoteca / MONTHS_PER_YEAR;
+  const interesesMensuales = totalIntereses / MONTHS_PER_YEAR;
+  const amortizacionMensual = totalAmort / MONTHS_PER_YEAR;
+  const cashflowPreTaxMensual = totalCashflowPreTax / MONTHS_PER_YEAR;
+
+  const interesesAnuales = totalIntereses;
   const ingresosBrutosAnuales = ingresoWarmMensual * MONTHS_PER_YEAR;
   const afaEdificioAnual = (params.precio * AFA_BUILDING_PCT * (1 / params.afaYears));
   const gastosDeduciblesAnuales = interesesAnuales + afaEdificioAnual + (hausgeldActual * MONTHS_PER_YEAR);
@@ -77,15 +104,16 @@ export function calculateYear(
     umlageMensual,
     hausgeldMensual: hausgeldActual,
     ingresoWarmMensual,
-    hipotecaMensual: cuotaMensualHipoteca,
+    hipotecaMensual,
     interesesMensuales,
     amortizacionMensual,
-    deudaRestante: nuevaDeuda,
+    deudaRestante: remainder,
     cashflowPreTaxMensual,
     resultadoFiscalMensual,
     devolucionFiscalMensual,
     cashflowNetoPostTaxMensual,
     afaMensual,
+    payoffMonth,
   };
 }
 
@@ -129,11 +157,16 @@ export function computeSummary(params: InputParams, years: YearData[], purchaseC
   const roiProyectoAnualizado = (1 + roiProyectoTotal) ** (1 / n) - 1;
   const apalancamiento = roiCapitalPropioTotal > 0 && roiProyectoTotal > 0 ? roiCapitalPropioTotal / roiProyectoTotal : 0;
 
+  const payoffEntry = years.find(y => y.payoffMonth !== null);
+  const payoffYear = payoffEntry?.year ?? null;
+  const payoffMonth = payoffEntry?.payoffMonth ?? null;
+
   return {
     valorPropiedadFutura, deudaRestanteFinal, netoDeLaVenta, totalCashflowAcumulado,
     gananciaNeta, capitalTotalFinal, totalCapitalAportado, roiAnualizado,
     costoAdquisicionTotal, afaAcumulada, gananciaVenta, gananciaFiscal,
     roiProyectoAnualizado, roiCapitalPropioTotal, roiProyectoTotal, apalancamiento,
+    payoffYear, payoffMonth,
   };
 }
 

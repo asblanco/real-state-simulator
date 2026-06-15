@@ -26,6 +26,7 @@
   "kpi.costo_adquisicion": "Costo Adq. Total",
   "kpi.ganancia_neto": "Ganancia Neta",
   "kpi.roi": "ROI Capital Propio",
+  "kpi.payoff": "Hipoteca Liquidada",
   "kpi.roi_proyecto": "ROI del Proyecto",
 
   "tooltip.desglose_fondos": "Desglose de Fondos:",

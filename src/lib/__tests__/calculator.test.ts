@@ -99,8 +99,10 @@ describe("calculateYear", () => {
     expect(year1.ingresoWarmMensual).toBe(WARM_INITIAL);
   });
 
-  test("year 1 monthly interest on full mortgage", () => {
-    expect(year1.interesesMensuales).toBeCloseTo(costs.montoFinanciar * 0.0422 / 12, 1);
+  test("year 1 monthly interest lower than annual approximation (monthly amortization reduces balance)", () => {
+    const annualApprox = costs.montoFinanciar * defaultParams.interesPct / 12;
+    expect(year1.interesesMensuales).toBeLessThan(annualApprox);
+    expect(year1.interesesMensuales).toBeGreaterThan(annualApprox * 0.98);
   });
 
   test("hipoteca total = interest + amortization", () => {
@@ -209,6 +211,44 @@ describe("edge cases", () => {
     const years = calculateAllYears(params, costs);
     expect(years[0].resultadoFiscalMensual).toBeLessThan(0);
     expect(years[0].devolucionFiscalMensual).toBeGreaterThan(0);
+  });
+});
+
+describe("mortgage payoff", () => {
+  const payoffParams: InputParams = {
+    ...defaultParams,
+    tilgungPct: 0.10,
+    years: 30,
+  };
+
+  test("deudaRestante never goes negative", () => {
+    const costs = computePurchaseCosts(payoffParams);
+    const years = calculateAllYears(payoffParams, costs);
+    for (const y of years) {
+      expect(y.deudaRestante).toBeGreaterThanOrEqual(-0.01);
+    }
+  });
+
+  test("hipotecaMensual is 0 after mortgage fully paid", () => {
+    const costs = computePurchaseCosts(payoffParams);
+    const years = calculateAllYears(payoffParams, costs);
+    let deudaCero = false;
+    for (const y of years) {
+      if (deudaCero) {
+        expect(y.hipotecaMensual).toBe(0);
+        expect(y.interesesMensuales).toBe(0);
+        expect(y.amortizacionMensual).toBe(0);
+      }
+      if (Math.abs(y.deudaRestante) < 0.01) deudaCero = true;
+    }
+    expect(deudaCero).toBe(true);
+  });
+
+  test("total amortization equals original mortgage amount", () => {
+    const costs = computePurchaseCosts(payoffParams);
+    const years = calculateAllYears(payoffParams, costs);
+    const totalAmort = years.reduce((s, y) => s + y.amortizacionMensual * 12, 0);
+    expect(totalAmort).toBeCloseTo(costs.montoFinanciar, -1);
   });
 });
 

@@ -53,7 +53,7 @@
     return `
       <p class="font-bold text-emerald-400 border-b border-gray-700 pb-1 mb-1">Desglose Ganancia Neta</p>
       <div class="flex justify-between"><span>Valor venta futuro:</span><span class="font-mono">${fmt(s.valorPropiedadFutura)}</span></div>
-      <div class="flex justify-between"><span>− Deuda restante:</span><span class="font-mono text-red-300">−${fmt(s.deudaRestanteFinal)}</span></div>
+      <div class="flex justify-between"><span>− Deuda restante:</span><span class="font-mono ${s.deudaRestanteFinal > 0 ? 'text-red-300' : 'text-white'}">${s.deudaRestanteFinal > 0 ? '−' + fmt(s.deudaRestanteFinal) : fmt(s.deudaRestanteFinal)}</span></div>
       <div class="flex justify-between border-b border-gray-800 pb-1"><span>= Neto de venta:</span><span class="font-mono">${fmt(s.netoDeLaVenta)}</span></div>
       <div class="flex justify-between"><span>+ Cashflow acumulado:</span><span class="font-mono ${cfColor}">${cfSign}${fmt(s.totalCashflowAcumulado)}</span></div>
       <div class="flex justify-between"><span>− Inversión inicial:</span><span class="font-mono text-red-300">−${fmt(pc.efectivoTotalNecesario)}</span></div>
@@ -330,6 +330,11 @@
         <div class="p-3 bg-gray-50 rounded-xl">
           <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Préstamo Total</p>
           <p class="text-lg font-black text-[#0A2540] mt-0.5">{fmt($purchaseCosts.montoFinanciar)}</p>
+          {#if $summary.payoffYear !== null}
+            <p class="text-[10px] text-emerald-600 font-bold mt-1">✓ Liquidada mes {$summary.payoffMonth} año {$summary.payoffYear}</p>
+          {:else}
+            <p class="text-[10px] text-gray-400 mt-1">Deuda restante: {fmt($summary.deudaRestanteFinal)}</p>
+          {/if}
         </div>
       </div>
     </div>
@@ -359,7 +364,11 @@
                   {fmt(y.ingresoWarmMensual)}
                 </TooltipTd>
                 <TooltipTd content={htmlHipotecaTooltip(y)} tdClass="text-center text-amber-700 bg-amber-50/40 text-sm">
-                  {fmt(-y.hipotecaMensual)}
+                  {#if y.deudaRestante <= 0 && y.hipotecaMensual === 0}
+                    <span class="text-emerald-600 font-bold">✓ Liquidada</span>
+                  {:else}
+                    {fmt(-y.hipotecaMensual)}
+                  {/if}
                 </TooltipTd>
                 <TooltipTd content={htmlCashflowTooltip(y, $params)} tdClass="text-center text-sm">
                   {fmt(y.cashflowPreTaxMensual)}
