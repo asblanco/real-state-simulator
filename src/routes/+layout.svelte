@@ -126,8 +126,8 @@
             </div>
 
             <div>
-              <label class="block text-xs font-semibold text-gray-500 mb-1">{$t("slider.entrada")} <span class="text-[#635BFF] font-bold">{$params.entradaPct * 100}</span>%</label>
-              <input type="range" id="input-entrada" min="0" max="50" step="5" value={$params.entradaPct * 100}
+              <label class="block text-xs font-semibold text-gray-500 mb-1">{$t("slider.entrada")} <span class="text-[#635BFF] font-bold">{($params.entradaPct * 100).toFixed(0)}</span>%</label>
+              <input type="range" id="input-entrada" min="0" max="50" step="1" value={$params.entradaPct * 100}
                 oninput={(e) => updateParam("entradaPct", parseFloat(e.target.value) / 100)}
                 class="w-full accent-[#635BFF]">
             </div>
