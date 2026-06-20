@@ -140,7 +140,7 @@
             </div>
 
             <div>
-              <label class="block text-xs font-semibold text-gray-500 mb-1">{$t("slider.tilgung")} <span class="text-[#635BFF] font-bold">{($params.tilgungPct * 100).toFixed(1)}</span>%</label>
+              <label class="block text-xs font-semibold text-gray-500 mb-1">{$t("slider.tilgung")} <span class="text-[#635BFF] font-bold">{($params.tilgungPct * 100).toFixed(2)}</span>%</label>
               <input type="range" id="input-tilgung" min="1.0" max="3.0" step="0.25" value={$params.tilgungPct * 100}
                 oninput={(e) => updateParam("tilgungPct", parseFloat(e.target.value) / 100)}
                 class="w-full accent-[#635BFF]">
