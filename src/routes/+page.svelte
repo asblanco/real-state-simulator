@@ -1,7 +1,7 @@
 <script lang="ts">
   import { params } from "$lib/stores/params";
   import { t, locale, getCurrentLocale } from "$lib/i18n";
-  import { purchaseCosts, years, summary, roiColor, roaColor, yearlyWealth } from "$lib/stores/computed";
+  import { purchaseCosts, years, summary, roiColor, roaColor, nettomietrenditeColor, yearlyWealth } from "$lib/stores/computed";
   import KpiCard from "$lib/components/KpiCard.svelte";
   import TooltipTd from "$lib/components/TooltipTd.svelte";
   import Chart from "$lib/components/Chart.svelte";
@@ -24,6 +24,7 @@
   let gananciaNetaTooltip = $derived(htmlGananciaNeta($summary, $purchaseCosts));
   let roeTooltip = $derived(htmlRoeTooltip($summary, $purchaseCosts, $params));
   let roaTooltip = $derived(htmlRoaTooltip($summary, $purchaseCosts));
+  let nettomietrenditeTooltip = $derived(htmlNettomietrenditeTooltip($summary, $params));
 
   let payoffLabel = $derived.by(() => {
     if ($summary.payoffYear === null) return null;
@@ -115,6 +116,27 @@
     `;
   }
 
+  function htmlNettomietrenditeTooltip(s: { nettomietrendite: number }, p: { alquilerInicialPiso: number; alquilerInicialParking: number; hausgeldMensualInicial: number; reservaImprevistos: number }): string {
+    const kaltAnual = (p.alquilerInicialPiso + p.alquilerInicialParking) * 12;
+    const gastosAnuales = (p.hausgeldMensualInicial * 0.4 + p.reservaImprevistos) * 12;
+    const netAnual = kaltAnual - gastosAnuales;
+    return `
+      <p class="font-bold text-sky-300 mb-1">Cálculo Nettomietrendite</p>
+      <div class="text-[10px] text-gray-400 italic mb-1">= (Kaltmiete anual − Gastos no repercutibles) ÷ Costo adq. total</div>
+      <div class="flex justify-between"><span>Kaltmiete anual:</span><span class="font-mono">${fmt(kaltAnual)}</span></div>
+      <div class="flex justify-between"><span>− Gastos no repercutibles:</span><span class="font-mono text-red-300">−${fmt(gastosAnuales)}</span></div>
+      <div class="flex justify-between border-b border-gray-700 pb-1"><span>= Renta neta anual:</span><span class="font-mono">${fmt(netAnual)}</span></div>
+      <div class="flex justify-between"><span>÷ Costo adq. total:</span><span class="font-mono">${fmt($purchaseCosts.efectivoTotalNecesario + $purchaseCosts.montoFinanciar)}</span></div>
+      <div class="border-t border-gray-700 pt-1 mt-1 flex justify-between font-bold text-sky-300"><span>Nettomietrendite:</span><span class="font-mono">${pct(s.nettomietrendite)}</span></div>
+      <div class="border-t border-gray-700 pt-2 mt-2 text-[10px] space-y-0.5">
+        <p class="text-gray-400 font-bold mb-0.5">Referencia:</p>
+        <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-red-600 inline-block"></span><span class="text-gray-400">&lt; 2% — Rendimiento bajo</span></div>
+        <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-sky-600 inline-block"></span><span class="text-gray-400">2–3,5% — Rendimiento aceptable</span></div>
+        <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-600 inline-block"></span><span class="text-gray-400">≥ 3,5% — Rendimiento excelente</span></div>
+      </div>
+    `;
+  }
+
   function htmlWarmTooltip(y: { mensualPiso: number; mensualParking: number; umlageMensual: number; hausgeldMensual: number; ingresoWarmMensual: number }): string {
     return `
       <p class="font-bold text-sky-300 mb-1">Composición Alquiler Total</p>
@@ -199,6 +221,9 @@
     <KpiCard id="kpi-ganancia-neta" label={$t("kpi.ganancia_neto")} value={fmt($summary.gananciaNeta)} tooltipContent={gananciaNetaTooltip} />
     <KpiCard id="kpi-roe" label="ROE" value={Number.isFinite($summary.roiAnualizado) ? pctDisplay($summary.roiAnualizado, $summary.roiCapitalPropioTotal) : "—"} bgClass={$roiColor} valueClass="text-white" labelClass="text-blue-100" tooltipContent={roeTooltip} />
     <KpiCard id="kpi-roa" label="ROA" value={Number.isFinite($summary.roiProyectoAnualizado) ? pctDisplay($summary.roiProyectoAnualizado, $summary.roiProyectoTotal) : "—"} bgClass={$roaColor} valueClass="text-white" labelClass="text-blue-100" tooltipContent={roaTooltip} />
+    <div></div>
+    <div></div>
+    <KpiCard id="kpi-nettomietrendite" label={$t("kpi.nettomietrendite")} value={Number.isFinite($summary.nettomietrendite) ? pct($summary.nettomietrendite) : "—"} bgClass={$nettomietrenditeColor} valueClass="text-white" labelClass="text-blue-100" tooltipContent={nettomietrenditeTooltip} />
   </div>
 
   <!-- CASHFLOW / CAPITAL APORTADO TOGGLE + CHART -->

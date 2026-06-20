@@ -157,6 +157,10 @@ export function computeSummary(params: InputParams, years: YearData[], purchaseC
   const roiProyectoAnualizado = (1 + roiProyectoTotal) ** (1 / n) - 1;
   const apalancamiento = roiCapitalPropioTotal > 0 && roiProyectoTotal > 0 ? roiCapitalPropioTotal / roiProyectoTotal : 0;
 
+  const kaltmieteAnual = (params.alquilerInicialPiso + params.alquilerInicialParking) * MONTHS_PER_YEAR;
+  const gastosNoRepercutiblesAnuales = (params.hausgeldMensualInicial * (1 - UMLAGE_PCT) + params.reservaImprevistos) * MONTHS_PER_YEAR;
+  const nettomietrendite = (kaltmieteAnual - gastosNoRepercutiblesAnuales) / costoAdquisicionTotal;
+
   const payoffEntry = years.find(y => y.payoffMonth !== null);
   const payoffYear = payoffEntry?.year ?? null;
   const payoffMonth = payoffEntry?.payoffMonth ?? null;
@@ -166,7 +170,7 @@ export function computeSummary(params: InputParams, years: YearData[], purchaseC
     gananciaNeta, capitalTotalFinal, totalCapitalAportado, roiAnualizado,
     costoAdquisicionTotal, afaAcumulada, gananciaVenta, gananciaFiscal,
     roiProyectoAnualizado, roiCapitalPropioTotal, roiProyectoTotal, apalancamiento,
-    payoffYear, payoffMonth,
+    payoffYear, payoffMonth, nettomietrendite,
   };
 }
 

@@ -29,6 +29,7 @@
   "payoff.format": "Getilgt im {month} {year} - in {years} Jahren und {months} Monaten",
   "kpi.roi": "Eigenkapitalrendite (ROE)",
   "kpi.roi_proyecto": "Projektrendite (ROA)",
+  "kpi.nettomietrendite": "Nettomietrendite",
 
   "tooltip.desglose_fondos": "Mittelaufteilung:",
   "tooltip.entrada_pura": "Eigenkapital:",

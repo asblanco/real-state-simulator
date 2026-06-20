@@ -68,6 +68,7 @@ export interface SummaryData {
   apalancamiento: number;
   payoffYear: number | null;
   payoffMonth: number | null;
+  nettomietrendite: number;
 }
 
 export interface EtfYearData {

@@ -29,6 +29,7 @@
   "payoff.format": "Paid off in {month} {year} - in {years} years and {months} months",
   "kpi.roi": "Equity ROI (ROE)",
   "kpi.roi_proyecto": "Project ROI (ROA)",
+  "kpi.nettomietrendite": "Net Rental Yield",
 
   "tooltip.desglose_fondos": "Fund Breakdown:",
   "tooltip.entrada_pura": "Down Payment:",
